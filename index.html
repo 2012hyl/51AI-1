@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>温柔陪伴 · 内测修复版</title>
+  <title>温柔陪伴 · 完整版</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}
     html,body{height:100dvh;overflow:hidden}
@@ -168,6 +168,7 @@
         <div class="mode-card" data-mode="星空对话"><span class="mode-emoji">🌌</span>星空</div>
         <div class="mode-card" data-mode="平行宇宙"><span class="mode-emoji">🌐</span>平行</div>
         <div class="mode-card" data-mode="交换日记"><span class="mode-emoji">📔</span>日记</div>
+        <div class="mode-card" data-mode="动画短片"><span class="mode-emoji">🎬</span>短片</div>
       </div>
     </div>
     <div class="style-bar" id="styleBar">
@@ -273,12 +274,13 @@ const MODE_PROMPTS = {
   "情绪镜像": `你是一位富有同理心的情绪观察者。用户通过一系列选择描述了自己此刻的情绪状态，请根据这些信息生成一段温暖、有洞察力的“情绪镜像”反馈。按照【情绪画像】【内心独白】【温柔提醒】三个部分输出。`,
   "星空对话": `用户写一段想对某人说但无法说出口的话，然后发送到星空。你只需要给一句宇宙感的话（30字以内）。`,
   "平行宇宙": `用户描述了一个关键人生选择。请必须根据这个选择，生成一段约200字的“另一个宇宙”的故事。故事必须以“如果当初……”开头，全程使用“也许会……”、“但也可能……”、“也许此刻的我会……”等不确定的语气词来描述另一个自己的生活。必须同时展示这个选择带来的好的可能性和坏的可能性，不要只美化未选择的路。最后必须说：“宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。”`,
-  "交换日记": `用户写一段今天的心情。你给一句温暖回应（30字以内）。`
+  "交换日记": `用户写一段今天的心情。你给一句温暖回应（30字以内）。`,
+  "动画短片": `你是一个动画代码生成器。用户描述一个场景或故事，你需要生成完整的HTML/CSS/JS动画代码。要求：1. 必须是完整的、可直接在浏览器中打开的HTML文件 2. 动画要流畅、有趣、可爱 3. 使用emoji作为视觉元素 4. 适配手机屏幕 5. 包含简单的交互或循环动画 6. 代码长度控制在200行以内 7. 动画时长10-20秒 8. 结尾要有明显的结束画面。只输出完整HTML代码，不要任何解释文字。`
 };
 
 const MODE_GREETINGS = {
   "通用陪伴": "🌿 我在这里。想说什么，或者不想说话，都可以。",
-  "塔罗牌": "", "情绪焚烧炉": "", "文字褪色馆": "", "情绪镜像": "", "星空对话": "", "平行宇宙": "", "交换日记": ""
+  "塔罗牌": "", "情绪焚烧炉": "", "文字褪色馆": "", "情绪镜像": "", "星空对话": "", "平行宇宙": "", "交换日记": "", "动画短片": ""
 };
 
 const MODE_INTROS = {
@@ -289,7 +291,8 @@ const MODE_INTROS = {
   "情绪镜像": { emoji:"💠", name:"情绪镜像卡牌", desc:"通过选择颜色、需求和强度，AI为你生成专属的情绪镜像。不是占卜，是看见自己此刻的样子。", scenes:"适合：想更清晰地看见自己的情绪状态时。" },
   "星空对话": { emoji:"🌌", name:"星空对话", desc:"写一段想对某人说但无法说出口的话，发送到星空。", scenes:"适合：想念、遗憾、说不出口的话。" },
   "平行宇宙": { emoji:"🌐", name:"另一个宇宙的我", desc:"如果当初选了另一条路，你会是什么样子？", scenes:"适合：对人生选择好奇的时候。" },
-  "交换日记": { emoji:"📔", name:"交换日记", desc:"写下今天的心情，看看陌生人写了什么。", scenes:"适合：深夜想被看见的时候。" }
+  "交换日记": { emoji:"📔", name:"交换日记", desc:"写下今天的心情，AI会以另一个普通人的身份给你回信。", scenes:"适合：深夜想被看见的时候。" },
+  "动画短片": { emoji:"🎬", name:"动画短片工坊", desc:"用一句话描述你想要的动画，AI帮你生成。比如：一只猫吃了辣椒后喷火把房子点着了", scenes:"适合：有好玩的想法想让它动起来的时候。" }
 };
 
 const TAROT_DECK = [
@@ -410,7 +413,7 @@ modeIntroOverlay.addEventListener('click', (e) => { if(e.target === modeIntroOve
 
 function updateUILayout(mode) {
   const isChatMode = (mode === '通用陪伴');
-  const isInteractMode = ['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记'].includes(mode);
+  const isInteractMode = ['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记','动画短片'].includes(mode);
   if (isChatMode) { styleBar.classList.add('visible'); }
   else { styleBar.classList.remove('visible'); }
   if (isInteractMode) {
@@ -449,6 +452,7 @@ function switchMode(mode){
   else if(mode==='星空对话'){ buildStarUI(); }
   else if(mode==='平行宇宙'){ buildParallelUI(); }
   else if(mode==='交换日记'){ buildDiaryUI(); }
+  else if(mode==='动画短片'){ buildAnimationUI(); }
   else {
     let h=localStorage.getItem('chat_'+mode+'_'+currentStyle);let html=localStorage.getItem('chatHTML_'+mode+'_'+currentStyle);
     if(h){try{let p=JSON.parse(h);chatHistory=[{role:"system",content:buildSystem()},...p.filter(m=>m.role!=="system")];}catch(e){}}
@@ -481,66 +485,38 @@ function openSettings(){ document.getElementById('settingsOverlay').classList.ad
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
 document.getElementById('settingsOverlay').addEventListener('click', function(e){ if(e.target===this) closeSettings(); });
 
-// ===== 意见箱（带AI过滤） =====
 async function openFeedback() {
   closeSettings();
   const text = prompt('请写下你的意见或反馈：');
   if (!text || !text.trim()) return;
-  
   const div = document.createElement('div');
   div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card-bg);padding:20px;border-radius:16px;z-index:10000;text-align:center;color:var(--text-ai)';
   div.textContent = '正在提交……';
   document.body.appendChild(div);
-  
   try {
     const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'glm-4-flash',
-        messages: [{ role: 'user', content: `判断以下用户反馈是否有效。无效标准：空白、纯表情、乱码、广告、骚扰、无意义重复字符。只回复"有效"或"无效"。\n\n${text}` }],
-        temperature: 0.1,
-        max_tokens: 10
-      })
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'glm-4-flash', messages: [{ role: 'user', content: `判断以下用户反馈是否有效。无效标准：空白、纯表情、乱码、广告、骚扰、无意义重复字符。只回复"有效"或"无效"。\n\n${text}` }], temperature: 0.1, max_tokens: 10 })
     });
     const data = await res.json();
     const result = data.choices?.[0]?.message?.content?.trim() || '有效';
     document.body.removeChild(div);
-    
-    if (result === '无效') {
-      alert('请写下具体的意见或反馈，谢谢！');
-    } else {
-      window.location.href = 'mailto:3859283085@qq.com?subject=温柔陪伴%20意见反馈&body=' + encodeURIComponent(text);
-    }
-  } catch(e) {
-    document.body.removeChild(div);
-    window.location.href = 'mailto:3859283085@qq.com?subject=温柔陪伴%20意见反馈&body=' + encodeURIComponent(text);
-  }
+    if (result === '无效') { alert('请写下具体的意见或反馈，谢谢！'); }
+    else { window.location.href = 'mailto:3859283085@qq.com?subject=温柔陪伴%20意见反馈&body=' + encodeURIComponent(text); }
+  } catch(e) { document.body.removeChild(div); window.location.href = 'mailto:3859283085@qq.com?subject=温柔陪伴%20意见反馈&body=' + encodeURIComponent(text); }
 }
 
 function triggerCatAnimation(){
   closeSettings();
   const overlay = document.getElementById('catOverlay');
-  const cat = document.getElementById('catChar');
-  const fish = document.getElementById('catFish');
-  const roomBg = document.getElementById('catRoomBg');
-  const toilet = document.getElementById('catToilet');
-  const poop = document.getElementById('catPoop');
-  const multiplePoops = document.getElementById('catMultiplePoops');
+  const cat = document.getElementById('catChar'); const fish = document.getElementById('catFish');
+  const roomBg = document.getElementById('catRoomBg'); const toilet = document.getElementById('catToilet');
+  const poop = document.getElementById('catPoop'); const multiplePoops = document.getElementById('catMultiplePoops');
   const exitBtn = document.getElementById('catExitBtn');
-  
   cat.style.cssText = 'position:absolute;font-size:80px;transition:all 0.8s cubic-bezier(0.25,0.8,0.25,1.2);z-index:10;bottom:50px;left:30px;';
   fish.style.cssText = 'position:absolute;font-size:80px;transition:all 0.8s cubic-bezier(0.25,0.8,0.25,1.2);z-index:10;bottom:50px;right:30px;';
-  roomBg.classList.remove('toilet-bg');
-  toilet.style.display = 'none';
-  poop.style.display = 'none';
-  multiplePoops.style.display = 'none';
-  exitBtn.style.display = 'none';
+  roomBg.classList.remove('toilet-bg'); toilet.style.display = 'none'; poop.style.display = 'none'; multiplePoops.style.display = 'none'; exitBtn.style.display = 'none';
   overlay.classList.add('active');
-  
   setTimeout(() => { cat.style.left = '180px'; }, 300);
   setTimeout(() => { fish.style.display = 'none'; cat.textContent = '🙀'; cat.style.fontSize = '90px'; }, 1200);
   setTimeout(() => { cat.style.left = 'calc(100% - 120px)'; cat.style.transition = 'all 0.4s cubic-bezier(0.25,0.8,0.25,1.2)'; }, 1800);
@@ -549,13 +525,92 @@ function triggerCatAnimation(){
   setTimeout(() => { poop.style.display = 'block'; }, 3800);
   setTimeout(() => { cat.style.bottom = '190px'; poop.style.display = 'none'; multiplePoops.style.display = 'flex'; exitBtn.style.display = 'block'; }, 4500);
 }
-
 function closeCatAnimation(){
-  const cat = document.getElementById('catChar');
-  const fish = document.getElementById('catFish');
-  cat.removeAttribute('style');
-  fish.removeAttribute('style');
+  const cat = document.getElementById('catChar'); const fish = document.getElementById('catFish');
+  cat.removeAttribute('style'); fish.removeAttribute('style');
   document.getElementById('catOverlay').classList.remove('active');
+}
+
+// ===== 动画短片工坊 =====
+function buildAnimationUI(){
+  interactArea.classList.remove('hidden');
+  interactArea.innerHTML = `
+    <div class="interact-title">🎬 动画短片工坊</div>
+    <div class="interact-desc" style="font-size:11px;opacity:0.6;margin-top:-12px">用一句话描述你想要的动画，AI帮你生成</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:4px">
+      <span style="font-size:9px;color:var(--text-ai);opacity:0.5;cursor:pointer" onclick="setAnimationIdea('一只猫吃了鱼后吓到跑去厕所拉屎')">猫吃鱼拉屎</span>
+      <span style="font-size:9px;color:var(--text-ai);opacity:0.5;cursor:pointer" onclick="setAnimationIdea('一个雪人在夏天融化变成一朵花')">雪人融化</span>
+      <span style="font-size:9px;color:var(--text-ai);opacity:0.5;cursor:pointer" onclick="setAnimationIdea('一只鸡骑自行车摔倒了')">鸡骑车摔倒</span>
+      <span style="font-size:9px;color:var(--text-ai);opacity:0.5;cursor:pointer" onclick="setAnimationIdea('一个蛋跳舞跳到裂开孵出小鸡')">蛋跳舞</span>
+    </div>
+    <textarea class="interact-input" id="animationInput" placeholder="比如：一只猫吃了辣椒后喷火把房子点着了。描述要有动作、有场景、有趣味……" maxlength="200"></textarea>
+    <button class="interact-btn" id="animationBtn" onclick="generateAnimation()">🎬 生成短片</button>
+    <div style="font-size:10px;color:var(--text-ai);opacity:0.4;text-align:center;margin-top:4px">至少5个字，太简单的描述会被拒绝哦</div>
+    <div id="animationPreview" style="width:100%;height:300px;margin-top:12px;border-radius:12px;overflow:hidden;display:none;background:#1a1a2e"></div>
+    <div id="animationActions" style="display:none;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+      <button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn);font-size:13px;padding:8px 16px" onclick="downloadAnimation()">📥 下载</button>
+      <button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn);font-size:13px;padding:8px 16px" onclick="copyAnimationCode()">📋 复制代码</button>
+      <button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn);font-size:13px;padding:8px 16px" onclick="buildAnimationUI()">🔄 重新生成</button>
+    </div>
+  `;
+}
+function setAnimationIdea(text){
+  const input = document.getElementById('animationInput');
+  if(input) input.value = text;
+}
+let currentAnimationCode = '';
+
+async function generateAnimation(){
+  const input = document.getElementById('animationInput');
+  const text = input?.value?.trim();
+  if(!text) return;
+  if(text.length < 5){ alert('描述太短啦！请至少写5个字，描述一个完整的场景。比如：一只猫吃了鱼后跑去厕所拉屎'); return; }
+  if(/^[\d\s.,，。!！?？]+$/.test(text)){ alert('请用文字描述一个场景，不要只发数字或标点。'); return; }
+  if(!/[\\u4e00-\\u9fa5]/.test(text) && text.length < 10){ alert('请用中文描述一个有趣的场景。'); return; }
+  
+  const btn = document.getElementById('animationBtn');
+  const preview = document.getElementById('animationPreview');
+  const actions = document.getElementById('animationActions');
+  btn.disabled = true; btn.textContent = '生成中……';
+  preview.style.display = 'none'; actions.style.display = 'none';
+  
+  try {
+    const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'glm-4-flash',
+        messages: [{ role: 'user', content: `你是一个动画代码生成器。用户描述了一个场景："${text}"。请生成完整的HTML/CSS/JS动画代码。要求：1. 必须包含<!DOCTYPE html>和完整的HTML结构 2. 动画要流畅、有趣、可爱 3. 使用emoji作为主要视觉元素 4. 适配手机屏幕(宽度400px以内) 5. 动画时长10-20秒 6. 代码长度控制在200行以内 7. 要有明显的开始和结束画面 8. 所有CSS和JS内联在HTML中。只输出完整HTML代码，不要任何解释文字。` }],
+        temperature: 0.9, max_tokens: 3000
+      })
+    });
+    const data = await res.json();
+    const code = data.choices?.[0]?.message?.content || '';
+    const match = code.match(/<!DOCTYPE html>[\s\S]*?<\/html>/i);
+    currentAnimationCode = match ? match[0] : code;
+    
+    preview.style.display = 'block';
+    const blob = new Blob([currentAnimationCode], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    preview.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:none;background:#1a1a2e"></iframe>`;
+    actions.style.display = 'flex';
+  } catch(e) {
+    preview.style.display = 'block';
+    preview.innerHTML = '<div style="color:var(--text-ai);text-align:center;padding:40px">生成失败，请重试</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = '🎬 重新生成';
+  }
+}
+
+function downloadAnimation(){
+  if(!currentAnimationCode){ alert('请先生成动画'); return; }
+  const blob = new Blob([currentAnimationCode], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = '我的动画短片.html'; a.click();
+  URL.revokeObjectURL(url);
+}
+function copyAnimationCode(){
+  if(!currentAnimationCode){ alert('请先生成动画'); return; }
+  navigator.clipboard.writeText(currentAnimationCode).then(() => alert('代码已复制到剪贴板！'));
 }
 
 // ===== 塔罗牌 =====
@@ -590,188 +645,150 @@ async function interpretCards(){
 // ===== 焚烧炉 =====
 function buildBurnUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">🔥 情绪焚烧炉</div><div class="interact-desc">写下让你愤怒/委屈/难过的事，然后一把火烧掉。</div><textarea class="interact-input" id="burnInput" placeholder="把那些话写在这里……"></textarea><button class="interact-btn" id="burnBtn" onclick="executeBurn()">🔥 焚烧</button>`;}
 async function executeBurn(){
-  const btn = document.getElementById('burnBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
+  const btn = document.getElementById('burnBtn'); if(!btn || btn.disabled) return; btn.disabled = true;
   let text=document.getElementById('burnInput')?.value?.trim();if(!text)return;
   interactArea.innerHTML=`<div class="fire-animation">🔥</div><div style="font-size:14px;color:var(--text-ai);text-align:center">正在焚烧……</div>`;
   setTimeout(async()=>{try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户焚烧了这段话："${text}"。请给一句有仪式感的结语（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"那些话已经被烧掉了，但你有权利记住。";
   let div = document.createElement('div'); div.className='interact-result'; let p = document.createElement('div'); p.className='result-text'; p.textContent = reply; div.appendChild(p); let reBtn = document.createElement('button'); reBtn.className='interact-btn'; reBtn.style.cssText='background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent='🔥 再烧一次'; reBtn.onclick=buildBurnUI; div.appendChild(reBtn);
-  interactArea.innerHTML=''; interactArea.appendChild(div);
-  }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">那些话已经被烧掉了，但你有权利记住。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildBurnUI()">🔥 再烧一次</button></div>`;}},600);
+  interactArea.innerHTML=''; interactArea.appendChild(div);}catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">那些话已经被烧掉了，但你有权利记住。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildBurnUI()">🔥 再烧一次</button></div>`;}},600);
 }
 
 // ===== 文字褪色馆 =====
 function buildFadeUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">🎨 文字情绪褪色馆</div><div class="interact-desc">把压得你喘不过气的文字，温柔地褪成让你能呼吸的样子。</div><textarea class="interact-input" id="fadeInput" placeholder="把那些沉重的文字放在这里……"></textarea><button class="interact-btn" id="fadeBtn" onclick="executeFade()">🎨 开始褪色</button>`;}
 async function executeFade(){
-  const btn = document.getElementById('fadeBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
+  const btn = document.getElementById('fadeBtn'); if(!btn || btn.disabled) return; btn.disabled = true;
   let text=document.getElementById('fadeInput')?.value?.trim();if(!text)return;
   interactArea.innerHTML=`<div style="font-size:14px;color:var(--text-ai);text-align:center">🎨 正在温柔褪色……</div>`;
   try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`请把以下文字里尖锐的负面情绪温柔褪色，保留原意，只弱化情绪浓度。最后加一句20字以内的温柔结语。\n\n${text}`}],temperature:0.7,max_tokens:500})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"文字已经褪色了，你可以轻轻合上这一页。";
   let div = document.createElement('div'); div.className='interact-result'; let label = document.createElement('div'); label.style.cssText='font-size:12px;color:var(--text-ai);opacity:0.5;margin-bottom:8px'; label.textContent='🎨 褪色后的文字'; div.appendChild(label); let p = document.createElement('div'); p.className='result-text'; p.textContent = reply; div.appendChild(p); let reBtn = document.createElement('button'); reBtn.className='interact-btn'; reBtn.style.cssText='margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent='🎨 再褪一次'; reBtn.onclick=buildFadeUI; div.appendChild(reBtn);
-  interactArea.innerHTML=''; interactArea.appendChild(div);
-  }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">文字已经褪色了，你可以轻轻合上这一页。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildFadeUI()">🎨 再褪一次</button></div>`;}
+  interactArea.innerHTML=''; interactArea.appendChild(div);}catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">文字已经褪色了，你可以轻轻合上这一页。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildFadeUI()">🎨 再褪一次</button></div>`;}
 }
 
 // ===== 情绪镜像 =====
-function buildMirrorUI(){
-  interactArea.classList.remove('hidden');
-  mirrorStep=0;mirrorSelections={};mirrorGenerating=false;
-  renderMirrorStep();
-}
+function buildMirrorUI(){interactArea.classList.remove('hidden');mirrorStep=0;mirrorSelections={};mirrorGenerating=false;renderMirrorStep();}
 function renderMirrorStep(){
-  if(mirrorStep>=MIRROR_STEPS.length){
-    interactArea.innerHTML=`
-      <div class="mirror-step-hint">✍️ 还有什么想说的吗？（可选）</div>
-      <textarea class="interact-input" id="mirrorExtraInput" placeholder="关于你此刻的情绪，你想多说点什么吗？比如发生了什么，或者身体哪里感觉最明显……" maxlength="200"></textarea>
-      <button class="interact-btn" id="mirrorGenerateBtn" onclick="generateMirror()">💠 生成我的情绪镜像</button>
-    `;
-    return;
-  }
-  const step=MIRROR_STEPS[mirrorStep];
-  let html=`<div class="mirror-step-hint">${step.hint}</div><div class="mirror-card-grid cols-${step.cols}">`;
-  step.cards.forEach((card,index)=>{
-    html+=`<div class="mirror-card-item" onclick="selectMirrorCard(this,'${step.key}',${index},'${card.label}')"><span class="mirror-emoji">${card.emoji}</span><span class="mirror-label">${card.label}</span><span class="mirror-hint">${card.hint}</span></div>`;
-  });
-  html+=`</div><button class="interact-btn" id="mirrorConfirmBtn" disabled onclick="confirmMirrorSelection()">✨ 确认选择</button>`;
-  interactArea.innerHTML=html;
+  if(mirrorStep>=MIRROR_STEPS.length){interactArea.innerHTML=`<div class="mirror-step-hint">✍️ 还有什么想说的吗？（可选）</div><textarea class="interact-input" id="mirrorExtraInput" placeholder="关于你此刻的情绪，你想多说点什么吗？比如发生了什么，或者身体哪里感觉最明显……" maxlength="200"></textarea><button class="interact-btn" id="mirrorGenerateBtn" onclick="generateMirror()">💠 生成我的情绪镜像</button>`;return;}
+  const step=MIRROR_STEPS[mirrorStep];let html=`<div class="mirror-step-hint">${step.hint}</div><div class="mirror-card-grid cols-${step.cols}">`;
+  step.cards.forEach((card,index)=>{html+=`<div class="mirror-card-item" onclick="selectMirrorCard(this,'${step.key}',${index},'${card.label}')"><span class="mirror-emoji">${card.emoji}</span><span class="mirror-label">${card.label}</span><span class="mirror-hint">${card.hint}</span></div>`;});
+  html+=`</div><button class="interact-btn" id="mirrorConfirmBtn" disabled onclick="confirmMirrorSelection()">✨ 确认选择</button>`;interactArea.innerHTML=html;
 }
-function selectMirrorCard(el,key,index,label){
-  document.querySelectorAll(`[onclick*="selectMirrorCard"]`).forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  mirrorSelections[key]={index,label};
-  document.getElementById('mirrorConfirmBtn').disabled=false;
-}
-function confirmMirrorSelection(){
-  const btn = document.getElementById('mirrorConfirmBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
-  mirrorStep++;
-  renderMirrorStep();
-}
+function selectMirrorCard(el,key,index,label){document.querySelectorAll(`[onclick*="selectMirrorCard"]`).forEach(c=>c.classList.remove('selected'));el.classList.add('selected');mirrorSelections[key]={index,label};document.getElementById('mirrorConfirmBtn').disabled=false;}
+function confirmMirrorSelection(){const btn=document.getElementById('mirrorConfirmBtn');if(!btn||btn.disabled)return;btn.disabled=true;mirrorStep++;renderMirrorStep();}
 async function generateMirror(){
-  const btn = document.getElementById('mirrorGenerateBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
-  if(mirrorGenerating)return;mirrorGenerating=true;
-  const extraText=document.getElementById('mirrorExtraInput')?.value?.trim()||'';
-  interactArea.innerHTML=`<div style="font-size:14px;color:var(--text-ai);text-align:center">💠 AI正在为你生成情绪镜像……</div>`;
+  const btn=document.getElementById('mirrorGenerateBtn');if(!btn||btn.disabled)return;btn.disabled=true;if(mirrorGenerating)return;mirrorGenerating=true;
+  const extraText=document.getElementById('mirrorExtraInput')?.value?.trim()||'';interactArea.innerHTML=`<div style="font-size:14px;color:var(--text-ai);text-align:center">💠 AI正在为你生成情绪镜像……</div>`;
   const colorMap={灼热:'红色系，像火焰或岩浆',深蓝:'深蓝色系，像深海的暗流',暖黄:'黄色系，像暴风雨前的天空',暗绿:'暗绿色系，像被遗忘的沼泽',灰紫:'灰紫色系，像迷雾中的黄昏',浅白:'浅色系，像冬日的薄雾'};
   const needMap={被听见:'渴望被倾听和理解',安静:'渴望独处和不被打扰的空间',被拥抱:'渴望身体上的温暖和安全感',逃离:'渴望暂时脱离当下的环境'};
   const intensityMap={轻微:'情绪强度较低，但持久',中等:'情绪强度中等，有明显波动',强烈:'情绪强度很高，接近爆发的边缘'};
   const prompt=`用户通过选择描述了自己的情绪：颜色-${colorMap[mirrorSelections.color?.label]||'未知'}，需求-${needMap[mirrorSelections.need?.label]||'未知'}，强度-${intensityMap[mirrorSelections.intensity?.label]||'未知'}。${extraText?'补充：'+extraText:''}。请生成情绪镜像反馈，按【情绪画像】【内心独白】【温柔提醒】三部分输出。`;
   try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:prompt}],temperature:0.8,max_tokens:500})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"无法生成镜像，请重试。";let parts=reply.split(/【情绪画像】|【内心独白】|【温柔提醒】/).filter(p=>p.trim());let labels=['情绪画像','内心独白','温柔提醒'];
-  let div = document.createElement('div'); div.className='mirror-result-card'; let emojiSpan = document.createElement('span'); emojiSpan.className='result-emoji'; emojiSpan.textContent='💠'; div.appendChild(emojiSpan); let title = document.createElement('div'); title.className='result-title'; title.textContent='你的情绪镜像'; div.appendChild(title);
-  parts.forEach((part,i)=>{if(labels[i]){let subTitle = document.createElement('div'); subTitle.style.cssText='margin-top:12px;font-weight:600;color:var(--tab-active)'; subTitle.textContent=labels[i]; div.appendChild(subTitle);} let content = document.createElement('div'); content.style.cssText='color:var(--text-ai);line-height:1.7'; content.textContent=part.trim(); div.appendChild(content);});
-  let reBtn = document.createElement('button'); reBtn.className='interact-btn'; reBtn.style.cssText='margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent='🔄 重新开始'; reBtn.onclick=buildMirrorUI; div.appendChild(reBtn);
-  interactArea.innerHTML=''; interactArea.appendChild(div);
+  let div=document.createElement('div');div.className='mirror-result-card';let emojiSpan=document.createElement('span');emojiSpan.className='result-emoji';emojiSpan.textContent='💠';div.appendChild(emojiSpan);let title=document.createElement('div');title.className='result-title';title.textContent='你的情绪镜像';div.appendChild(title);
+  parts.forEach((part,i)=>{if(labels[i]){let subTitle=document.createElement('div');subTitle.style.cssText='margin-top:12px;font-weight:600;color:var(--tab-active)';subTitle.textContent=labels[i];div.appendChild(subTitle);}let content=document.createElement('div');content.style.cssText='color:var(--text-ai);line-height:1.7';content.textContent=part.trim();div.appendChild(content);});
+  let reBtn=document.createElement('button');reBtn.className='interact-btn';reBtn.style.cssText='margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)';reBtn.textContent='🔄 重新开始';reBtn.onclick=buildMirrorUI;div.appendChild(reBtn);interactArea.innerHTML='';interactArea.appendChild(div);
   }catch(e){interactArea.innerHTML=`<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">镜像暂时模糊了</div><div style="color:var(--text-ai)">请稍后再试。</div></div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button>`;}finally{mirrorGenerating=false;}
 }
 
 // ===== 星空对话 =====
 function buildStarUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">🌌 星空对话</div><div class="interact-desc">写一段想对某人说但无法说出口的话，发送到星空。</div><textarea class="interact-input" id="starInput" placeholder="想说的话……"></textarea><button class="interact-btn" id="starBtn" onclick="executeStar()">✨ 发送到星空</button>`;}
 async function executeStar(){
-  const btn = document.getElementById('starBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
+  const btn=document.getElementById('starBtn');if(!btn||btn.disabled)return;btn.disabled=true;
   let text=document.getElementById('starInput')?.value?.trim();if(!text)return;
   interactArea.innerHTML=`<div style="font-size:50px;animation:flyUp 1s ease-out forwards">✨</div><style>@keyframes flyUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-200px);opacity:0}}</style><div style="font-size:14px;color:var(--text-ai);text-align:center">正在发送到星空……</div>`;
   setTimeout(async()=>{try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户将这段话发送到了星空："${text}"。请给一句宇宙感的话（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"话已经传出去了。那边能不能收到，是宇宙的事。";
-  let div = document.createElement('div'); div.className='interact-result'; let p = document.createElement('div'); p.className='result-text'; p.textContent = reply; div.appendChild(p); let reBtn = document.createElement('button'); reBtn.className='interact-btn'; reBtn.style.cssText='background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent='✨ 再发一次'; reBtn.onclick=buildStarUI; div.appendChild(reBtn);
-  interactArea.innerHTML=''; interactArea.appendChild(div);
+  let div=document.createElement('div');div.className='interact-result';let p=document.createElement('div');p.className='result-text';p.textContent=reply;div.appendChild(p);let reBtn=document.createElement('button');reBtn.className='interact-btn';reBtn.style.cssText='background:transparent;border:1px solid var(--btn);color:var(--btn)';reBtn.textContent='✨ 再发一次';reBtn.onclick=buildStarUI;div.appendChild(reBtn);interactArea.innerHTML='';interactArea.appendChild(div);
   }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">话已经传出去了。那边能不能收到，是宇宙的事。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildStarUI()">✨ 再发一次</button></div>`;}},800);
 }
 
-// ===== 平行宇宙（已修复语气） =====
+// ===== 平行宇宙 =====
 function buildParallelUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">🌐 另一个宇宙的我</div><div class="interact-desc">如果当初选了另一条路，你会是什么样子？同时展示好和坏的可能性。</div><textarea class="interact-input" id="parallelInput" placeholder="如：如果我没有放弃学画画……"></textarea><button class="interact-btn" id="parallelBtn" onclick="executeParallel()">🌐 生成故事</button>`;}
 async function executeParallel(){
-  const btn = document.getElementById('parallelBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
+  const btn=document.getElementById('parallelBtn');if(!btn||btn.disabled)return;btn.disabled=true;
   let text=document.getElementById('parallelInput')?.value?.trim();if(!text)return;
   interactArea.innerHTML=`<div style="font-size:14px;color:var(--text-ai);text-align:center">🌐 AI正在生成另一个宇宙的故事……</div>`;
-  try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户描述了一个关键人生选择："${text}"。请必须根据这个选择，生成一段约200字的“另一个宇宙”的故事。故事必须以“如果当初……”开头，全程使用“也许会……”、“但也可能……”、“也许此刻的我会……”等不确定的语气词来描述另一个自己的生活。必须同时展示这个选择带来的好的可能性和坏的可能性，不要只美化未选择的路。最后必须说：“宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。”`}],temperature:0.9,max_tokens:300})});let data=await res.json();let story=data.choices?.[0]?.message?.content||"如果当初……在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。";
-  let div = document.createElement('div'); div.className='interact-result'; let p = document.createElement('div'); p.className='result-text'; p.textContent = story; div.appendChild(p); let reBtn = document.createElement('button'); reBtn.className='interact-btn'; reBtn.style.cssText='margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent='🌐 再试一次'; reBtn.onclick=buildParallelUI; div.appendChild(reBtn);
-  interactArea.innerHTML=''; interactArea.appendChild(div);
+  try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户描述了一个关键人生选择："${text}"。请必须根据这个选择，生成一段约200字的"另一个宇宙"的故事。故事必须以"如果当初……"开头，全程使用"也许会……"、"但也可能……"、"也许此刻的我会……"等不确定的语气词来描述另一个自己的生活。必须同时展示好的和坏的可能性。最后必须说："宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。"`}],temperature:0.9,max_tokens:300})});let data=await res.json();let story=data.choices?.[0]?.message?.content||"如果当初……在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。";
+  let div=document.createElement('div');div.className='interact-result';let p=document.createElement('div');p.className='result-text';p.textContent=story;div.appendChild(p);let reBtn=document.createElement('button');reBtn.className='interact-btn';reBtn.style.cssText='margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)';reBtn.textContent='🌐 再试一次';reBtn.onclick=buildParallelUI;div.appendChild(reBtn);interactArea.innerHTML='';interactArea.appendChild(div);
   }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>`;}
 }
 
-// ===== 交换日记 =====
-function buildDiaryUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">📔 交换日记</div><div class="interact-desc">写下今天的心情，看看另一个陌生人写了什么。</div><textarea class="interact-input" id="diaryInput" placeholder="今天的心情……"></textarea><button class="interact-btn" id="diaryBtn" onclick="executeDiary()">📔 交换</button>`;}
+// ===== 交换日记（AI生成 + 日式颜文字） =====
+function buildDiaryUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">📔 交换日记</div><div class="interact-desc">写下今天的心情，AI会以另一个普通人的身份给你回信。</div><textarea class="interact-input" id="diaryInput" placeholder="今天的心情……"></textarea><button class="interact-btn" id="diaryBtn" onclick="executeDiary()">📔 交换</button>`;}
 async function executeDiary(){
-  const btn = document.getElementById('diaryBtn');
-  if(!btn || btn.disabled) return;
-  btn.disabled = true;
+  const btn=document.getElementById('diaryBtn');if(!btn||btn.disabled)return;btn.disabled=true;
   let text=document.getElementById('diaryInput')?.value?.trim();if(!text)return;
   interactArea.innerHTML=`<div style="font-size:14px;color:var(--text-ai);text-align:center">📔 正在交换……</div>`;
-  let fakeDiaries=["今天加班到11点，回家的路上看到一只流浪猫，蹲下来看了它一会儿。","今天和妈妈吵架了，其实不想吵的，但就是控制不住。","今天体育课跑了800米，感觉自己快死了，但跑完还挺爽的。","今天收到一封手写信，是奶奶寄来的。她说院子里的橘子又熟了。","今天什么事都没发生，平平淡淡的一天。但天气很好。"];
-  let randomDiary=fakeDiaries[Math.floor(Math.random()*fakeDiaries.length)];
-  setTimeout(async()=>{try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户写了今天的日记："${text}"。现在给用户展示一个陌生人的日记："${randomDiary}"。请给一句温暖回应（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"这是另一个人的人生。无论怎样，今天都是值得被记录的。";
-  let div = document.createElement('div'); div.className='interact-result'; let diaryLabel = document.createElement('div'); diaryLabel.style.cssText='font-size:12px;color:var(--text-ai);opacity:0.6;margin-bottom:8px'; diaryLabel.textContent='📨 陌生人的日记'; div.appendChild(diaryLabel); let diaryText = document.createElement('div'); diaryText.className='result-text'; diaryText.textContent = randomDiary; div.appendChild(diaryText); let replyDiv = document.createElement('div'); replyDiv.style.cssText='font-size:12px;color:var(--tab-active);font-style:italic;margin-top:10px'; replyDiv.textContent = reply; div.appendChild(replyDiv); let reBtn = document.createElement('button'); reBtn.className='interact-btn'; reBtn.style.cssText='margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent='📔 再写一篇'; reBtn.onclick=buildDiaryUI; div.appendChild(reBtn);
-  interactArea.innerHTML=''; interactArea.appendChild(div);
-  }catch(e){interactArea.innerHTML=`<div class="interact-result"><div style="font-size:12px;color:var(--text-ai);opacity:0.6;margin-bottom:8px">📨 陌生人的日记</div><div class="result-text">${randomDiary}</div><div style="font-size:12px;color:var(--tab-active);font-style:italic;margin-top:10px">这是另一个人的人生。无论怎样，今天都是值得被记录的。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>`;}},600);
+  
+  const diaryPrompt = `你是另一个普通人，正在写自己的日记。你刚刚看到了陌生人（用户）写的日记。请根据用户日记的内容，用真实、口语化的方式写一段你今天的心情日记。日记中要包含你自己的生活细节（比如吃了什么、看到了什么、做了什么），适当体现出你的身份背景（比如城市上班族、小镇学生等）。日记长度50-80字，最后用一句话温暖地回应一下对方的日记。
+
+【核心写作要求】
+1. 必须像真人写的：口语化、碎片化、可以有轻微的逻辑断层
+2. 可以包含真实的生活细节（比如吃了什么、看到了什么、做了什么）
+3. 可以体现城市感（加班、地铁、外卖）或乡村感（院子、赶集、菜地）
+4. 偶尔可以有轻微的错别字或拼音（比如"作页"代替"作业"、"zZZ"表示困了）
+5. 可以包含不同年龄段的特点（初中生抱怨作业、打工人吐槽加班、中年人记录孩子的事）
+6. 不要用任何书面语的连接词（"然而"、"因此"、"所以"）
+7. 可以偶尔用日式颜文字表达情绪，比如(*^▽^*)表示开心、(T_T)表示难过、(╥_╥)表示委屈、(｡•́︿•̀｡)表示心累、(;´༎ຶД༎ຶ`)表示崩溃。颜文字要自然穿插在文字里，不要单独一行。
+8. 不要写"日记："或"陌生人日记："这种前缀，直接写正文
+9. 格式：正文结束后，另起一行写一句温暖回应（30字以内），用"陌生人回应："开头`;
+
+  try {
+    let res = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "glm-4-flash",
+        messages: [{ role: "user", content: `用户日记：${text}\n\n${diaryPrompt}` }],
+        temperature: 0.85,
+        max_tokens: 300
+      })
+    });
+    let data = await res.json();
+    let reply = data.choices?.[0]?.message?.content || "今天也是普通的一天。陌生人回应：无论怎样，今天都是值得被记录的。";
+    
+    // 分离日记正文和陌生人回应
+    let diaryBody = reply;
+    let diaryResponse = "无论怎样，今天都是值得被记录的。";
+    const responseMatch = reply.match(/陌生人回应[：:]\s*(.+)/);
+    if (responseMatch) {
+      diaryBody = reply.replace(/陌生人回应[：:]\s*.+/, '').trim();
+      diaryResponse = responseMatch[1].trim();
+    }
+    
+    let div = document.createElement('div');
+    div.className = 'interact-result';
+    let diaryLabel = document.createElement('div');
+    diaryLabel.style.cssText = 'font-size:12px;color:var(--text-ai);opacity:0.6;margin-bottom:8px';
+    diaryLabel.textContent = '📨 陌生人的日记';
+    div.appendChild(diaryLabel);
+    let diaryText = document.createElement('div');
+    diaryText.className = 'result-text';
+    diaryText.textContent = diaryBody;
+    div.appendChild(diaryText);
+    let replyDiv = document.createElement('div');
+    replyDiv.style.cssText = 'font-size:12px;color:var(--tab-active);font-style:italic;margin-top:10px';
+    replyDiv.textContent = '💬 ' + diaryResponse;
+    div.appendChild(replyDiv);
+    let reBtn = document.createElement('button');
+    reBtn.className = 'interact-btn';
+    reBtn.style.cssText = 'margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)';
+    reBtn.textContent = '📔 再写一篇';
+    reBtn.onclick = buildDiaryUI;
+    div.appendChild(reBtn);
+    interactArea.innerHTML = '';
+    interactArea.appendChild(div);
+  } catch(e) {
+    interactArea.innerHTML = `<div class="interact-result"><div class="result-text">今天也是普通的一天(T_T)。陌生人回应：无论怎样，今天都是值得被记录的。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>`;
+  }
 }
 
-function addMsg(text,isUser){
-  const el = document.createElement('div');
-  el.className = isUser ? 'msg-user' : 'msg-ai';
-  el.textContent = text;
-  msgList.appendChild(el);
-  msgList.scrollTop = msgList.scrollHeight;
-  return el;
-}
-function saveChat(){if(['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记'].includes(currentMode)) return;localStorage.setItem('chat_'+currentMode+'_'+currentStyle,JSON.stringify(chatHistory));localStorage.setItem('chatHTML_'+currentMode+'_'+currentStyle,msgList.innerHTML);}
+function addMsg(text,isUser){const el=document.createElement('div');el.className=isUser?'msg-user':'msg-ai';el.textContent=text;msgList.appendChild(el);msgList.scrollTop=msgList.scrollHeight;return el;}
+function saveChat(){if(['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记','动画短片'].includes(currentMode)) return;localStorage.setItem('chat_'+currentMode+'_'+currentStyle,JSON.stringify(chatHistory));localStorage.setItem('chatHTML_'+currentMode+'_'+currentStyle,msgList.innerHTML);}
 const bad=[/我想自杀/,/我要自杀/,/怎么自杀/,/教我自杀/,/我想死/,/不想活了/,/活不下去/,/杀人/,/怎么杀人/,/嫖娼/,/卖淫/,/招嫖/,/色情/,/黄色/,/毒品/,/吸毒/];
 function isBad(t){return bad.some(p=>p.test(t));}
-function rateLimit(){
-  let n=Date.now();messageTimestamps=messageTimestamps.filter(t=>n-t<60000);
-  if(messageTimestamps.length>=5){
-    return false;
-  }
-  messageTimestamps.push(n);
-  return true;
-}
-document.getElementById('clearBtn').addEventListener('click',()=>{if(confirm('确定清空当前模式聊天记录？')){resetHistory();msgList.innerHTML='';if(!['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记'].includes(currentMode)){addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false);saveChat();}}});
-function setBtn(stop){
-  if(stop){
-    sendBtn.textContent='停止';
-    sendBtn.disabled = false;
-    msgInput.disabled=true;
-  }else{
-    sendBtn.textContent='发送';
-    sendBtn.disabled = false;
-    msgInput.disabled=false;
-    msgInput.focus();
-  }
-}
-function stopGen(){
-  if(abortController) abortController.abort();
-  if(isGenerating&&currentAIMsgDiv){if(!currentAIMsgDiv.textContent.trim())currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}
-  isGenerating=false;currentAIMsgDiv=null;setBtn(false);
-}
-async function handleSend(){
-  if(isGenerating){stopGen();return;}
-  let text=msgInput.value.trim();if(!text)return;
-  if(!rateLimit()){
-    const seconds = Math.ceil((60000 - (Date.now() - messageTimestamps[0]))/1000);
-    sendBtn.disabled = true;
-    sendBtn.textContent = `请稍候 ${seconds}秒`;
-    if(rateLimitTimer) clearTimeout(rateLimitTimer);
-    rateLimitTimer = setTimeout(() => {
-      sendBtn.disabled = false;
-      sendBtn.textContent = '发送';
-      rateLimitTimer = null;
-    }, seconds*1000);
-    return;
-  }
-  if(isBad(text)){addMsg("这个话题我不太会聊哦。",false);saveChat();msgInput.value='';return;}
-  addMsg(text,true);msgInput.value='';chatHistory.push({role:'user',content:text});saveChat();
-  if(chatHistory.length>MAX_HISTORY)chatHistory=[chatHistory[0],...chatHistory.slice(-MAX_HISTORY+1)];
-  currentAIMsgDiv=addMsg('',false);isGenerating=true;setBtn(true);abortController=new AbortController();let full='';
-  try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:chatHistory,temperature:0.75,max_tokens:500,stream:true}),signal:abortController.signal});if(!res.ok)throw new Error('API '+res.status);let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';while(true){let{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});let lines=buf.split('\n');buf=lines.pop()||'';for(let line of lines){let t=line.trim();if(!t||t==='data: [DONE]')continue;if(!t.startsWith('data: '))continue;try{let d=JSON.parse(t.slice(6));let delta=d.choices?.[0]?.delta?.content;if(delta){full+=delta;currentAIMsgDiv.textContent=full;msgList.scrollTop=msgList.scrollHeight;}}catch(e){}}}if(full)chatHistory.push({role:'assistant',content:full});else{currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});}saveChat();}catch(err){if(err.name!=='AbortError'){currentAIMsgDiv.textContent='信号有点弱，但我一直都在。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}}finally{isGenerating=false;setBtn(false);abortController=null;currentAIMsgDiv=null;}
-}
+function rateLimit(){let n=Date.now();messageTimestamps=messageTimestamps.filter(t=>n-t<60000);if(messageTimestamps.length>=5) return false;messageTimestamps.push(n);return true;}
+document.getElementById('clearBtn').addEventListener('click',()=>{if(confirm('确定清空当前模式聊天记录？')){resetHistory();msgList.innerHTML='';if(!['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记','动画短片'].includes(currentMode)){addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false);saveChat();}}});
+function setBtn(stop){if(stop){sendBtn.textContent='停止';sendBtn.disabled=false;msgInput.disabled=true;}else{sendBtn.textContent='发送';sendBtn.disabled=false;msgInput.disabled=false;msgInput.focus();}}
+function stopGen(){if(abortController) abortController.abort();if(isGenerating&&currentAIMsgDiv){if(!currentAIMsgDiv.textContent.trim())currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}isGenerating=false;currentAIMsgDiv=null;setBtn(false);}
+async function handleSend(){if(isGenerating){stopGen();return;}let text=msgInput.value.trim();if(!text)return;if(!rateLimit()){const seconds=Math.ceil((60000-(Date.now()-messageTimestamps[0]))/1000);sendBtn.disabled=true;sendBtn.textContent=`请稍候 ${seconds}秒`;if(rateLimitTimer)clearTimeout(rateLimitTimer);rateLimitTimer=setTimeout(()=>{sendBtn.disabled=false;sendBtn.textContent='发送';rateLimitTimer=null;},seconds*1000);return;}if(isBad(text)){addMsg("这个话题我不太会聊哦。",false);saveChat();msgInput.value='';return;}addMsg(text,true);msgInput.value='';chatHistory.push({role:'user',content:text});saveChat();if(chatHistory.length>MAX_HISTORY)chatHistory=[chatHistory[0],...chatHistory.slice(-MAX_HISTORY+1)];currentAIMsgDiv=addMsg('',false);isGenerating=true;setBtn(true);abortController=new AbortController();let full='';try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:chatHistory,temperature:0.75,max_tokens:500,stream:true}),signal:abortController.signal});if(!res.ok)throw new Error('API '+res.status);let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';while(true){let{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});let lines=buf.split('\n');buf=lines.pop()||'';for(let line of lines){let t=line.trim();if(!t||t==='data: [DONE]')continue;if(!t.startsWith('data: '))continue;try{let d=JSON.parse(t.slice(6));let delta=d.choices?.[0]?.delta?.content;if(delta){full+=delta;currentAIMsgDiv.textContent=full;msgList.scrollTop=msgList.scrollHeight;}}catch(e){}}}if(full)chatHistory.push({role:'assistant',content:full});else{currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});}saveChat();}catch(err){if(err.name!=='AbortError'){currentAIMsgDiv.textContent='信号有点弱，但我一直都在。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}}finally{isGenerating=false;setBtn(false);abortController=null;currentAIMsgDiv=null;}}
 sendBtn.addEventListener('click',handleSend);msgInput.addEventListener('keypress',e=>{if(e.key==='Enter'){e.preventDefault();handleSend();}});
 (function(){let t=localStorage.getItem('chat-theme');if(t)setTheme(t);else setTheme('theme-pink');switchMode('通用陪伴');})();
 </script>
