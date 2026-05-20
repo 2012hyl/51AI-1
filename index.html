@@ -233,7 +233,6 @@
 
 <script>
 (function(){
-  console.log('脚本开始加载');
   try {
     const API_KEY = "6bd5519c6ed0436dbba6667b2a7bbfbd.fYGRMgdTwPZ5SrEt";
 
@@ -535,6 +534,8 @@
     }
 
     // ===== 动画短片工坊 =====
+    let currentAnimationCode = '';
+    
     function buildAnimationUI(){
       interactArea.classList.remove('hidden');
       interactArea.innerHTML = `
@@ -557,19 +558,18 @@
         </div>
       `;
     }
+
+    // 这些函数挂在window上，供HTML中的onclick调用
     window.setAnimationIdea = function(text){
       const input = document.getElementById('animationInput');
       if(input) input.value = text;
     };
-    let currentAnimationCode = '';
-
     window.generateAnimation = async function(){
       const input = document.getElementById('animationInput');
       const text = input?.value?.trim();
       if(!text) return;
       if(text.length < 5){ alert('描述太短啦！请至少写5个字，描述一个完整的场景。比如：一只猫吃了鱼后跑去厕所拉屎'); return; }
       if(/^[\d\s.,，。!！?？]+$/.test(text)){ alert('请用文字描述一个场景，不要只发数字或标点。'); return; }
-      if(!/[\\u4e00-\\u9fa5]/.test(text) && text.length < 10){ alert('请用中文描述一个有趣的场景。'); return; }
       
       const btn = document.getElementById('animationBtn');
       const preview = document.getElementById('animationPreview');
@@ -603,7 +603,6 @@
         btn.disabled = false; btn.textContent = '🎬 重新生成';
       }
     };
-
     window.downloadAnimation = function(){
       if(!currentAnimationCode){ alert('请先生成动画'); return; }
       const blob = new Blob([currentAnimationCode], { type: 'text/html' });
@@ -713,7 +712,7 @@
       }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>`;}
     };
 
-    // ===== 交换日记（AI生成 + 日式颜文字） =====
+    // ===== 交换日记 =====
     function buildDiaryUI(){interactArea.classList.remove('hidden');interactArea.innerHTML=`<div class="interact-title">📔 交换日记</div><div class="interact-desc">写下今天的心情，AI会以另一个普通人的身份给你回信。</div><textarea class="interact-input" id="diaryInput" placeholder="今天的心情……"></textarea><button class="interact-btn" id="diaryBtn" onclick="executeDiary()">📔 交换</button>`;}
     window.executeDiary = async function(){
       const btn=document.getElementById('diaryBtn');if(!btn||btn.disabled)return;btn.disabled=true;
@@ -724,60 +723,31 @@
 
 【核心写作要求】
 1. 必须像真人写的：口语化、碎片化、可以有轻微的逻辑断层
-2. 可以包含真实的生活细节（比如吃了什么、看到了什么、做了什么）
-3. 可以体现城市感（加班、地铁、外卖）或乡村感（院子、赶集、菜地）
-4. 偶尔可以有轻微的错别字或拼音（比如"作页"代替"作业"、"zZZ"表示困了）
-5. 可以包含不同年龄段的特点（初中生抱怨作业、打工人吐槽加班、中年人记录孩子的事）
-6. 不要用任何书面语的连接词（"然而"、"因此"、"所以"）
-7. 可以偶尔用日式颜文字表达情绪，比如(*^▽^*)表示开心、(T_T)表示难过、(╥_╥)表示委屈、(｡•́︿•̀｡)表示心累、(;´༎ຶД༎ຶ`)表示崩溃。颜文字要自然穿插在文字里，不要单独一行。
-8. 不要写"日记："或"陌生人日记："这种前缀，直接写正文
-9. 格式：正文结束后，另起一行写一句温暖回应（30字以内），用"陌生人回应："开头`;
+2. 可以包含真实的生活细节
+3. 可以体现城市感或乡村感
+4. 偶尔可以有轻微的错别字或拼音
+5. 不要用书面语的连接词
+6. 可以偶尔用日式颜文字表达情绪，比如(*^▽^*)表示开心、(T_T)表示难过
+7. 不要写"日记："或"陌生人日记："这种前缀，直接写正文
+8. 格式：正文结束后，另起一行写一句温暖回应（30字以内），用"陌生人回应："开头`;
 
       try {
         let res = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
-          method: "POST",
-          headers: { "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "glm-4-flash",
-            messages: [{ role: "user", content: `用户日记：${text}\n\n${diaryPrompt}` }],
-            temperature: 0.85,
-            max_tokens: 300
-          })
+          method: "POST", headers: { "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "glm-4-flash", messages: [{ role: "user", content: `用户日记：${text}\n\n${diaryPrompt}` }], temperature: 0.85, max_tokens: 300 })
         });
         let data = await res.json();
         let reply = data.choices?.[0]?.message?.content || "今天也是普通的一天。陌生人回应：无论怎样，今天都是值得被记录的。";
-        
-        // 分离日记正文和陌生人回应
-        let diaryBody = reply;
-        let diaryResponse = "无论怎样，今天都是值得被记录的。";
+        let diaryBody = reply, diaryResponse = "无论怎样，今天都是值得被记录的。";
         const responseMatch = reply.match(/陌生人回应[：:]\s*(.+)/);
-        if (responseMatch) {
-          diaryBody = reply.replace(/陌生人回应[：:]\s*.+/, '').trim();
-          diaryResponse = responseMatch[1].trim();
-        }
+        if (responseMatch) { diaryBody = reply.replace(/陌生人回应[：:]\s*.+/, '').trim(); diaryResponse = responseMatch[1].trim(); }
         
-        let div = document.createElement('div');
-        div.className = 'interact-result';
-        let diaryLabel = document.createElement('div');
-        diaryLabel.style.cssText = 'font-size:12px;color:var(--text-ai);opacity:0.6;margin-bottom:8px';
-        diaryLabel.textContent = '📨 陌生人的日记';
-        div.appendChild(diaryLabel);
-        let diaryText = document.createElement('div');
-        diaryText.className = 'result-text';
-        diaryText.textContent = diaryBody;
-        div.appendChild(diaryText);
-        let replyDiv = document.createElement('div');
-        replyDiv.style.cssText = 'font-size:12px;color:var(--tab-active);font-style:italic;margin-top:10px';
-        replyDiv.textContent = '💬 ' + diaryResponse;
-        div.appendChild(replyDiv);
-        let reBtn = document.createElement('button');
-        reBtn.className = 'interact-btn';
-        reBtn.style.cssText = 'margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)';
-        reBtn.textContent = '📔 再写一篇';
-        reBtn.onclick = buildDiaryUI;
-        div.appendChild(reBtn);
-        interactArea.innerHTML = '';
-        interactArea.appendChild(div);
+        let div = document.createElement('div'); div.className = 'interact-result';
+        let diaryLabel = document.createElement('div'); diaryLabel.style.cssText = 'font-size:12px;color:var(--text-ai);opacity:0.6;margin-bottom:8px'; diaryLabel.textContent = '📨 陌生人的日记'; div.appendChild(diaryLabel);
+        let diaryText = document.createElement('div'); diaryText.className = 'result-text'; diaryText.textContent = diaryBody; div.appendChild(diaryText);
+        let replyDiv = document.createElement('div'); replyDiv.style.cssText = 'font-size:12px;color:var(--tab-active);font-style:italic;margin-top:10px'; replyDiv.textContent = '💬 ' + diaryResponse; div.appendChild(replyDiv);
+        let reBtn = document.createElement('button'); reBtn.className = 'interact-btn'; reBtn.style.cssText = 'margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)'; reBtn.textContent = '📔 再写一篇'; reBtn.onclick = buildDiaryUI; div.appendChild(reBtn);
+        interactArea.innerHTML = ''; interactArea.appendChild(div);
       } catch(e) {
         interactArea.innerHTML = `<div class="interact-result"><div class="result-text">今天也是普通的一天(T_T)。陌生人回应：无论怎样，今天都是值得被记录的。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>`;
       }
@@ -795,10 +765,8 @@
     sendBtn.addEventListener('click',handleSend);msgInput.addEventListener('keypress',e=>{if(e.key==='Enter'){e.preventDefault();handleSend();}});
     (function(){let t=localStorage.getItem('chat-theme');if(t)setTheme(t);else setTheme('theme-pink');switchMode('通用陪伴');})();
 
-    console.log('脚本加载完成，所有功能已就绪');
   } catch(e) {
     console.error('脚本加载失败：', e.message);
-    alert('脚本加载出错：' + e.message);
   }
 })();
 </script>
