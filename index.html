@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>温柔陪伴 · v1.6</title>
+  <title>温柔陪伴 · v1.7</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}
     html,body{height:100dvh;overflow:hidden}
@@ -114,11 +114,7 @@
     .dice-face:nth-child(1){transform:translateZ(50px)}.dice-face:nth-child(2){transform:rotateY(180deg) translateZ(50px)}
     .dice-face:nth-child(3){transform:rotateY(-90deg) translateZ(50px)}.dice-face:nth-child(4){transform:rotateY(90deg) translateZ(50px)}
     .dice-face:nth-child(5){transform:rotateX(90deg) translateZ(50px)}.dice-face:nth-child(6){transform:rotateX(-90deg) translateZ(50px)}
-    @keyframes diceRoll{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}
-      25%{transform:rotateX(360deg) rotateY(180deg) rotateZ(90deg)}
-      50%{transform:rotateX(720deg) rotateY(360deg) rotateZ(180deg)}
-      75%{transform:rotateX(900deg) rotateY(540deg) rotateZ(270deg)}
-      100%{transform:rotateX(1080deg) rotateY(720deg) rotateZ(360deg)}}
+    @keyframes diceRoll{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}25%{transform:rotateX(360deg) rotateY(180deg) rotateZ(90deg)}50%{transform:rotateX(720deg) rotateY(360deg) rotateZ(180deg)}75%{transform:rotateX(900deg) rotateY(540deg) rotateZ(270deg)}100%{transform:rotateX(1080deg) rotateY(720deg) rotateZ(360deg)}}
 
     .dice-result-text{font-size:18px;font-weight:700;color:var(--tab-active);text-align:center;margin-top:8px;animation:fadeIn 0.5s ease}
     .dice-hint-text{font-size:11px;color:var(--text-ai);opacity:0.6;text-align:center;margin-top:4px;font-style:italic}
@@ -167,6 +163,7 @@
     .settings-panel h3{font-size:18px;color:var(--text-header);margin-bottom:16px}
     .settings-item{padding:12px;border:1px solid var(--border-light);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;color:var(--text-ai);font-size:14px}
     .settings-item:hover{background:var(--bg-ai)}
+    .settings-item.active-model{border-color:var(--tab-active);background:var(--bg-ai);font-weight:600}
     .settings-item.danger{color:#e17055;border-color:#e17055}
     .settings-item.danger:hover{background:#fff5f5}
     .settings-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-ai)}
@@ -241,9 +238,10 @@
   <div class="settings-panel">
     <button class="settings-close" onclick="window.closeSettings()">✕</button>
     <h3>⚙️ 设置</h3>
-    <div class="settings-item" onclick="alert('主题切换：点击顶部色块即可切换主题')">🎨 主题切换</div>
+    <div class="settings-item" id="modelZhipu" onclick="window.switchModel('zhipu')">🤖 AI模型：智谱清言</div>
+    <div class="settings-item" id="modelDeepseek" onclick="window.switchModel('deepseek')">🤖 AI模型：DeepSeek V4</div>
     <div class="settings-item" onclick="alert('聊天记录保存在你的浏览器中，清空缓存会丢失。')">💾 数据说明</div>
-    <div class="settings-item" onclick="alert('版本：v1.6 | 开发者：14岁独立开发者')">ℹ️ 关于</div>
+    <div class="settings-item" onclick="alert('版本：v1.7 | 双模型切换 | 开发者：14岁独立开发者')">ℹ️ 关于</div>
     <div class="settings-item" onclick="window.openFeedback()">📬 意见箱</div>
     <div class="settings-item danger" onclick="window.triggerCatAnimation()">⚠️ 千万不要点</div>
     <button class="interact-btn" style="margin-top:12px;width:100%" onclick="window.closeSettings()">关闭</button>
@@ -265,7 +263,43 @@
 <script>
 (function(){
   try {
-    const API_KEY = "6bd5519c6ed0436dbba6667b2a7bbfbd.fYGRMgdTwPZ5SrEt";
+    // ===== 双模型配置 =====
+    const ZHIPU_KEY = "6bd5519c6ed0436dbba6667b2a7bbfbd.fYGRMgdTwPZ5SrEt";
+    const ZHIPU_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+    const ZHIPU_MODEL = "glm-4-flash";
+    
+    const DEEPSEEK_KEY = "sk-5f994c01e8d14d0d902ebcdaf3ee8362";
+    const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+    const DEEPSEEK_MODEL = "deepseek-v4-flash";
+
+    let currentModel = localStorage.getItem('currentModel') || 'zhipu';
+    
+    function getAPIKey(){ return currentModel === 'deepseek' ? DEEPSEEK_KEY : ZHIPU_KEY; }
+    function getAPIUrl(){ return currentModel === 'deepseek' ? DEEPSEEK_URL : ZHIPU_URL; }
+    function getModelName(){ return currentModel === 'deepseek' ? DEEPSEEK_MODEL : ZHIPU_MODEL; }
+
+    window.switchModel = function(model){
+      currentModel = model;
+      localStorage.setItem('currentModel', model);
+      document.getElementById('modelZhipu').classList.remove('active-model');
+      document.getElementById('modelDeepseek').classList.remove('active-model');
+      if(model === 'zhipu') document.getElementById('modelZhipu').classList.add('active-model');
+      else document.getElementById('modelDeepseek').classList.add('active-model');
+      resetHistory();
+      msgList.innerHTML = '';
+      if(currentMode === '通用陪伴'){
+        addMsg("已切换到「"+(model==='deepseek'?'DeepSeek V4':'智谱清言')+"」。我在这里，想说什么都可以。", false);
+        saveChat();
+      }
+      window.closeSettings();
+    };
+
+    function updateModelUI(){
+      document.getElementById('modelZhipu').classList.remove('active-model');
+      document.getElementById('modelDeepseek').classList.remove('active-model');
+      if(currentModel === 'zhipu') document.getElementById('modelZhipu').classList.add('active-model');
+      else document.getElementById('modelDeepseek').classList.add('active-model');
+    }
 
     const BASE_RULES = `
 【身份】
@@ -564,7 +598,10 @@
     });
 
     // ===== 全局函数 =====
-    window.openSettings = function(){ document.getElementById('settingsOverlay').classList.add('active'); };
+    window.openSettings = function(){ 
+      updateModelUI();
+      document.getElementById('settingsOverlay').classList.add('active'); 
+    };
     window.closeSettings = function(){ document.getElementById('settingsOverlay').classList.remove('active'); };
     document.getElementById('settingsOverlay').addEventListener('click', function(e){ if(e.target===this) window.closeSettings(); });
 
@@ -577,9 +614,9 @@
       div.textContent = '正在提交……';
       document.body.appendChild(div);
       try {
-        const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
-          method: 'POST', headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: 'glm-4-flash', messages: [{ role: 'user', content: `判断以下用户反馈是否有效。无效标准：空白、纯表情、乱码、广告、骚扰、无意义重复字符。只回复"有效"或"无效"。\n\n${text}` }], temperature: 0.1, max_tokens: 10 })
+        const res = await fetch(getAPIUrl(), {
+          method: 'POST', headers: { 'Authorization': 'Bearer ' + getAPIKey(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: getModelName(), messages: [{ role: 'user', content: `判断以下用户反馈是否有效。无效标准：空白、纯表情、乱码、广告、骚扰、无意义重复字符。只回复"有效"或"无效"。\n\n${text}` }], temperature: 0.1, max_tokens: 10 })
         });
         const data = await res.json();
         const result = data.choices?.[0]?.message?.content?.trim() || '有效';
@@ -643,9 +680,9 @@
       btn.disabled = true; btn.textContent = '生成中……'; fullscreen.style.display = 'none'; exitBtn.style.display = 'none';
       interactArea.innerHTML = `<div style="color:var(--text-ai);text-align:center;padding:40px">🎬 正在生成动画，请稍候……</div>`;
       try {
-        const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
-          method: 'POST', headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: 'glm-4-flash', messages: [{ role: 'user', content: `你是一个轻量动画生成器。用户描述了一个场景："${text}"。请生成完整的HTML/CSS动画代码。要求：1. 必须在50行代码以内 2. 只用emoji和纯CSS动画，不用JS 3. 只输出完整HTML代码，不要解释 4. 背景色#1a1a2e 5. 动画循环播放或持续5-8秒后自动显示"播放完毕" 6. 适配手机屏幕。` }], temperature: 0.9, max_tokens: 1500 })
+        const res = await fetch(getAPIUrl(), {
+          method: 'POST', headers: { 'Authorization': 'Bearer ' + getAPIKey(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: getModelName(), messages: [{ role: 'user', content: `你是一个轻量动画生成器。用户描述了一个场景："${text}"。请生成完整的HTML/CSS动画代码。要求：1. 必须在50行代码以内 2. 只用emoji和纯CSS动画，不用JS 3. 只输出完整HTML代码，不要解释 4. 背景色#1a1a2e 5. 动画循环播放或持续5-8秒后自动显示"播放完毕" 6. 适配手机屏幕。` }], temperature: 0.9, max_tokens: 1500 })
         });
         const data = await res.json(); const code = data.choices?.[0]?.message?.content || '';
         const match = code.match(/<!DOCTYPE html>[\s\S]*?<\/html>/i); const animCode = match ? match[0] : code;
@@ -658,7 +695,7 @@
     };
     window.closeAnimationFullscreen = function(){ document.getElementById('fullscreenAnimation').style.display = 'none'; document.getElementById('fullscreenAnimation').innerHTML = ''; document.getElementById('animationExitBtn').style.display = 'none'; buildAnimationUI(); };
 
-    // ===== 焚烧炉升级版 =====
+    // ===== 焚烧炉 =====
     function buildBurnUI(){
       interactArea.classList.remove('hidden');
       interactArea.innerHTML = `
@@ -686,13 +723,13 @@
     window.executeBurn = async function(){
       const text = document.getElementById('burnInput')?.value?.trim(); const result = document.getElementById('burnResult'); const stage = document.getElementById('burnStage');
       if(!text) return; stage.innerHTML = '<div style="font-size:60px;text-align:center;margin-top:60px">🔥</div><div style="color:var(--text-ai);text-align:center;margin-top:10px">正在焚烧……</div>';
-      try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户焚烧了这段话："${text}"。请给一句有仪式感的结语（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"那些话已经被烧掉了，但你有权利记住。";
+      try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Authorization":"Bearer "+getAPIKey(),"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`用户焚烧了这段话："${text}"。请给一句有仪式感的结语（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"那些话已经被烧掉了，但你有权利记住。";
       stage.style.display = 'none'; result.style.display = 'block'; result.innerHTML = `<div class="interact-result"><div class="result-text">${reply}</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="window.buildBurnUI()">🔥 再烧一次</button></div>`;
       }catch(e){stage.style.display = 'none'; result.style.display = 'block'; result.innerHTML = `<div class="interact-result"><div class="result-text">那些话已经被烧掉了，但你有权利记住。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="window.buildBurnUI()">🔥 再烧一次</button></div>`;}
     };
     window.buildBurnUI = buildBurnUI;
 
-    // ===== 褪色馆升级版 =====
+    // ===== 褪色馆 =====
     function buildFadeUI(){
       interactArea.classList.remove('hidden');
       interactArea.innerHTML = `
@@ -719,7 +756,7 @@
     window.executeFade = async function(){
       const text = document.getElementById('fadeInput')?.value?.trim(); const result = document.getElementById('fadeResult'); const stage = document.getElementById('fadeStage');
       if(!text) return; stage.innerHTML = '<div style="font-size:60px;text-align:center;margin-top:60px">💧</div><div style="color:var(--text-ai);text-align:center;margin-top:10px">正在温柔褪色……</div>';
-      try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`请把以下文字里尖锐的负面情绪温柔褪色，保留原意，只弱化情绪浓度。最后加一句20字以内的温柔结语。\n\n${text}`}],temperature:0.7,max_tokens:500})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"文字已经褪色了，你可以轻轻合上这一页。";
+      try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Authorization":"Bearer "+getAPIKey(),"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`请把以下文字里尖锐的负面情绪温柔褪色，保留原意，只弱化情绪浓度。最后加一句20字以内的温柔结语。\n\n${text}`}],temperature:0.7,max_tokens:500})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"文字已经褪色了，你可以轻轻合上这一页。";
       stage.style.display = 'none'; result.style.display = 'block'; result.innerHTML = `<div class="interact-result"><div style="font-size:12px;color:var(--text-ai);opacity:0.5;margin-bottom:8px">🎨 褪色后的文字</div><div class="result-text">${reply.replace(/\n/g,'<br>')}</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="window.buildFadeUI()">🎨 再褪一次</button></div>`;
       }catch(e){stage.style.display = 'none'; result.style.display = 'block'; result.innerHTML = `<div class="interact-result"><div style="font-size:12px;color:var(--text-ai);opacity:0.5;margin-bottom:8px">🎨 褪色后的文字</div><div class="result-text">文字已经褪色了，你可以轻轻合上这一页。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="window.buildFadeUI()">🎨 再褪一次</button></div>`;}
     };
@@ -727,10 +764,8 @@
 
     // ===== 纠结骰子 =====
     let diceOptions = [];
-    let diceType = '';
-    window.buildDiceUI = function(){ buildDiceUI(); };
-    function buildDiceUI(reset=true){
-      diceOptions = []; diceType = '';
+    function buildDiceUI(){
+      diceOptions = [];
       interactArea.classList.remove('hidden');
       interactArea.innerHTML = `
         <div class="interact-title">🎲 纠结骰子</div>
@@ -766,9 +801,9 @@
       const btn = document.getElementById('diceGenerateBtn');
       btn.disabled = true; btn.textContent = '生成中……';
       try {
-        const res = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
-          method: 'POST', headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: 'glm-4-flash', messages: [{ role: 'user', content: `用户需要做一个决定："${text}"。请把模糊的需求转化成可选项列表。不要给建议，不要分析利弊。如果是"要不要"类问题，只回复"去,不去"或"做,不做"。如果是"吃什么"类问题，根据用户偏好生成10-15个具体选项。如果是"选哪个"类问题，列出用户提到的所有选项。只回复选项列表（用中文逗号分隔），不要多余的话。` }], temperature: 0.7, max_tokens: 200 })
+        const res = await fetch(getAPIUrl(), {
+          method: 'POST', headers: { 'Authorization': 'Bearer ' + getAPIKey(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: getModelName(), messages: [{ role: 'user', content: `用户需要做一个决定："${text}"。请把模糊的需求转化成可选项列表。不要给建议，不要分析利弊。如果是"要不要"类问题，只回复"去,不去"或"做,不做"。如果是"吃什么"类问题，根据用户偏好生成10-15个具体选项。如果是"选哪个"类问题，列出用户提到的所有选项。只回复选项列表（用中文逗号分隔），不要多余的话。` }], temperature: 0.7, max_tokens: 200 })
         });
         const data = await res.json();
         const rawOptions = data.choices?.[0]?.message?.content || text;
@@ -791,10 +826,8 @@
         btn.textContent = '✅ 选项已生成';
       } catch(e) {
         diceOptions = ['去','不去'];
-        const optionsArea = document.getElementById('diceOptionsArea');
-        const optionsList = document.getElementById('diceOptionsList');
-        optionsArea.style.display = 'block';
-        optionsList.innerHTML = diceOptions.map(o => 
+        document.getElementById('diceOptionsArea').style.display = 'block';
+        document.getElementById('diceOptionsList').innerHTML = diceOptions.map(o => 
           `<span style="background:var(--bg-ai);border:1px solid var(--border-light);border-radius:12px;padding:4px 10px;font-size:12px;color:var(--text-ai)">${o}</span>`
         ).join('');
         document.getElementById('diceResult').style.display = 'none';
@@ -838,6 +871,7 @@
       document.getElementById('diceRerollBtn').style.display = 'none';
       window.rollDice();
     };
+    window.buildDiceUI = buildDiceUI;
 
     // ===== 塔罗牌 =====
     function buildTarotUI(step){
@@ -878,9 +912,9 @@
 
       interactArea.innerHTML='<div style="font-size:14px;color:var(--text-ai);text-align:center">📖 AI正在深度解读牌面……</div>';
       try {
-        let res = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
-          method: "POST", headers: { "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "glm-4-flash", messages: [{ role: "user", content: prompt }], temperature: 0.7, max_tokens: 800 })
+        let res = await fetch(getAPIUrl(), {
+          method: "POST", headers: { "Authorization": "Bearer " + getAPIKey(), "Content-Type": "application/json" },
+          body: JSON.stringify({ model: getModelName(), messages: [{ role: "user", content: prompt }], temperature: 0.7, max_tokens: 800 })
         });
         let data = await res.json();
         let reading = data.choices?.[0]?.message?.content || "牌面正在告诉我一些事情……";
@@ -928,7 +962,7 @@
       const needMap={被听见:'渴望被倾听和理解',安静:'渴望独处和不被打扰的空间',被拥抱:'渴望身体上的温暖和安全感',逃离:'渴望暂时脱离当下的环境'};
       const intensityMap={轻微:'情绪强度较低，但持久',中等:'情绪强度中等，有明显波动',强烈:'情绪强度很高，接近爆发的边缘'};
       const prompt=`用户通过选择描述了自己的情绪：颜色-${colorMap[mirrorSelections.color?.label]||'未知'}，需求-${needMap[mirrorSelections.need?.label]||'未知'}，强度-${intensityMap[mirrorSelections.intensity?.label]||'未知'}。${extraText?'补充：'+extraText:''}。请生成情绪镜像反馈，按【情绪画像】【内心独白】【温柔提醒】三部分输出。`;
-      try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:prompt}],temperature:0.8,max_tokens:500})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"无法生成镜像，请重试。";let parts=reply.split(/【情绪画像】|【内心独白】|【温柔提醒】/).filter(p=>p.trim());let labels=['情绪画像','内心独白','温柔提醒'];
+      try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Authorization":"Bearer "+getAPIKey(),"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:prompt}],temperature:0.8,max_tokens:500})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"无法生成镜像，请重试。";let parts=reply.split(/【情绪画像】|【内心独白】|【温柔提醒】/).filter(p=>p.trim());let labels=['情绪画像','内心独白','温柔提醒'];
       let div=document.createElement('div');div.className='mirror-result-card';let emojiSpan=document.createElement('span');emojiSpan.className='result-emoji';emojiSpan.textContent='💠';div.appendChild(emojiSpan);let title=document.createElement('div');title.className='result-title';title.textContent='你的情绪镜像';div.appendChild(title);
       parts.forEach((part,i)=>{if(labels[i]){let subTitle=document.createElement('div');subTitle.style.cssText='margin-top:12px;font-weight:600;color:var(--tab-active)';subTitle.textContent=labels[i];div.appendChild(subTitle);}let content=document.createElement('div');content.style.cssText='color:var(--text-ai);line-height:1.7';content.textContent=part.trim();div.appendChild(content);});
       let reBtn=document.createElement('button');reBtn.className='interact-btn';reBtn.style.cssText='margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)';reBtn.textContent='🔄 重新开始';reBtn.onclick=buildMirrorUI;div.appendChild(reBtn);interactArea.innerHTML='';interactArea.appendChild(div);
@@ -941,7 +975,7 @@
       const btn=document.getElementById('starBtn');if(!btn||btn.disabled)return;btn.disabled=true;
       let text=document.getElementById('starInput')?.value?.trim();if(!text)return;
       interactArea.innerHTML=`<div style="font-size:50px;animation:flyUp 1s ease-out forwards">✨</div><style>@keyframes flyUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-200px);opacity:0}}</style><div style="font-size:14px;color:var(--text-ai);text-align:center">正在发送到星空……</div>`;
-      setTimeout(async()=>{try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户将这段话发送到了星空："${text}"。请给一句宇宙感的话（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"话已经传出去了。那边能不能收到，是宇宙的事。";
+      setTimeout(async()=>{try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Authorization":"Bearer "+getAPIKey(),"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`用户将这段话发送到了星空："${text}"。请给一句宇宙感的话（30字以内）。`}],temperature:0.8,max_tokens:80})});let data=await res.json();let reply=data.choices?.[0]?.message?.content||"话已经传出去了。那边能不能收到，是宇宙的事。";
       let div=document.createElement('div');div.className='interact-result';let p=document.createElement('div');p.className='result-text';p.textContent=reply;div.appendChild(p);let reBtn=document.createElement('button');reBtn.className='interact-btn';reBtn.style.cssText='background:transparent;border:1px solid var(--btn);color:var(--btn)';reBtn.textContent='✨ 再发一次';reBtn.onclick=buildStarUI;div.appendChild(reBtn);interactArea.innerHTML='';interactArea.appendChild(div);
       }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">话已经传出去了。那边能不能收到，是宇宙的事。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="window.buildStarUI()">✨ 再发一次</button></div>`;}},800);
     };
@@ -953,7 +987,7 @@
       const btn=document.getElementById('parallelBtn');if(!btn||btn.disabled)return;btn.disabled=true;
       let text=document.getElementById('parallelInput')?.value?.trim();if(!text)return;
       interactArea.innerHTML=`<div style="font-size:14px;color:var(--text-ai);text-align:center">🌐 AI正在生成另一个宇宙的故事……</div>`;
-      try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:[{role:"user",content:`用户描述了一个关键人生选择："${text}"。请生成一段约200字的"另一个宇宙"的故事。故事必须以"如果当初……"开头，全程使用"也许会……"、"但也可能……"、"也许此刻的我会……"等不确定的语气词来描述另一个自己的生活。必须同时展示好的和坏的可能性。最后说："宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。"`}],temperature:0.9,max_tokens:300})});let data=await res.json();let story=data.choices?.[0]?.message?.content||"如果当初……在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。";
+      try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Authorization":"Bearer "+getAPIKey(),"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`用户描述了一个关键人生选择："${text}"。请生成一段约200字的"另一个宇宙"的故事。故事必须以"如果当初……"开头，全程使用"也许会……"、"但也可能……"、"也许此刻的我会……"等不确定的语气词来描述另一个自己的生活。必须同时展示好的和坏的可能性。最后说："宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。"`}],temperature:0.9,max_tokens:300})});let data=await res.json();let story=data.choices?.[0]?.message?.content||"如果当初……在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。";
       let div=document.createElement('div');div.className='interact-result';let p=document.createElement('div');p.className='result-text';p.textContent=story;div.appendChild(p);let reBtn=document.createElement('button');reBtn.className='interact-btn';reBtn.style.cssText='margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)';reBtn.textContent='🌐 再试一次';reBtn.onclick=buildParallelUI;div.appendChild(reBtn);interactArea.innerHTML='';interactArea.appendChild(div);
       }catch(e){interactArea.innerHTML=`<div class="interact-result"><div class="result-text">在另一个宇宙，你走上了完全不同的路。宇宙不只有一个版本。每个版本都有它的光，也都有它的灰。你现在这个版本，还在继续往下写。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="window.buildParallelUI()">🌐 再试一次</button></div>`;}
     };
@@ -968,7 +1002,7 @@
       const diaryPrompt = `你是另一个普通人，正在写自己的日记。你刚刚看到了陌生人（用户）写的日记。请根据用户日记的内容，用真实、口语化的方式写一段你今天的心情日记。日记中要包含你自己的生活细节（比如吃了什么、看到了什么、做了什么），适当体现出你的身份背景（比如城市上班族、小镇学生等）。日记长度50-80字，最后用一句话温暖地回应一下对方的日记。
 【核心写作要求】1. 必须像真人写的：口语化、碎片化、可以有轻微的逻辑断层 2. 可以包含真实的生活细节 3. 可以体现城市感或乡村感 4. 偶尔可以有轻微的错别字或拼音 5. 不要用书面语的连接词 6. 可以偶尔用日式颜文字表达情绪，比如(*^▽^*)表示开心、(T_T)表示难过 7. 不要写"日记："或"陌生人日记："这种前缀，直接写正文 8. 格式：正文结束后，另起一行写一句温暖回应（30字以内），用"陌生人回应："开头`;
       try {
-        let res = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", { method: "POST", headers: { "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ model: "glm-4-flash", messages: [{ role: "user", content: `用户日记：${text}\n\n${diaryPrompt}` }], temperature: 0.85, max_tokens: 300 }) });
+        let res = await fetch(getAPIUrl(), { method: "POST", headers: { "Authorization": "Bearer " + getAPIKey(), "Content-Type": "application/json" }, body: JSON.stringify({ model: getModelName(), messages: [{ role: "user", content: `用户日记：${text}\n\n${diaryPrompt}` }], temperature: 0.85, max_tokens: 300 }) });
         let data = await res.json(); let reply = data.choices?.[0]?.message?.content || "今天也是普通的一天。陌生人回应：无论怎样，今天都是值得被记录的。";
         let diaryBody = reply, diaryResponse = "无论怎样，今天都是值得被记录的。"; const responseMatch = reply.match(/陌生人回应[：:]\s*(.+)/);
         if (responseMatch) { diaryBody = reply.replace(/陌生人回应[：:]\s*.+/, '').trim(); diaryResponse = responseMatch[1].trim(); }
@@ -990,9 +1024,15 @@
     document.getElementById('clearBtn').addEventListener('click',()=>{if(confirm('确定清空当前模式聊天记录？')){resetHistory();msgList.innerHTML='';if(!['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记','动画短片','纠结骰子'].includes(currentMode)){addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false);saveChat();}}});
     function setBtn(stop){if(stop){sendBtn.textContent='停止';sendBtn.disabled=false;msgInput.disabled=true;}else{sendBtn.textContent='发送';sendBtn.disabled=false;msgInput.disabled=false;msgInput.focus();}}
     function stopGen(){if(abortController) abortController.abort();if(isGenerating&&currentAIMsgDiv){if(!currentAIMsgDiv.textContent.trim())currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}isGenerating=false;currentAIMsgDiv=null;setBtn(false);}
-    async function handleSend(){if(isGenerating){stopGen();return;}let text=msgInput.value.trim();if(!text)return;if(!rateLimit()){const seconds=Math.ceil((60000-(Date.now()-messageTimestamps[0]))/1000);sendBtn.disabled=true;sendBtn.textContent=`请稍候 ${seconds}秒`;if(rateLimitTimer)clearTimeout(rateLimitTimer);rateLimitTimer=setTimeout(()=>{sendBtn.disabled=false;sendBtn.textContent='发送';rateLimitTimer=null;},seconds*1000);return;}if(isBad(text)){addMsg("这个话题我不太会聊哦。",false);saveChat();msgInput.value='';return;}addMsg(text,true);msgInput.value='';chatHistory.push({role:'user',content:text});saveChat();if(chatHistory.length>MAX_HISTORY)chatHistory=[chatHistory[0],...chatHistory.slice(-MAX_HISTORY+1)];currentAIMsgDiv=addMsg('',false);isGenerating=true;setBtn(true);abortController=new AbortController();let full='';try{let res=await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:"glm-4-flash",messages:chatHistory,temperature:0.75,max_tokens:500,stream:true}),signal:abortController.signal});if(!res.ok)throw new Error('API '+res.status);let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';while(true){let{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});let lines=buf.split('\n');buf=lines.pop()||'';for(let line of lines){let t=line.trim();if(!t||t==='data: [DONE]')continue;if(!t.startsWith('data: '))continue;try{let d=JSON.parse(t.slice(6));let delta=d.choices?.[0]?.delta?.content;if(delta){full+=delta;currentAIMsgDiv.textContent=full;msgList.scrollTop=msgList.scrollHeight;}}catch(e){}}}if(full)chatHistory.push({role:'assistant',content:full});else{currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});}saveChat();}catch(err){if(err.name!=='AbortError'){currentAIMsgDiv.textContent='信号有点弱，但我一直都在。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}}finally{isGenerating=false;setBtn(false);abortController=null;currentAIMsgDiv=null;}}
+    async function handleSend(){if(isGenerating){stopGen();return;}let text=msgInput.value.trim();if(!text)return;if(!rateLimit()){const seconds=Math.ceil((60000-(Date.now()-messageTimestamps[0]))/1000);sendBtn.disabled=true;sendBtn.textContent=`请稍候 ${seconds}秒`;if(rateLimitTimer)clearTimeout(rateLimitTimer);rateLimitTimer=setTimeout(()=>{sendBtn.disabled=false;sendBtn.textContent='发送';rateLimitTimer=null;},seconds*1000);return;}if(isBad(text)){addMsg("这个话题我不太会聊哦。",false);saveChat();msgInput.value='';return;}addMsg(text,true);msgInput.value='';chatHistory.push({role:'user',content:text});saveChat();if(chatHistory.length>MAX_HISTORY)chatHistory=[chatHistory[0],...chatHistory.slice(-MAX_HISTORY+1)];currentAIMsgDiv=addMsg('',false);isGenerating=true;setBtn(true);abortController=new AbortController();let full='';try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Authorization":"Bearer "+getAPIKey(),"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:chatHistory,temperature:0.75,max_tokens:500,stream:true}),signal:abortController.signal});if(!res.ok)throw new Error('API '+res.status);let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';while(true){let{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});let lines=buf.split('\n');buf=lines.pop()||'';for(let line of lines){let t=line.trim();if(!t||t==='data: [DONE]')continue;if(!t.startsWith('data: '))continue;try{let d=JSON.parse(t.slice(6));let delta=d.choices?.[0]?.delta?.content;if(delta){full+=delta;currentAIMsgDiv.textContent=full;msgList.scrollTop=msgList.scrollHeight;}}catch(e){}}}if(full)chatHistory.push({role:'assistant',content:full});else{currentAIMsgDiv.textContent='我在呢。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});}saveChat();}catch(err){if(err.name!=='AbortError'){currentAIMsgDiv.textContent='信号有点弱，但我一直都在。';chatHistory.push({role:'assistant',content:currentAIMsgDiv.textContent});saveChat();}}finally{isGenerating=false;setBtn(false);abortController=null;currentAIMsgDiv=null;}}
     sendBtn.addEventListener('click',handleSend);msgInput.addEventListener('keypress',e=>{if(e.key==='Enter'){e.preventDefault();handleSend();}});
-    (function(){let t=localStorage.getItem('chat-theme');if(t)setTheme(t);else setTheme('theme-pink');switchMode('通用陪伴');})();
+    
+    // 初始化
+    (function(){
+      let t=localStorage.getItem('chat-theme');if(t)setTheme(t);else setTheme('theme-pink');
+      updateModelUI();
+      switchMode('通用陪伴');
+    })();
 
   } catch(e) { console.error('脚本加载失败：', e.message); }
 })();
