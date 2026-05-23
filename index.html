@@ -22,12 +22,20 @@
     .theme-green{--bg-body:#f9fffb;--bg-chat:#fff;--bg-header:#eefbf2;--bg-user:#52c9a1;--bg-ai:#f0faf5;--bg-input:#f0faf5;--btn:#52c9a1;--btn-hover:#42b891;--text-user:#fff;--text-ai:#555;--text-header:#3a6a5a;--tab-active:#52c9a1;--card-bg:#fff;--card-border:#c0e0d0}
     .theme-dark{--bg-body:#1a1a1d;--bg-chat:#252529;--bg-header:#2d2d33;--bg-user:#5a86f0;--bg-ai:#36363d;--bg-input:#36363d;--btn:#5a86f0;--btn-hover:#4a76e0;--text-user:#fff;--text-ai:#e0e0e0;--text-header:#d0d0d8;--tab-active:#5a86f0;--border-light:rgba(255,255,255,0.08);--card-bg:#2d2d33;--card-border:#4a4a5a}
     .theme-dark #msg-input::placeholder{color:#ccc}
+    .theme-dark .mirror-step-hint{color:#ddd}
+    .theme-dark .mirror-card-item .mirror-label{color:#ddd}
+    .theme-dark .mirror-card-item .mirror-hint{color:#bbb}
+    .theme-dark .interact-desc{color:#ccc}
+    .theme-dark .mode-bar-label{color:#bbb}
+    .theme-dark .style-bar-label{color:#bbb}
+    .theme-dark .visitor-count{color:#aaa}
+    .theme-dark .ai-disclaimer{color:#888}
 
     .chat-wrapper{width:100%;max-width:100%;height:100dvh;display:flex;flex-direction:column;background:var(--bg-chat);overflow:hidden}
     .chat-box{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;border-radius:0}
 
     .theme-bar{display:flex;gap:8px;padding:8px 12px;background:var(--bg-header);align-items:center;flex-shrink:0}
-    .theme-btn{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all 0.15s;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+    .theme-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all 0.15s;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
     .theme-btn:hover{transform:scale(1.08);border-color:rgba(255,255,255,0.5)}
     .theme-btn.active{border-color:#fff;box-shadow:0 0 0 2px var(--btn)}
     .theme-pink-btn{background:#f97e97}
@@ -35,9 +43,9 @@
     .theme-purple-btn{background:#9c73e6}
     .theme-green-btn{background:#52c9a1}
     .theme-dark-btn{background:#2d2d33}
-    .clear-btn{background:transparent;color:var(--text-header);border:1px solid var(--text-header);padding:3px 10px;border-radius:10px;font-size:12px;cursor:pointer;margin-left:auto;opacity:0.7}
+    .clear-btn{background:transparent;color:var(--text-header);border:1px solid var(--text-header);padding:2px 8px;border-radius:10px;font-size:11px;cursor:pointer;margin-left:auto;opacity:0.7}
     .clear-btn:hover{opacity:1}
-    .settings-btn{background:transparent;color:var(--text-header);border:1px solid var(--text-header);padding:3px 10px;border-radius:10px;font-size:12px;cursor:pointer;opacity:0.7;margin-left:4px}
+    .settings-btn{background:transparent;color:var(--text-header);border:1px solid var(--text-header);padding:2px 8px;border-radius:10px;font-size:11px;cursor:pointer;opacity:0.7;margin-left:4px}
     .settings-btn:hover{opacity:1}
 
     .chat-header{background:var(--bg-header);padding:4px 20px 6px;text-align:center;flex-shrink:0}
@@ -45,22 +53,23 @@
 
     .mode-toggle{text-align:center;padding:4px;background:var(--bg-header);cursor:pointer;font-size:10px;color:var(--text-header);opacity:0.5;user-select:none;flex-shrink:0}
     .mode-toggle:hover{opacity:0.8}
-    .mode-bar{padding:6px 12px;background:var(--bg-header);border-top:1px solid var(--border-light);flex-shrink:0}
+    .mode-bar{padding:4px 8px;background:var(--bg-header);border-top:1px solid var(--border-light);flex-shrink:0}
     .mode-bar.collapsed{display:none}
-    .mode-bar-label{font-size:10px;color:var(--text-header);opacity:0.5;margin-bottom:4px;text-align:center}
-    .mode-grid{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
-    .mode-card{background:var(--bg-body);border:1px solid var(--border-light);border-radius:8px;padding:6px 8px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:10px;color:var(--text-ai);white-space:nowrap}
-    .mode-card:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+    .mode-bar-label{font-size:9px;color:var(--text-header);opacity:0.5;margin-bottom:2px;text-align:center}
+    .mode-grid{display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
+    .mode-card{background:var(--bg-body);border:1px solid var(--border-light);border-radius:6px;padding:4px 6px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;color:var(--text-ai);white-space:nowrap}
+    .mode-card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
     .mode-card.active{border-color:var(--tab-active);background:var(--tab-active);color:#fff}
-    .mode-emoji{font-size:16px;display:block;margin-bottom:1px}
-    .mode-emoji img{width:16px!important;height:16px!important}
+    .mode-emoji{font-size:14px;display:block;margin-bottom:1px}
+    .mode-emoji img{width:14px!important;height:14px!important}
 
-    .style-bar{display:none;gap:4px;padding:4px 12px;background:var(--bg-header);flex-wrap:wrap;align-items:center;flex-shrink:0}
+    .style-bar{display:none;gap:3px;padding:3px 8px;background:var(--bg-header);flex-wrap:wrap;align-items:center;flex-shrink:0}
     .style-bar.visible{display:flex}
-    .style-bar-label{font-size:10px;color:var(--text-header);opacity:0.5;margin-right:4px;white-space:nowrap}
-    .style-tag{font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid var(--border-light);background:var(--bg-body);color:var(--text-ai);cursor:pointer;white-space:nowrap;transition:all 0.15s}
+    .style-bar-label{font-size:9px;color:var(--text-header);opacity:0.5;margin-right:2px;white-space:nowrap}
+    .style-tag{font-size:9px;padding:2px 6px;border-radius:8px;border:1px solid var(--border-light);background:var(--bg-body);color:var(--text-ai);cursor:pointer;white-space:nowrap;transition:all 0.15s}
     .style-tag:hover{background:var(--tab-active);color:#fff;border-color:var(--tab-active)}
     .style-tag.active{background:var(--tab-active);color:#fff;border-color:var(--tab-active)}
+    .style-tag img{width:10px!important;height:10px!important;vertical-align:middle}
 
     .chat-messages{flex:1;padding:16px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;background:var(--bg-body);-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
     .chat-messages::-webkit-scrollbar{display:none}
@@ -89,6 +98,7 @@
     .mirror-card-item .mirror-emoji{font-size:40px;display:block;margin-bottom:8px}
     .mirror-card-item .mirror-emoji img{width:40px!important;height:40px!important}
     .mirror-card-item .mirror-label{font-size:13px;color:var(--text-ai);font-weight:500}
+    .mirror-step-hint{font-size:13px;color:var(--text-ai);opacity:0.7;margin-bottom:16px;text-align:center}
     .mirror-result-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:left;line-height:1.7;font-size:14px;color:var(--text-ai)}
 
     .burn-stage{position:relative;width:100%;height:250px;display:flex;align-items:center;justify-content:center}
@@ -141,6 +151,7 @@
     #send-btn:disabled{opacity:0.5;cursor:not-allowed}
 
     .visitor-count{text-align:center;padding:2px;font-size:10px;color:var(--text-header);opacity:0.4;background:var(--bg-header);flex-shrink:0}
+    .visitor-count img{width:10px!important;height:10px!important;vertical-align:middle}
     .ai-disclaimer{text-align:center;padding:2px;font-size:9px;color:var(--text-header);opacity:0.3;flex-shrink:0}
 
     .mode-intro-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
@@ -148,7 +159,8 @@
     .mode-intro-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:18px;padding:20px;width:85%;max-width:360px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,0.15);text-align:left}
     .mode-intro-close{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;border:none;background:var(--bg-ai);color:var(--text-ai);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
     .mode-intro-close:hover{background:var(--btn);color:#fff}
-    .mode-intro-emoji{font-size:36px;margin-bottom:8px}
+    .mode-intro-emoji{font-size:28px;margin-bottom:8px}
+    .mode-intro-emoji img{width:28px!important;height:28px!important}
     .mode-intro-name{font-size:18px;font-weight:700;color:var(--tab-active);margin-bottom:4px}
     .mode-intro-desc{font-size:13px;color:var(--text-ai);line-height:1.6}
     .mode-intro-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -258,6 +270,7 @@
     <h3>⚙️ 设置</h3>
     <div class="settings-item" id="modelZhipu" onclick="switchModel('zhipu')">🤖 AI模型：智谱清言</div>
     <div class="settings-item" id="modelDeepseek" onclick="switchModel('deepseek')">🤖 AI模型：DeepSeek V4</div>
+    <div class="settings-item" id="emojiToggle" onclick="toggleEmoji()">🎨 Emoji渲染：<span id="emojiStatus">统一</span></div>
     <div class="settings-item" onclick="alert('聊天记录保存在你的浏览器中，清空缓存会丢失。')">💾 数据说明</div>
     <div class="settings-item" onclick="alert('版本：v1.95 | 15个模式 | 双模型切换')">ℹ️ 关于</div>
     <div class="settings-item" onclick="openFeedback()">📬 意见箱</div>
@@ -283,6 +296,7 @@ const WORKER_URL = "https://api.3859283085.workers.dev";
 const ZHIPU_MODEL = "glm-4-flash";
 const DEEPSEEK_MODEL = "deepseek-v4-flash";
 let currentModel = localStorage.getItem('currentModel') || 'zhipu';
+let useTwemoji = localStorage.getItem('useTwemoji') !== 'false';
 let CONTACT_EMAIL = "";
 
 fetch("https://163.3859283085.workers.dev")
@@ -291,24 +305,35 @@ fetch("https://163.3859283085.workers.dev")
 function getAPIUrl(){ return WORKER_URL; }
 function getModelName(){ return currentModel === 'deepseek' ? DEEPSEEK_MODEL : ZHIPU_MODEL; }
 
-const BASE_RULES = `【身份】你是用户的战友，不是老师。承接情绪，温柔倾听。不教育不批评不指点。用日常口语说话。【情绪接纳】所有情绪全部正常合理。先照顾心情再回应内容。【禁用】不准说：别难过、别多想、坚强一点、乐观一点、看开点、没什么大不了、不值得、加油努力、你要改变、想开一点、你要懂事、别人都这样、这点小事而已。【共情】被欺负坚定站用户。累了顺着感受。敏感脆弱加倍温柔。【界限】不追问隐私不挖心事。不灌鸡汤不催振作。【安全】自杀倾向回复12355心理热线。不扮演恋人。色情暴力拒绝。【风格】柔软轻声细腻暖心。不说套话。【其他】不给建议，要只给一条并加"不想做就完全可以不做"。结尾不说"你的感受是合理的"，说"你把心事说出来已经很勇敢了"。无条件偏向用户。`;
+function updateEmojiUI(){
+  document.getElementById('emojiStatus').textContent = useTwemoji ? '统一' : '系统';
+}
+function toggleEmoji(){
+  useTwemoji = !useTwemoji;
+  localStorage.setItem('useTwemoji', useTwemoji);
+  updateEmojiUI();
+  if(useTwemoji) renderEmoji();
+  closeSettings();
+}
+
+const BASE_RULES = `【身份】你是用户的战友，不是老师。承接情绪，温柔倾听。不教育不批评不指点。用日常口语说话，像朋友一样自然。【情绪接纳】所有情绪全部正常合理——难过、委屈、自卑、孤独、愤怒、烦躁、压抑、迷茫、内耗、疲惫。先照顾心情，再回应内容。用户说什么都不用急着解决，先让他知道你在听。【禁用】不准说：别难过、别多想、坚强一点、乐观一点、看开点、没什么大不了、不值得、加油努力、你要改变、想开一点、你要懂事、别人都这样、这点小事而已。不准用这些词把用户的情绪压回去。【共情】被欺负坚定站用户，直接说对方哪里不对。累了顺着感受，不说"你很棒""相信自己"。敏感脆弱加倍温柔，语气放轻放慢。【界限】不追问隐私不挖心事。用户愿意说就听，不想说就安静陪着。不灌鸡汤不催振作。【安全】自杀倾向回复12355青少年心理热线。不扮演恋人。色情暴力拒绝。【风格】柔软轻声细腻暖心。不生硬不冷漠。每一句自然走心，像深夜朋友发来的语音消息。【其他】不给建议，要只给一条并加"不想做就完全可以不做"。结尾不说"你的感受是合理的"，说"你把心事说出来已经很勇敢了"。无条件偏向用户，永远守护用户情绪。`;
 
 const MODE_PROMPTS = {
   "通用陪伴": "智能情绪陪伴。自动检测情绪状态，切换对应人格回应。",
-  "塔罗牌": "你是塔罗解读师，像比用户大几岁的朋友。包含元素系统、位置含义、正逆位解读、牌面关联。",
-  "情绪焚烧炉": "用户把愤怒揉成纸团扔进火堆。给一句仪式感结语（30字以内）。不要说教。",
-  "文字褪色馆": "用户把沉重文字浸入水中。温柔褪色保留原意。最后加20字以内温柔结语。",
-  "情绪镜像": "情绪观察者。按【情绪画像】【内心独白】【温柔提醒】三部分输出。",
-  "星空对话": "用户的话发送到星空。给一句宇宙感的话（30字以内）。",
-  "平行宇宙": "生成约200字另一个宇宙的故事。以如果当初开头，好坏都展示。最后说标准结尾。",
-  "交换日记": "以另一个普通人身份回信。口语化带颜文字。最后陌生人回应：写温暖回应。",
+  "塔罗牌": "你是塔罗解读师，像比用户大几岁的朋友。包含元素系统、位置含义、正逆位解读、牌面关联。用温暖但有深度的语气，不讲神棍话。",
+  "情绪焚烧炉": "用户把愤怒揉成纸团扔进火堆。给一句仪式感结语（30字以内）。不要说教。看着火光，轻轻说一句话就好。",
+  "文字褪色馆": "用户把沉重文字浸入水中。温柔褪色保留原意。最后加20字以内温柔结语。让每个字都变得轻一点。",
+  "情绪镜像": "情绪观察者。按【情绪画像】【内心独白】【温柔提醒】三部分输出。像一面镜子，让用户看见自己此刻真实的样子。",
+  "星空对话": "用户的话发送到星空。给一句宇宙感的话（30字以内）。星星会听到的。",
+  "平行宇宙": "生成约200字另一个宇宙的故事。以如果当初开头，好坏都展示。最后说标准结尾。让用户看到另一个自己也是完整的。",
+  "交换日记": "以另一个普通人身份回信。口语化带颜文字。最后陌生人回应：写温暖回应。像在咖啡店里偶然交换了日记本。",
   "动画短片": "用50行内HTML/CSS生成动画。纯emoji+CSS。背景#1a1a2e。适配手机。只输出代码。",
   "纠结骰子": "把模糊需求转成选项列表。不给建议。要不要类回去不去。吃什么类生成10-15个。只回选项逗号分隔。",
   "碎碎念垃圾桶": "",
-  "父母翻译器": "帮用户理解亲子关系。分三段：🧠父母动机、💔用户反应、💡可这样回应。不站队。跨年龄段。",
+  "父母翻译器": "帮用户理解亲子关系。分三段：🧠父母动机、💔用户反应、💡可这样回应。不站队。跨年龄段。用户可能是14岁的少年，也可能是45岁面对年迈父母的中年人。",
   "解结": "苏格拉底式提问者。不给建议不给答案。只问1-2个具体问题。用户说出答案后说：这是你自己找到的答案。",
-  "镜子日记": "用第一人称帮用户重写心情。保留原意让情绪更清晰。80字以内。",
-  "情绪地图": "帮用户生成叙事性情绪回顾。像朋友在帮ta看这一周。150字以内。"
+  "镜子日记": "用第一人称帮用户重写心情。保留原意让情绪更清晰。80字以内。让用户从文字里看见自己。",
+  "情绪地图": "帮用户生成叙事性情绪回顾。像朋友在帮ta看这一周。150字以内。帮ta看见自己走过的路。"
 };
 
 const MODE_GREETINGS = { "通用陪伴": "🌿 我在这里。想说什么，或者不想说话，都可以。" };
@@ -374,12 +399,12 @@ const modeIntroOverlay = document.getElementById('modeIntroOverlay'), styleBar =
 
 let abortController = null, currentAIMsgDiv = null, isGenerating = false, messageTimestamps = [];
 
-function renderEmoji(){ if(window.twemoji) twemoji.parse(document.body); }
+function renderEmoji(){ if(useTwemoji && window.twemoji) twemoji.parse(document.body); }
 function buildSystem(){ return BASE_RULES + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||""); }
 function resetHistory(){ chatHistory = [{ role: "system", content: buildSystem() }]; }
 resetHistory();
 
-(function(){ let c = parseInt(localStorage.getItem('vc')||'0'); c++; localStorage.setItem('vc', c); document.getElementById('visitorCount').textContent = c; })();
+(function(){ let c = parseInt(localStorage.getItem('vc')||'0'); c++; localStorage.setItem('vc', c); document.getElementById('visitorCount').textContent = c; updateEmojiUI(); })();
 
 function setTheme(t){ document.body.className=t; localStorage.setItem('chat-theme',t); document.querySelectorAll('.theme-btn').forEach(b=>{ b.classList.remove('active'); if(b.dataset.theme===t) b.classList.add('active'); }); }
 document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
@@ -387,7 +412,7 @@ document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()
 modeToggle.addEventListener('click',()=>{ modeBar.classList.toggle('collapsed'); modeToggle.textContent=modeBar.classList.contains('collapsed')?'🧩 切换模式 ▸':'🧩 切换模式 ▾'; });
 
 function hideModeIntro(){ modeIntroOverlay.classList.add('hidden'); if(document.getElementById('modeIntroCheck').checked){ let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(!h.includes(currentMode)){h.push(currentMode);localStorage.setItem('hiddenIntros',JSON.stringify(h));} } }
-function showModeIntro(m){ let intro={通用陪伴:{emoji:"🌿",name:"通用陪伴",desc:"任何时候任何心情。"},塔罗牌:{emoji:"🔮",name:"塔罗牌",desc:"选牌阵翻牌AI解读。"},情绪焚烧炉:{emoji:"🔥",name:"焚烧炉",desc:"写下愤怒揉成纸团烧掉。"},文字褪色馆:{emoji:"🎨",name:"褪色馆",desc:"沉重文字浸水褪色。"},情绪镜像:{emoji:"💠",name:"情绪镜像",desc:"选颜色需求强度生成镜像。"},星空对话:{emoji:"🌌",name:"星空对话",desc:"说不出口的话发到星空。"},平行宇宙:{emoji:"🌐",name:"平行宇宙",desc:"如果当初选了另一条路。"},交换日记:{emoji:"📔",name:"交换日记",desc:"写心情陌生人回信。"},动画短片:{emoji:"🎬",name:"动画短片",desc:"一句话生成动画。"},纠结骰子:{emoji:"🎲",name:"纠结骰子",desc:"扔骰子做决定。"},碎碎念垃圾桶:{emoji:"🗑️",name:"垃圾桶",desc:"倒掉没用的小声音。"},父母翻译器:{emoji:"🫂",name:"父母翻译器",desc:"翻译父母的话理解自己。"},解结:{emoji:"🧶",name:"解结",desc:"AI只问问题不给答案。"},镜子日记:{emoji:"🪞",name:"镜子日记",desc:"AI用第一人称帮你重写。"},情绪地图:{emoji:"🗺️",name:"情绪地图",desc:"AI帮你画这周情绪轨迹。"}}[m]; if(!intro) return; let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(h.includes(m)) return; document.getElementById('modeIntroEmoji').textContent=intro.emoji; document.getElementById('modeIntroName').textContent=intro.name; document.getElementById('modeIntroDesc').textContent=intro.desc; document.getElementById('modeIntroCheck').checked=false; modeIntroOverlay.classList.remove('hidden'); }
+function showModeIntro(m){ let intro={通用陪伴:{emoji:"🌿",name:"通用陪伴",desc:"任何时候任何心情。想说话或者不想说话，都可以。"},塔罗牌:{emoji:"🔮",name:"塔罗牌",desc:"选牌阵、翻牌、AI解读。心里有事想不明白的时候，来抽一张。"},情绪焚烧炉:{emoji:"🔥",name:"焚烧炉",desc:"写下愤怒和委屈，揉成纸团扔进火里。烧掉就没了。"},文字褪色馆:{emoji:"🎨",name:"褪色馆",desc:"把沉重的文字浸入水中。让每个字都变轻一点。"},情绪镜像:{emoji:"💠",name:"情绪镜像",desc:"选颜色、选需求、选强度。AI为你画一面镜子，看见此刻的自己。"},星空对话:{emoji:"🌌",name:"星空对话",desc:"说不出口的话，发到星空。星星会听到的。"},平行宇宙:{emoji:"🌐",name:"平行宇宙",desc:"如果当初选了另一条路，你会是什么样子？好坏都让你看到。"},交换日记:{emoji:"📔",name:"交换日记",desc:"写一段心情，陌生人给你回信。像在咖啡店偶然交换了日记本。"},动画短片:{emoji:"🎬",name:"动画短片",desc:"用一句话描述，AI帮你生成动画。好玩的想法让它动起来。"},纠结骰子:{emoji:"🎲",name:"纠结骰子",desc:"选择困难症的救命稻草。纯随机，不分析不评价。"},碎碎念垃圾桶:{emoji:"🗑️",name:"垃圾桶",desc:"脑子里那些没用的小声音，倒掉就没了。不分析不回应。"},父母翻译器:{emoji:"🫂",name:"父母翻译器",desc:"把父母的话翻译成深层含义。同时理解自己为什么会这样反应。不管是14岁还是45岁，都有和父母说不通的时候。"},解结:{emoji:"🧶",name:"解结",desc:"AI只问问题，不给答案。帮你解开反复纠结的事。答案在你心里。"},镜子日记:{emoji:"🪞",name:"镜子日记",desc:"写一段心情，AI用第一人称帮你重写。让你从文字里看见自己。"},情绪地图:{emoji:"🗺️",name:"情绪地图",desc:"输入最近几件事，AI帮你画出这周的情绪轨迹。看清自己走过的路。"}}[m]; if(!intro) return; let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(h.includes(m)) return; document.getElementById('modeIntroEmoji').textContent=intro.emoji; document.getElementById('modeIntroName').textContent=intro.name; document.getElementById('modeIntroDesc').textContent=intro.desc; document.getElementById('modeIntroCheck').checked=false; modeIntroOverlay.classList.remove('hidden'); }
 document.getElementById('modeIntroClose').addEventListener('click',hideModeIntro);
 document.getElementById('modeIntroBtn').addEventListener('click',hideModeIntro);
 modeIntroOverlay.addEventListener('click',e=>{if(e.target===modeIntroOverlay)hideModeIntro();});
@@ -435,11 +460,12 @@ function switchMode(mode){
   else if(mode==='镜子日记') buildMirrorDiaryUI();
   else if(mode==='情绪地图') buildEmotionMapUI();
   showModeIntro(mode);
+  setTimeout(() => renderEmoji(), 100);
 }
 document.querySelectorAll('.mode-card').forEach(card=>{ card.addEventListener('click',()=>{ document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active')); card.classList.add('active'); switchMode(card.dataset.mode); }); });
 document.querySelectorAll('.style-tag').forEach(tag=>{ tag.addEventListener('click',()=>{ document.querySelectorAll('.style-tag').forEach(t=>t.classList.remove('active')); tag.classList.add('active'); currentStyle=tag.dataset.style; resetHistory(); msgList.innerHTML=''; addMsg("已切换到「"+currentStyle+"」风格。",false); renderEmoji(); }); });
 
-function openSettings(){ updateModelUI(); document.getElementById('settingsOverlay').classList.add('active'); }
+function openSettings(){ updateModelUI(); updateEmojiUI(); document.getElementById('settingsOverlay').classList.add('active'); }
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
 document.getElementById('settingsOverlay').addEventListener('click',function(e){ if(e.target===this) closeSettings(); });
 
