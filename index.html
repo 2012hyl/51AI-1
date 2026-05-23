@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -53,6 +53,7 @@
     .mode-card:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
     .mode-card.active{border-color:var(--tab-active);background:var(--tab-active);color:#fff}
     .mode-emoji{font-size:16px;display:block;margin-bottom:1px}
+    .mode-emoji img{width:16px!important;height:16px!important}
 
     .style-bar{display:none;gap:4px;padding:4px 12px;background:var(--bg-header);flex-wrap:wrap;align-items:center;flex-shrink:0}
     .style-bar.visible{display:flex}
@@ -86,6 +87,7 @@
     .mirror-card-item:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.1);border-color:var(--tab-active)}
     .mirror-card-item.selected{border-color:var(--tab-active);box-shadow:0 0 20px rgba(249,126,151,0.3);background:var(--bg-ai)}
     .mirror-card-item .mirror-emoji{font-size:40px;display:block;margin-bottom:8px}
+    .mirror-card-item .mirror-emoji img{width:40px!important;height:40px!important}
     .mirror-card-item .mirror-label{font-size:13px;color:var(--text-ai);font-weight:500}
     .mirror-result-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:left;line-height:1.7;font-size:14px;color:var(--text-ai)}
 
@@ -310,7 +312,6 @@ const MODE_PROMPTS = {
 };
 
 const MODE_GREETINGS = { "通用陪伴": "🌿 我在这里。想说什么，或者不想说话，都可以。" };
-const INTERACT_MODES = ['塔罗牌','情绪焚烧炉','文字褪色馆','情绪镜像','星空对话','平行宇宙','交换日记','动画短片','纠结骰子','碎碎念垃圾桶','父母翻译器','解结','镜子日记','情绪地图'];
 
 const TAROT_DECK = [
   { name:"愚者", emoji:"🃏", element:"风", upright:"新的开始、冒险", reversed:"犹豫、害怕未知" },
@@ -344,9 +345,17 @@ const SPREADS = {
 };
 
 const MIRROR_STEPS = [
-  { hint:"👇 选择最能代表你此刻情绪的颜色", cards:[{emoji:"🔴",label:"灼热"},{emoji:"🔵",label:"深蓝"},{emoji:"🟡",label:"暖黄"},{emoji:"🟢",label:"暗绿"},{emoji:"🟣",label:"灰紫"},{emoji:"⚪",label:"浅白"}], cols:3, key:"color" },
-  { hint:"👇 选择你此刻最想做的事", cards:[{emoji:"🗣️",label:"被听见"},{emoji:"🤫",label:"安静"},{emoji:"🤗",label:"被拥抱"},{emoji:"🚶",label:"逃离"}], cols:2, key:"need" },
-  { hint:"👇 选择你此刻的情绪强度", cards:[{emoji:"🌊",label:"轻微"},{emoji:"⛈️",label:"中等"},{emoji:"🌋",label:"强烈"}], cols:3, key:"intensity" }
+  { hint:"👇 选择最能代表你此刻情绪的颜色", cards:[
+    {emoji:"❤️",label:"灼热"},{emoji:"💙",label:"深蓝"},{emoji:"💛",label:"暖黄"},
+    {emoji:"💚",label:"暗绿"},{emoji:"💜",label:"灰紫"},{emoji:"🤍",label:"浅白"}
+  ], cols:3, key:"color" },
+  { hint:"👇 选择你此刻最想做的事", cards:[
+    {emoji:"🗣️",label:"被听见"},{emoji:"🤫",label:"安静"},
+    {emoji:"🤗",label:"被拥抱"},{emoji:"🚶",label:"逃离"}
+  ], cols:2, key:"need" },
+  { hint:"👇 选择你此刻的情绪强度", cards:[
+    {emoji:"🌊",label:"轻微"},{emoji:"⛈️",label:"中等"},{emoji:"🌋",label:"强烈"}
+  ], cols:3, key:"intensity" }
 ];
 
 const PARENT_CHARS = [{v:"",l:"不选"},{v:"独立型",l:"🛠️ 独立型"},{v:"敏感型",l:"🌊 敏感型"},{v:"直接型",l:"🔥 直接型"},{v:"内敛型",l:"🪨 内敛型"}];
