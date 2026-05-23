@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>温柔陪伴 · v1.9</title>
-  <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+  <title>温柔陪伴 · v1.95</title>
+  <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous" onerror="window.twemoji=null"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}
     html,body{height:100dvh;overflow:hidden}
@@ -258,7 +258,7 @@
     <div class="settings-item" id="modelZhipu" onclick="window.switchModel('zhipu')">🤖 AI模型：智谱清言</div>
     <div class="settings-item" id="modelDeepseek" onclick="window.switchModel('deepseek')">🤖 AI模型：DeepSeek V4</div>
     <div class="settings-item" onclick="alert('聊天记录保存在你的浏览器中，清空缓存会丢失。')">💾 数据说明</div>
-    <div class="settings-item" onclick="alert('版本：v1.9 | 15个模式 | 双模型切换')">ℹ️ 关于</div>
+    <div class="settings-item" onclick="alert('版本：v1.95 | 15个模式 | 双模型切换')">ℹ️ 关于</div>
     <div class="settings-item" onclick="window.openFeedback()">📬 意见箱</div>
     <div class="settings-item danger" onclick="window.triggerCatAnimation()">⚠️ 千万不要点</div>
     <button class="interact-btn" style="margin-top:12px;width:100%" onclick="window.closeSettings()">关闭</button>
@@ -487,7 +487,7 @@
     sendBtn.addEventListener('click',handleSend);
     msgInput.addEventListener('keypress',e=>{ if(e.key==='Enter'){ e.preventDefault(); handleSend(); } });
 
-    // ===== 模式构建函数（精简）=====
+    // ===== 模式构建函数 =====
     function buildAnimUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🎬 动画短片</div><div class="interact-desc">用一句话描述想要的动画</div><textarea class="interact-input" id="aIn" placeholder="比如：一只猫吃了辣椒后喷火" maxlength="200"></textarea><button class="interact-btn" id="aBtn" onclick="window.genAnim()">🎬 生成</button><div id="aFs" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#1a1a2e"></div><div id="aTm" style="display:none;position:fixed;bottom:80px;right:20px;z-index:10001;color:#fff;font-size:14px;opacity:0.7">⏱ 8秒</div><div id="aEx" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:10000;padding:12px 28px;background:var(--btn);color:#fff;border:none;border-radius:22px;font-size:15px;cursor:pointer" onclick="window.closeAnim()">🚪 退出</div>'; }
     window.genAnim = async function(){ let t=document.getElementById('aIn')?.value?.trim(); if(!t||t.length<5) return; let btn=document.getElementById('aBtn'),fs=document.getElementById('aFs'),ex=document.getElementById('aEx'),tm=document.getElementById('aTm'); btn.disabled=true;btn.textContent='生成中…';fs.style.display='none';ex.style.display='none';tm.style.display='none'; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🎬 正在生成…</div>'; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:'user',content:`生成动画："${t}"。50行内HTML/CSS。纯emoji+CSS。背景#1a1a2e。只输出代码。`}],temperature:0.9,max_tokens:1500})}); let d=await r.json(); let code=d.choices?.[0]?.message?.content||''; let md=code.match(/```html\n([\s\S]*?)\n```/); if(md) code=md[1]; else{ let hm=code.match(/<!DOCTYPE html>[\s\S]*?<\/html>/i); if(hm) code=hm[0]; } fs.style.display='block';tm.style.display='block'; fs.innerHTML=`<iframe src="${URL.createObjectURL(new Blob([code],{type:'text/html'}))}" style="width:100%;height:100%;border:none;background:#1a1a2e"></iframe>`; let sec=8;tm.textContent='⏱ '+sec+'秒'; let timer=setInterval(()=>{sec--;tm.textContent='⏱ '+sec+'秒';if(sec<=0){clearInterval(timer);tm.style.display='none';ex.style.display='block';}},1000); fs.addEventListener('click',()=>{clearInterval(timer);tm.style.display='none';ex.style.display='block';}); }catch(e){interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">生成失败</div>';} finally{btn.disabled=false;btn.textContent='🎬 重新生成';} };
     window.closeAnim = function(){ document.getElementById('aFs').style.display='none'; document.getElementById('aFs').innerHTML=''; document.getElementById('aEx').style.display='none'; document.getElementById('aTm').style.display='none'; buildAnimUI(); };
