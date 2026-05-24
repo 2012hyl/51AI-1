@@ -549,7 +549,7 @@ async function handleSend(){
   currentAIMsgDiv=addMsg('',false); isGenerating=true; sendBtn.textContent='停止'; sendBtn.disabled=false; msgInput.disabled=true;
   abortController=new AbortController(); let full='';
   try{
-    let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:chatHistory,temperature:0.75,max_tokens:500,stream:true}),signal:abortController.signal});
+    let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:chatHistory,temperature:0.6,max_tokens:300stream:false}),signal:abortController.signal});
     if(!res.ok) throw new Error('API '+res.status);
     let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';
     while(true){ let{done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); let lines=buf.split('\n'); buf=lines.pop()||''; for(let line of lines){ let t=line.trim(); if(!t||t==='data: [DONE]') continue; if(!t.startsWith('data: ')) continue; try{ let d=JSON.parse(t.slice(6)); let delta=d.choices?.[0]?.delta?.content; if(delta){ full+=delta; currentAIMsgDiv.textContent=full; msgList.scrollTop=msgList.scrollHeight; renderEmoji(); } }catch(e){} } }
