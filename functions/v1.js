@@ -35,16 +35,12 @@ export async function onRequest(context) {
     body: JSON.stringify(body),
   });
 
-  try {
-    const response = await fetch(modifiedRequest);
-    const data = await response.json();
-    return new Response(JSON.stringify(data), {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: '代理请求失败' }), { status: 500 });
-  }
+  const response = await fetch(modifiedRequest);
+  const data = await response.json();
+  return new Response(JSON.stringify(data), {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    },
+  });
 }
