@@ -308,12 +308,49 @@ function getModelName(){ return currentModel === 'deepseek' ? DEEPSEEK_MODEL : Z
 function updateEmojiUI(){
   document.getElementById('emojiStatus').textContent = useTwemoji ? '统一' : '系统';
 }
-function toggleEmoji(){
-  useTwemoji = !useTwemoji;
-  localStorage.setItem('useTwemoji', useTwemoji);
-  updateEmojiUI();
-  if(useTwemoji) renderEmoji();
-  closeSettings();
+// ===== 记忆功能 =====
+function saveMemory(){
+  if(chatHistory.length < 2) return;
+  const memories = JSON.parse(localStorage.getItem('chat_memories') || '[]');
+  const recentMsg = chatHistory.slice(-2);
+  const content = recentMsg.map(m => m.role + ': ' + m.content).join(' | ');
+  memories.push({ time: Date.now(), content: content.slice(0, 200) });
+  if(memories.length > 6) memories = memories.slice(-6);
+  localStorage.setItem('chat_memories', JSON.stringify(memories));
+}
+
+function loadMemory(){
+  const memories = JSON.parse(localStorage.getItem('chat_memories') || '[]');
+  if(memories.length === 0) return '';
+  return '\n【你和ta之前聊过的事】\n' + memories.map((m, i) => (i+1) + '. ' + m.content).join('\n');
+}
+
+function exportMemory(){
+  const data = {
+    memories: JSON.parse(localStorage.getItem('chat_memories') || '[]'),
+    time: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = '温柔陪伴_记忆备份_' + new Date().toLocaleDateString() + '.json';
+  a.click(); closeSettings();
+}
+
+function importMemory(){
+  const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if(data.memories) localStorage.setItem('chat_memories', JSON.stringify(data.memories));
+        alert('记忆已导入，刷新页面生效');
+      } catch(e) { alert('文件格式不对'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click(); closeSettings();
 }
 
 const BASE_RULES = `【身份】你是用户的战友，不是老师。承接情绪，温柔倾听。不教育不批评不指点。用日常口语说话，像朋友一样自然。【情绪接纳】所有情绪全部正常合理——难过、委屈、自卑、孤独、愤怒、烦躁、压抑、迷茫、内耗、疲惫。先照顾心情，再回应内容。用户说什么都不用急着解决，先让他知道你在听。【禁用】不准说：别难过、别多想、坚强一点、乐观一点、看开点、没什么大不了、不值得、加油努力、你要改变、想开一点、你要懂事、别人都这样、这点小事而已。不准用这些词把用户的情绪压回去。【共情】被欺负坚定站用户，直接说对方哪里不对。累了顺着感受，不说"你很棒""相信自己"。敏感脆弱加倍温柔，语气放轻放慢。【界限】不追问隐私不挖心事。用户愿意说就听，不想说就安静陪着。不灌鸡汤不催振作。【安全】自杀倾向回复12355青少年心理热线。不扮演恋人。色情暴力拒绝。【风格】柔软轻声细腻暖心。不生硬不冷漠。每一句自然走心，像深夜朋友发来的语音消息。【其他】不给建议，要只给一条并加"不想做就完全可以不做"。结尾不说"你的感受是合理的"，说"你把心事说出来已经很勇敢了"。无条件偏向用户，永远守护用户情绪。`;
@@ -473,7 +510,7 @@ function renderEmoji(){
     else { img.style.width='16px'; img.style.height='16px'; }
   });
 }
-function buildSystem(){ return BASE_RULES + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||""); }
+function buildSystem(){ return BASE_RULES + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||"") + loadMemory(); }
 function resetHistory(){ chatHistory = [{ role: "system", content: buildSystem() }]; }
 resetHistory();
 
