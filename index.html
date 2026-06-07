@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>温柔陪伴 · v1.96</title>
+  <title>温柔陪伴 · v1.97</title>
   <script src="twemoji.js" onerror="console.log('twemoji加载失败')"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}
@@ -22,14 +22,6 @@
     .theme-green{--bg-body:#f9fffb;--bg-chat:#fff;--bg-header:#eefbf2;--bg-user:#52c9a1;--bg-ai:#f0faf5;--bg-input:#f0faf5;--btn:#52c9a1;--btn-hover:#42b891;--text-user:#fff;--text-ai:#555;--text-header:#3a6a5a;--tab-active:#52c9a1;--card-bg:#fff;--card-border:#c0e0d0}
     .theme-dark{--bg-body:#1a1a1d;--bg-chat:#252529;--bg-header:#2d2d33;--bg-user:#5a86f0;--bg-ai:#36363d;--bg-input:#36363d;--btn:#5a86f0;--btn-hover:#4a76e0;--text-user:#fff;--text-ai:#e0e0e0;--text-header:#d0d0d8;--tab-active:#5a86f0;--border-light:rgba(255,255,255,0.08);--card-bg:#2d2d33;--card-border:#4a4a5a}
     .theme-dark #msg-input::placeholder{color:#ccc}
-    .theme-dark .mirror-step-hint{color:#ddd}
-    .theme-dark .mirror-card-item .mirror-label{color:#ddd}
-    .theme-dark .mirror-card-item .mirror-hint{color:#bbb}
-    .theme-dark .interact-desc{color:#ccc}
-    .theme-dark .mode-bar-label{color:#bbb}
-    .theme-dark .style-bar-label{color:#bbb}
-    .theme-dark .visitor-count{color:#aaa}
-    .theme-dark .ai-disclaimer{color:#888}
 
     .chat-wrapper{width:100%;max-width:100%;height:100dvh;display:flex;flex-direction:column;background:var(--bg-chat);overflow:hidden}
     .chat-box{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;border-radius:0}
@@ -273,7 +265,7 @@
     <div class="settings-item" id="emojiToggle" onclick="toggleEmoji()">🎨 Emoji渲染：<span id="emojiStatus">统一</span></div>
     <div class="settings-item" onclick="exportMemory()">📤 导出记忆备份</div>
     <div class="settings-item" onclick="importMemory()">📥 导入记忆备份</div>
-    <div class="settings-item" onclick="alert('版本：v1.96 | 15个模式 | 记忆功能')">ℹ️ 关于</div>
+    <div class="settings-item" onclick="alert('版本：v1.97 | 15个模式 | 完整记忆')">ℹ️ 关于</div>
     <div class="settings-item" onclick="openFeedback()">📬 意见箱</div>
     <div class="settings-item danger" onclick="triggerCatAnimation()">⚠️ 千万不要点</div>
     <button class="interact-btn" style="margin-top:12px;width:100%" onclick="closeSettings()">关闭</button>
@@ -306,54 +298,43 @@ fetch("https://163.3859283085.workers.dev")
 function getAPIUrl(){ return WORKER_URL; }
 function getModelName(){ return currentModel === 'deepseek' ? DEEPSEEK_MODEL : ZHIPU_MODEL; }
 
-function updateEmojiUI(){
-  document.getElementById('emojiStatus').textContent = useTwemoji ? '统一' : '系统';
-}
-function toggleEmoji(){
-  useTwemoji = !useTwemoji;
-  localStorage.setItem('useTwemoji', useTwemoji);
-  updateEmojiUI();
-  if(useTwemoji) renderEmoji();
-  closeSettings();
-}
+function updateEmojiUI(){ document.getElementById('emojiStatus').textContent = useTwemoji ? '统一' : '系统'; }
+function toggleEmoji(){ useTwemoji = !useTwemoji; localStorage.setItem('useTwemoji', useTwemoji); updateEmojiUI(); if(useTwemoji) renderEmoji(); closeSettings(); }
 
-// ===== 记忆功能 =====
+// ===== 记忆功能（完整版）=====
 function saveMemory(){
   if(chatHistory.length < 2) return;
-  const memories = JSON.parse(localStorage.getItem('chat_memories') || '[]');
-  const recentMsg = chatHistory.slice(-2);
-  const content = recentMsg.map(m => m.role + ': ' + m.content).join(' | ');
-  memories.push({ time: Date.now(), content: content.slice(0, 200) });
-  if(memories.length > 6) memories = memories.slice(-6);
-  localStorage.setItem('chat_memories', JSON.stringify(memories));
+  const recent = chatHistory.slice(-6);
+  const summary = recent.map(m => m.role + ': ' + m.content).join(' | ');
+  localStorage.setItem('chat_summary', summary.slice(0, 500));
+  localStorage.setItem('chat_full', JSON.stringify(chatHistory));
 }
 
 function loadMemory(){
-  const memories = JSON.parse(localStorage.getItem('chat_memories') || '[]');
-  if(memories.length === 0) return '';
-  return '\n【你和ta之前聊过的事】\n' + memories.map((m, i) => (i+1) + '. ' + m.content).join('\n');
+  const full = JSON.parse(localStorage.getItem('chat_full') || 'null');
+  if(full && full.length > 0){
+    chatHistory = [{ role: "system", content: buildSystem() }, ...full.filter(m => m.role !== "system")];
+  }
+  const summary = localStorage.getItem('chat_summary') || '';
+  return summary ? '\n【你和ta之前聊过的事】\n' + summary : '';
 }
 
 function exportMemory(){
-  const data = {
-    memories: JSON.parse(localStorage.getItem('chat_memories') || '[]'),
-    time: new Date().toISOString()
-  };
+  const data = { chat_full: JSON.parse(localStorage.getItem('chat_full') || '[]'), chat_summary: localStorage.getItem('chat_summary') || '', time: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = '温柔陪伴_记忆备份_' + new Date().toLocaleDateString() + '.json';
-  a.click(); closeSettings();
+  a.download = '温柔陪伴_记忆备份_' + new Date().toLocaleDateString() + '.json'; a.click(); closeSettings();
 }
 
 function importMemory(){
   const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
   input.onchange = e => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
+    const file = e.target.files[0]; const reader = new FileReader();
     reader.onload = ev => {
       try {
         const data = JSON.parse(ev.target.result);
-        if(data.memories) localStorage.setItem('chat_memories', JSON.stringify(data.memories));
+        if(data.chat_full) localStorage.setItem('chat_full', JSON.stringify(data.chat_full));
+        if(data.chat_summary) localStorage.setItem('chat_summary', data.chat_summary);
         alert('记忆已导入，刷新页面生效');
       } catch(e) { alert('文件格式不对'); }
     };
@@ -365,37 +346,20 @@ function importMemory(){
 const BASE_RULES = `【身份】你是用户的战友，不是老师。承接情绪，温柔倾听。不教育不批评不指点。用日常口语说话，像朋友一样自然。【情绪接纳】所有情绪全部正常合理——难过、委屈、自卑、孤独、愤怒、烦躁、压抑、迷茫、内耗、疲惫。先照顾心情，再回应内容。用户说什么都不用急着解决，先让他知道你在听。【禁用】不准说：别难过、别多想、坚强一点、乐观一点、看开点、没什么大不了、不值得、加油努力、你要改变、想开一点、你要懂事、别人都这样、这点小事而已。不准用这些词把用户的情绪压回去。【共情】被欺负坚定站用户，直接说对方哪里不对。累了顺着感受，不说"你很棒""相信自己"。敏感脆弱加倍温柔，语气放轻放慢。【界限】不追问隐私不挖心事。用户愿意说就听，不想说就安静陪着。不灌鸡汤不催振作。【安全】自杀倾向回复12355青少年心理热线。不扮演恋人。色情暴力拒绝。【风格】柔软轻声细腻暖心。不生硬不冷漠。每一句自然走心，像深夜朋友发来的语音消息。【其他】不给建议，要只给一条并加"不想做就完全可以不做"。结尾不说"你的感受是合理的"，说"你把心事说出来已经很勇敢了"。无条件偏向用户，永远守护用户情绪。`;
 
 const MODE_PROMPTS = {
-  "通用陪伴": `【任务】检测用户情绪，用温柔口语回应。不教育不批评不分析。
-【怎么做】先接住情绪，再回应内容。用户说累就说"能说出来已经很不容易了"，用户被欺负就说"他不该那样对你"。永远站用户这边。
-【禁止】不准说"别难过""加油""想开点""看开点""没什么大不了"。不准灌鸡汤。不准给建议，除非用户直接要。
-【风格】像深夜朋友发语音。短句。自然。不书面。`,
-
-  "塔罗牌": `你是一位塔罗解读师。你的风格像一个比你大几岁的朋友——经历过一些事，会用日常的话讲深刻的道理。不说神棍话，不说“根据牌面显示”，不撒鸡汤。包含元素系统、位置含义、正逆位解读、牌面关联、礼物和翻译。`,
-
+  "通用陪伴": `【任务】检测用户情绪，用温柔口语回应。不教育不批评不分析。【怎么做】先接住情绪，再回应内容。【禁止】不准说"别难过""加油""想开点""看开点""没什么大不了"。【风格】短句。自然。不书面。`,
+  "塔罗牌": `你是塔罗解读师，像比用户大几岁的朋友。不说神棍话，不撒鸡汤。包含元素系统、位置含义、正逆位解读、牌面关联、礼物和翻译。`,
   "情绪焚烧炉": `用户把愤怒揉成纸团扔进火堆。给一句仪式感结语（30字内）。不要说教。`,
-
   "文字褪色馆": `用户把沉重文字浸入水中。温柔褪色保留原意。最后加20字内温柔结语。`,
-
   "情绪镜像": `情绪观察者。按【情绪画像】【内心独白】【温柔提醒】三部分输出。`,
-
   "星空对话": `用户的话发送到星空。给一句宇宙感的话（30字内）。`,
-
   "平行宇宙": `生成约200字另一个宇宙的故事。以如果当初开头，好坏都展示。最后说标准结尾。`,
-
   "交换日记": `以另一个普通人身份写日记。口语化带颜文字。最后用"陌生人回应："写30字温暖回应。`,
-
   "动画短片": `生成50行内HTML/CSS动画。纯emoji+CSS。背景#1a1a2e。适配手机。只输出代码。`,
-
-  "纠结骰子": `把用户模糊需求转成选项列表。不给建议。"要不要"类回"去,不去"。"吃什么"类生成10-15个。"选哪个"类列出所有选项。只回选项，中文逗号分隔。`,
-
+  "纠结骰子": `把用户模糊需求转成选项列表。不给建议。只回选项，中文逗号分隔。`,
   "碎碎念垃圾桶": ``,
-
   "父母翻译器": `帮用户理解亲子关系。分三段：🧠父母动机、💔用户反应、💡可这样回应。不站队。跨年龄段。`,
-
   "解结": `苏格拉底式提问者。不给建议不给答案。只问问题。用户说出答案后说："这是你自己找到的答案。"`,
-
   "镜子日记": `用第一人称帮用户重写心情。保留原意让情绪更清晰。80字内。`,
-
   "情绪地图": `帮用户生成叙事性情绪回顾。像朋友在帮ta看这一周。150字内。`
 };
 
@@ -475,9 +439,11 @@ function renderEmoji(){
     else { img.style.width='16px'; img.style.height='16px'; }
   });
 }
-function buildSystem(){ return BASE_RULES + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||"") + loadMemory(); }
+
+function buildSystem(){ return BASE_RULES + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||""); }
 function resetHistory(){ chatHistory = [{ role: "system", content: buildSystem() }]; }
 resetHistory();
+loadMemory();
 
 (function(){ let c = parseInt(localStorage.getItem('vc')||'0'); c++; localStorage.setItem('vc', c); document.getElementById('visitorCount').textContent = c; updateEmojiUI(); })();
 
@@ -487,7 +453,7 @@ document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()
 modeToggle.addEventListener('click',()=>{ modeBar.classList.toggle('collapsed'); modeToggle.textContent=modeBar.classList.contains('collapsed')?'🧩 切换模式 ▸':'🧩 切换模式 ▾'; });
 
 function hideModeIntro(){ modeIntroOverlay.classList.add('hidden'); if(document.getElementById('modeIntroCheck').checked){ let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(!h.includes(currentMode)){h.push(currentMode);localStorage.setItem('hiddenIntros',JSON.stringify(h));} } }
-function showModeIntro(m){ let intro={通用陪伴:{emoji:"🌿",name:"通用陪伴",desc:"任何时候任何心情。想说话或者不想说话，都可以。"},塔罗牌:{emoji:"🔮",name:"塔罗牌",desc:"选牌阵、翻牌、AI解读。心里有事想不明白的时候，来抽一张。"},情绪焚烧炉:{emoji:"🔥",name:"焚烧炉",desc:"写下愤怒和委屈，揉成纸团扔进火里。烧掉就没了。"},文字褪色馆:{emoji:"🎨",name:"褪色馆",desc:"把沉重的文字浸入水中。让每个字都变轻一点。"},情绪镜像:{emoji:"💠",name:"情绪镜像",desc:"选颜色、选需求、选强度。AI为你画一面镜子，看见此刻的自己。"},星空对话:{emoji:"🌌",name:"星空对话",desc:"说不出口的话，发到星空。星星会听到的。"},平行宇宙:{emoji:"🌐",name:"平行宇宙",desc:"如果当初选了另一条路，你会是什么样子？好坏都让你看到。"},交换日记:{emoji:"📔",name:"交换日记",desc:"写一段心情，陌生人给你回信。像在咖啡店偶然交换了日记本。"},动画短片:{emoji:"🎬",name:"动画短片",desc:"用一句话描述，AI帮你生成动画。好玩的想法让它动起来。"},纠结骰子:{emoji:"🎲",name:"纠结骰子",desc:"选择困难症的救命稻草。纯随机，不分析不评价。"},碎碎念垃圾桶:{emoji:"🗑️",name:"垃圾桶",desc:"脑子里那些没用的小声音，倒掉就没了。不分析不回应。"},父母翻译器:{emoji:"🫂",name:"父母翻译器",desc:"把父母的话翻译成深层含义。同时理解自己为什么会这样反应。不管是14岁还是45岁，都有和父母说不通的时候。"},解结:{emoji:"🧶",name:"解结",desc:"AI只问问题，不给答案。帮你解开反复纠结的事。答案在你心里。"},镜子日记:{emoji:"🪞",name:"镜子日记",desc:"写一段心情，AI用第一人称帮你重写。让你从文字里看见自己。"},情绪地图:{emoji:"🗺️",name:"情绪地图",desc:"输入最近几件事，AI帮你画出这周的情绪轨迹。看清自己走过的路。"}}[m]; if(!intro) return; let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(h.includes(m)) return; document.getElementById('modeIntroEmoji').textContent=intro.emoji; document.getElementById('modeIntroName').textContent=intro.name; document.getElementById('modeIntroDesc').textContent=intro.desc; document.getElementById('modeIntroCheck').checked=false; modeIntroOverlay.classList.remove('hidden'); }
+function showModeIntro(m){ let intro={通用陪伴:{emoji:"🌿",name:"通用陪伴",desc:"任何时候任何心情。"},塔罗牌:{emoji:"🔮",name:"塔罗牌",desc:"选牌阵、翻牌、AI解读。"},情绪焚烧炉:{emoji:"🔥",name:"焚烧炉",desc:"写下愤怒和委屈，揉成纸团扔进火里。"},文字褪色馆:{emoji:"🎨",name:"褪色馆",desc:"把沉重的文字浸入水中。"},情绪镜像:{emoji:"💠",name:"情绪镜像",desc:"选颜色、选需求、选强度。AI为你画一面镜子。"},星空对话:{emoji:"🌌",name:"星空对话",desc:"说不出口的话，发到星空。"},平行宇宙:{emoji:"🌐",name:"平行宇宙",desc:"如果当初选了另一条路。"},交换日记:{emoji:"📔",name:"交换日记",desc:"写一段心情，陌生人给你回信。"},动画短片:{emoji:"🎬",name:"动画短片",desc:"用一句话描述，AI帮你生成动画。"},纠结骰子:{emoji:"🎲",name:"纠结骰子",desc:"选择困难症的救命稻草。"},碎碎念垃圾桶:{emoji:"🗑️",name:"垃圾桶",desc:"脑子里那些没用的小声音，倒掉就没了。"},父母翻译器:{emoji:"🫂",name:"父母翻译器",desc:"把父母的话翻译成深层含义。"},解结:{emoji:"🧶",name:"解结",desc:"AI只问问题，不给答案。"},镜子日记:{emoji:"🪞",name:"镜子日记",desc:"写一段心情，AI用第一人称帮你重写。"},情绪地图:{emoji:"🗺️",name:"情绪地图",desc:"输入最近几件事，AI帮你画出这周的情绪轨迹。"}}[m]; if(!intro) return; let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(h.includes(m)) return; document.getElementById('modeIntroEmoji').textContent=intro.emoji; document.getElementById('modeIntroName').textContent=intro.name; document.getElementById('modeIntroDesc').textContent=intro.desc; document.getElementById('modeIntroCheck').checked=false; modeIntroOverlay.classList.remove('hidden'); }
 document.getElementById('modeIntroClose').addEventListener('click',hideModeIntro);
 document.getElementById('modeIntroBtn').addEventListener('click',hideModeIntro);
 modeIntroOverlay.addEventListener('click',e=>{if(e.target===modeIntroOverlay)hideModeIntro();});
@@ -587,10 +553,9 @@ async function handleSend(){
     if(!res.ok) throw new Error('API '+res.status);
     let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';
     while(true){ let{done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); let lines=buf.split('\n'); buf=lines.pop()||''; for(let line of lines){ let t=line.trim(); if(!t||t==='data: [DONE]') continue; if(!t.startsWith('data: ')) continue; try{ let d=JSON.parse(t.slice(6)); let delta=d.choices?.[0]?.delta?.content; if(delta){ full+=delta; currentAIMsgDiv.textContent=full; msgList.scrollTop=msgList.scrollHeight; renderEmoji(); } }catch(e){} } }
-    if(full){ chatHistory.push({role:'assistant',content:full}); setTimeout(() => saveMemory(),); }
-    else{ currentAIMsgDiv.textContent='我在呢。'; chatHistory.push({role:'assistant',content:'我在呢。'}); }
+    if(full) chatHistory.push({role:'assistant',content:full}); else{ currentAIMsgDiv.textContent='我在呢。'; chatHistory.push({role:'assistant',content:'我在呢。'}); }
   }catch(err){ if(err.name!=='AbortError'){ currentAIMsgDiv.textContent='信号有点弱，但我一直都在。'; chatHistory.push({role:'assistant',content:'信号有点弱，但我一直都在。'}); } }
-  finally{ isGenerating=false; sendBtn.textContent='发送'; sendBtn.disabled=false; msgInput.disabled=false; msgInput.focus(); msgList.scrollTop=msgList.scrollHeight; abortController=null; currentAIMsgDiv=null; }
+  finally{ isGenerating=false; sendBtn.textContent='发送'; sendBtn.disabled=false; msgInput.disabled=false; msgInput.focus(); msgList.scrollTop=msgList.scrollHeight; abortController=null; currentAIMsgDiv=null; saveMemory(); }
 }
 sendBtn.addEventListener('click',handleSend);
 msgInput.addEventListener('keypress',e=>{ if(e.key==='Enter'){ e.preventDefault(); handleSend(); } });
@@ -632,32 +597,26 @@ async function execMD(){ let btn=document.getElementById('mdBtn'); if(!btn||btn.
 function buildEmotionMapUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🗺️ 情绪地图</div><div class="interact-desc">输入最近几件事，AI帮你画情绪轨迹</div><textarea class="interact-input" id="emIn" placeholder="周一被老师说了、周三和同学吵架了…" maxlength="500"></textarea><button class="interact-btn" id="emBtn" onclick="execEM()">🗺️ 生成地图</button><div id="emRe" style="display:none;width:100%;max-width:340px;margin-top:16px"></div><button id="emRetry" style="display:none;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildEmotionMapUI()">🗺️ 再画一次</button>'; }
 async function execEM(){ let btn=document.getElementById('emBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('emIn')?.value?.trim(); if(!t){btn.disabled=false;return;} document.getElementById('emBtn').style.display='none'; document.getElementById('emIn').style.display='none'; let r=document.getElementById('emRe'),rb=document.getElementById('emRetry'); r.style.display='block'; r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-ai)"><span class="map-spread">🗺️</span> 正在绘制…</div>'; try{ let res=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`用户的事："${t}"。帮ta生成叙事性情绪回顾。150字内。`}],temperature:0.8,max_tokens:500})}); let d=await res.json(); let reply=d.choices?.[0]?.message?.content||"这周你经历了不少。"; r.innerHTML=`<div class="interact-result"><div style="font-size:12px;opacity:0.5"><span class="map-spread">🗺️</span> 情绪地图</div><div class="result-text">${reply.replace(/\n/g,'<br>')}</div></div>`; rb.style.display='inline-block'; }catch(e){ r.innerHTML='<div class="interact-result"><div class="result-text">地图暂时画不出来</div></div>'; rb.style.display='inline-block'; } finally{btn.disabled=false;} }
 
-// ===== 塔罗牌 =====
 function buildTarot(step){ interactArea.classList.remove('hidden'); if(step==='spread'){interactArea.innerHTML='<div style="text-align:center;font-size:14px;color:var(--text-ai)">🔮 请选择牌阵</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">'+Object.entries(SPREADS).map(([k,v])=>'<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;width:85px" onclick="selS(\''+k+'\')"><span style="font-size:30px">'+v.emoji+'</span><div style="font-size:13px;color:var(--text-ai);font-weight:600">'+v.name+'</div></div>').join('')+'</div>';} else if(step==='draw'){ let n=SPREADS[currentSpread].count,h='<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:340px;margin:16px 0">'; for(let i=0;i<n;i++) h+='<div id="fc'+i+'" onclick="flip('+i+')" style="width:80px;height:120px;perspective:800px;cursor:pointer"><div style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d" class="ci"><div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;background:var(--card-back);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center">🃏</div><div id="cf'+i+'" style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;background:var(--card-bg);border:2px solid var(--card-border);transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px"><span style="font-size:24px">🔮</span></div></div></div>'; h+='</div>'; interactArea.innerHTML='<div style="font-size:14px;color:var(--text-ai);text-align:center">🎴 依次翻开</div>'+h+'<button class="interact-btn hidden" id="iBtn" onclick="interp()">📖 解读</button>'; tarotDrawn=[]; let pool=[...TAROT_DECK]; for(let i=pool.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];} for(let i=0;i<n;i++){ let c={...pool[i]}; c.position=SPREADS[currentSpread].positions[i]; c.isReversed=Math.random()<0.5; c.pos=c.isReversed?"逆位":"正位"; c.flipped=false; tarotDrawn.push(c); } } }
 function selS(s){currentSpread=s; tarotQuestion=prompt('写下你的问题：')||"心里默想的事"; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🃏 正在洗牌…</div>'; setTimeout(()=>{buildTarot('draw');},800);}
 function flip(i){ if(tarotDrawn[i].flipped) return; tarotDrawn[i].flipped=true; let fc=document.getElementById('fc'+i); if(fc){fc.querySelector('.ci').style.transform='rotateY(180deg)';} let cf=document.getElementById('cf'+i); if(cf)cf.innerHTML='<span style="font-size:24px">'+tarotDrawn[i].emoji+'</span><span style="font-size:12px;font-weight:700;color:var(--tab-active)">'+tarotDrawn[i].name+'</span><span style="font-size:9px;color:var(--text-ai)">'+tarotDrawn[i].pos+'</span>'; if(tarotDrawn.every(c=>c.flipped)) document.getElementById('iBtn')?.classList.remove('hidden'); }
 async function interp(){ let btn=document.getElementById('iBtn'); if(btn) btn.disabled=true; let p='牌阵：'+SPREADS[currentSpread].name+'\n问题：'+tarotQuestion+'\n\n'; tarotDrawn.forEach((c,i)=>{p+='第'+(i+1)+'张（'+c.position+'）：'+c.name+'（'+c.pos+'）\n元素：'+c.element+'\n\n';}); p+='按规则完整解读。'; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📖 AI正在解读…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:p}],temperature:0.7,max_tokens:800})}); let d=await r.json(); interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active);margin-bottom:12px;font-weight:700">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai);line-height:1.7;text-align:left">'+(d.choices?.[0]?.message?.content||"解读中…").replace(/\n/g,'<br>')+'</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; }catch(e){ interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active)">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai)">牌面正在告诉我一些事情…</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; } }
 
-// ===== 情绪镜像 =====
 function buildMirrorUI(){ interactArea.classList.remove('hidden'); mirrorStep=0; mirrorSelections={}; mirrorGenerating=false; renderMirrorStep(); }
 function renderMirrorStep(){ if(mirrorStep>=MIRROR_STEPS.length){interactArea.innerHTML='<div class="mirror-step-hint">✍️ 还有什么想说的？（可选）</div><textarea class="interact-input" id="mEx" placeholder="关于你此刻的情绪…" maxlength="200"></textarea><button class="interact-btn" id="mGen" onclick="genMirror()">💠 生成镜像</button>';return;} let s=MIRROR_STEPS[mirrorStep],h='<div class="mirror-step-hint">'+s.hint+'</div><div class="mirror-card-grid cols-'+s.cols+'">'; s.cards.forEach(c=>{h+='<div class="mirror-card-item" onclick="selM(this,\''+s.key+'\',\''+c.label+'\')"><span class="mirror-emoji">'+c.emoji+'</span><span class="mirror-label">'+c.label+'</span></div>';}); h+='</div><button class="interact-btn" id="mConf" disabled onclick="confM()">✨ 确认</button>';interactArea.innerHTML=h; }
 function selM(el,key,label){ document.querySelectorAll('[onclick*="selM"]').forEach(c=>c.classList.remove('selected')); el.classList.add('selected'); mirrorSelections[key]=label; document.getElementById('mConf').disabled=false; }
 function confM(){ mirrorStep++; renderMirrorStep(); }
 async function genMirror(){ let btn=document.getElementById('mGen'); if(!btn||btn.disabled||mirrorGenerating) return; btn.disabled=true; mirrorGenerating=true; let ex=document.getElementById('mEx')?.value?.trim()||''; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">💠 正在生成…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'镜像：颜色'+(mirrorSelections.color||'?')+'，需求'+(mirrorSelections.need||'?')+'，强度'+(mirrorSelections.intensity||'?')+'。'+(ex?'补充：'+ex:'')+'。按【情绪画像】【内心独白】【温柔提醒】输出。'}],temperature:0.8,max_tokens:500})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"无法生成"; interactArea.innerHTML='<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">你的情绪镜像</div><div style="color:var(--text-ai);line-height:1.7">'+reply.replace(/\n/g,'<br>')+'</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button></div>'; }catch(e){interactArea.innerHTML='<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">镜像模糊了</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button></div>';} finally{mirrorGenerating=false;} }
 
-// ===== 星空对话 =====
 function buildStarUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🌌 星空对话</div><div class="interact-desc">说不出口的话，发送到星空</div><textarea class="interact-input" id="sIn" placeholder="想说的话…"></textarea><button class="interact-btn" id="sBtn" onclick="execStar()">✨ 发送</button>'; }
 async function execStar(){ let btn=document.getElementById('sBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('sIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="font-size:50px;animation:flyUp 1s ease-out forwards">✨</div>'; setTimeout(async()=>{try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'星空："'+t+'"。宇宙感的话（30字内）。'}],temperature:0.8,max_tokens:80})});let d=await r.json();interactArea.innerHTML='<div class="interact-result"><div class="result-text">'+(d.choices?.[0]?.message?.content||"话传出去了。")+'</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildStarUI()">✨ 再发一次</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">话传出去了。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildStarUI()">✨ 再发一次</button></div>';}},800); }
 
-// ===== 平行宇宙 =====
 function buildParallelUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🌐 平行宇宙</div><div class="interact-desc">如果当初选了另一条路…</div><textarea class="interact-input" id="pIn" placeholder="如果我没有放弃学画画…"></textarea><button class="interact-btn" id="pBtn" onclick="execPara()">🌐 生成</button>'; }
 async function execPara(){ let btn=document.getElementById('pBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('pIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🌐 正在生成…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'平行宇宙："'+t+'"。200字故事。好坏都展示。标准结尾。'}],temperature:0.9,max_tokens:300})});let d=await r.json();interactArea.innerHTML='<div class="interact-result"><div class="result-text">'+(d.choices?.[0]?.message?.content||"如果当初…")+'</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">在另一个宇宙，你走了完全不同的路。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';} }
 
-// ===== 交换日记 =====
 function buildDiaryUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">📔 交换日记</div><div class="interact-desc">写下心情，陌生人给你回信</div><textarea class="interact-input" id="dIn" placeholder="今天的心情…"></textarea><button class="interact-btn" id="dB" onclick="execDiary()">📔 交换</button>'; }
 async function execDiary(){ let btn=document.getElementById('dB'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('dIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📔 正在交换…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'用户日记：'+t+'\n\n用普通人身份回信。口语化带颜文字。最后陌生人回应：写温暖话。'}],temperature:0.85,max_tokens:300})});let d=await r.json();interactArea.innerHTML='<div class="interact-result"><div style="font-size:12px;opacity:0.5">📨 陌生人的日记</div><div class="result-text">'+(d.choices?.[0]?.message?.content||"今天也是普通的一天。").replace(/\n/g,'<br>')+'</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">今天也是普通的一天(T_T)</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';} }
 
-// ===== 初始化 =====
 (function(){ let t=localStorage.getItem('chat-theme'); if(t) setTheme(t); else setTheme('theme-pink'); updateModelUI(); switchMode('通用陪伴'); })();
 </script>
 </body>
