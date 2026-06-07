@@ -587,7 +587,7 @@ async function handleSend(){
     if(!res.ok) throw new Error('API '+res.status);
     let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';
     while(true){ let{done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); let lines=buf.split('\n'); buf=lines.pop()||''; for(let line of lines){ let t=line.trim(); if(!t||t==='data: [DONE]') continue; if(!t.startsWith('data: ')) continue; try{ let d=JSON.parse(t.slice(6)); let delta=d.choices?.[0]?.delta?.content; if(delta){ full+=delta; currentAIMsgDiv.textContent=full; msgList.scrollTop=msgList.scrollHeight; renderEmoji(); } }catch(e){} } }
-    if(full){ chatHistory.push({role:'assistant',content:full}); setTimeout(() => saveMemory(), 300); }
+    if(full){ chatHistory.push({role:'assistant',content:full}); setTimeout(() => saveMemory(),); }
     else{ currentAIMsgDiv.textContent='我在呢。'; chatHistory.push({role:'assistant',content:'我在呢。'}); }
   }catch(err){ if(err.name!=='AbortError'){ currentAIMsgDiv.textContent='信号有点弱，但我一直都在。'; chatHistory.push({role:'assistant',content:'信号有点弱，但我一直都在。'}); } }
   finally{ isGenerating=false; sendBtn.textContent='发送'; sendBtn.disabled=false; msgInput.disabled=false; msgInput.focus(); msgList.scrollTop=msgList.scrollHeight; abortController=null; currentAIMsgDiv=null; }
