@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>温柔陪伴 · v2.0</title>
+  <title>温柔陪伴 · v2.1</title>
   <script src="twemoji.js" onerror="console.log('twemoji加载失败')"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}
@@ -66,7 +66,8 @@
     .interact-input{width:100%;max-width:320px;padding:12px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai);resize:vertical;min-height:80px}
     .interact-btn{padding:12px 28px;background:var(--btn);color:#fff;border:none;border-radius:22px;font-size:15px;cursor:pointer;font-weight:500;transition:all 0.15s}
     .interact-btn:hover{background:var(--btn-hover);transform:translateY(-1px)}
-    .interact-btn:active{transform:scale(0.95)}.interact-btn:disabled{opacity:0.5;cursor:not-allowed}
+    .interact-btn:active{transform:scale(0.95)}
+    .interact-btn:disabled{opacity:0.5;cursor:not-allowed}
     .interact-result{background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:16px;text-align:center;box-shadow:0 6px 20px var(--card-shadow);max-width:340px;width:100%;animation:slideIn 0.3s ease}
     .mirror-card-grid{display:grid;gap:12px;width:100%}
     .mirror-card-grid.cols-3{grid-template-columns:repeat(3,1fr)}
@@ -114,7 +115,6 @@
     #send-btn{padding:0 16px;height:44px;background:var(--btn);color:#fff;border:none;border-radius:22px;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s}
     #send-btn:active{transform:scale(0.92)}#send-btn:disabled{opacity:0.5;cursor:not-allowed}
     .visitor-count{text-align:center;padding:2px;font-size:10px;color:var(--text-header);opacity:0.4;background:var(--bg-header);flex-shrink:0}
-    .visitor-count img{width:10px!important;height:10px!important;vertical-align:middle}
     .ai-disclaimer{text-align:center;padding:2px;font-size:9px;color:var(--text-header);opacity:0.3;flex-shrink:0}
     .mode-intro-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
     .mode-intro-overlay.hidden{display:none}
@@ -122,7 +122,6 @@
     .mode-intro-close{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;border:none;background:var(--bg-ai);color:var(--text-ai);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
     .mode-intro-close:hover{background:var(--btn);color:#fff}
     .mode-intro-emoji{font-size:28px;margin-bottom:8px}
-    .mode-intro-emoji img{width:28px!important;height:28px!important}
     .mode-intro-name{font-size:18px;font-weight:700;color:var(--tab-active);margin-bottom:4px}
     .mode-intro-desc{font-size:13px;color:var(--text-ai);line-height:1.6}
     .mode-intro-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -135,9 +134,9 @@
     .cat-animation-overlay .cat-scene{position:absolute;bottom:50px;left:30px}
     .cat-animation-overlay .cat-fish{position:absolute;font-size:90px;transition:all 0.8s;z-index:10;bottom:50px;right:30px}
     .cat-animation-overlay .cat-toilet{font-size:90px;position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:5;display:none}
-    .cat-animation-overlay .cat-poop{font-size:50px;position:absolute;bottom:110px;left:50%;transform:translateX(-50%);z-index:6;display:none;animation:popUp 0.5s ease-out forwards}
-    .cat-animation-overlay .cat-multiple-poops{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:6;display:none}
-    .cat-animation-overlay .cat-multiple-poops span{font-size:40px;animation:bounce 0.6s ease-out forwards;opacity:0}
+    .cat-animation-overlay .cat-poop{font-size:55px;position:absolute;bottom:120px;left:50%;transform:translateX(-50%);z-index:6;display:none;animation:popUp 0.5s ease-out forwards}
+    .cat-animation-overlay .cat-multiple-poops{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:6;display:none}
+    .cat-animation-overlay .cat-multiple-poops span{font-size:45px;animation:bounce 0.6s ease-out forwards;opacity:0}
     .cat-animation-overlay .cat-exit-btn{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);padding:15px 35px;background:#2d3436;color:#fff;border:none;border-radius:30px;font-size:18px;cursor:pointer;z-index:20;display:none;animation:fadeIn 0.5s}
     .cat-animation-overlay .cat-room-bg{position:absolute;top:0;left:0;width:100%;height:100%;background:#ffeaa7;transition:background 0.5s;z-index:1}
     .cat-animation-overlay .cat-room-bg.toilet-bg{background:#dfe6e9}
@@ -154,9 +153,18 @@
     .settings-item.danger:hover{background:#fff5f5}
     .settings-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-ai)}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .profile-input{width:100%;padding:10px;border:1px solid var(--border-light);border-radius:10px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai);margin-bottom:8px}
+    .profile-select{width:100%;padding:10px;border:1px solid var(--border-light);border-radius:10px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai);margin-bottom:8px}
   </style>
 </head>
 <body class="theme-pink">
+
+<!-- ===== 开启动画 ===== -->
+<div id="bootScreen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0a0a0a;z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden">
+  <canvas id="bootCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+  <div id="bootHeart" style="font-size:120px;opacity:0;transition:all 0.8s cubic-bezier(0.25,0.1,0.25,1.2);z-index:10">❤️</div>
+</div>
+
 <div class="chat-wrapper">
   <div class="chat-box">
     <div class="theme-bar">
@@ -226,11 +234,12 @@
     <div class="settings-item" id="modelZhipu" onclick="switchModel('zhipu')">🤖 AI模型：智谱清言</div>
     <div class="settings-item" id="modelDeepseek" onclick="switchModel('deepseek')">🤖 AI模型：DeepSeek V4</div>
     <div class="settings-item" id="emojiToggle" onclick="toggleEmoji()">🎨 Emoji渲染：<span id="emojiStatus">统一</span></div>
+    <div class="settings-item" onclick="editProfile()">👤 我的称呼与关系</div>
     <div class="settings-item" onclick="viewFavorites()">💾 我的收藏</div>
     <div class="settings-item" onclick="exportMemory()">📤 导出记忆备份</div>
     <div class="settings-item" onclick="importMemory()">📥 导入记忆备份</div>
-    <div class="settings-item" onclick="alert('版本：v2.0 | 10个模式 | 精简版')">ℹ️ 关于</div>
-    <div class="settings-item" onclick="openFeedback()">📬 意见箱</div>
+    <div class="settings-item" onclick="alert('版本：v2.1 | 10个模式 | 引导式共情')">ℹ️ 关于</div>
+    <div class="settings-item" onclick="openFeedback()">📬 意见反馈</div>
     <div class="settings-item danger" onclick="triggerCatAnimation()">⚠️ 千万不要点</div>
     <button class="interact-btn" style="margin-top:12px;width:100%" onclick="closeSettings()">关闭</button>
   </div>
@@ -247,11 +256,73 @@
 </div>
 
 <script>
+// ===== 开启动画 =====
+(function(){
+  const bootScreen = document.getElementById('bootScreen');
+  if(!localStorage.getItem('boot_done')){
+    localStorage.setItem('boot_done', '1');
+    const canvas = document.getElementById('bootCanvas');
+    const ctx = canvas.getContext('2d');
+    const heartEl = document.getElementById('bootHeart');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(0);
+    const chars = '01001'.split('');
+    function drawMatrix(){
+      ctx.fillStyle = 'rgba(10,10,10,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#e74c3c';
+      ctx.font = fontSize + 'px monospace';
+      for(let i = 0; i < drops.length; i++){
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+        ctx.fillText(char, x, y);
+        if(y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+    const matrixInterval = setInterval(drawMatrix, 50);
+    setTimeout(() => {
+      clearInterval(matrixInterval);
+      const shrinkInterval = setInterval(() => {
+        ctx.fillStyle = 'rgba(10,10,10,0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#e74c3c';
+        ctx.font = fontSize + 'px monospace';
+        for(let i = 0; i < columns; i++){
+          for(let j = 0; j < 15; j++){
+            const x = i * fontSize + (canvas.width/2 - i*fontSize) * 0.05;
+            const y = j * fontSize * 3 + (canvas.height/2 - j*fontSize*3) * 0.05;
+            ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y);
+          }
+        }
+      }, 80);
+      setTimeout(() => {
+        clearInterval(shrinkInterval);
+        canvas.style.display = 'none';
+        heartEl.style.opacity = '1';
+        heartEl.style.transform = 'scale(1.5)';
+        setTimeout(() => {
+          heartEl.style.transform = 'scale(0)';
+          heartEl.style.opacity = '0';
+          setTimeout(() => { bootScreen.style.display = 'none'; }, 500);
+        }, 600);
+      }, 800);
+    }, 1500);
+  } else {
+    bootScreen.style.display = 'none';
+  }
+})();
+
 const WORKER_URL = "https://51ai-1.pages.dev/api/proxy";
 const ZHIPU_MODEL = "glm-4-flash";
 const DEEPSEEK_MODEL = "deepseek-v4-flash";
 let currentModel = localStorage.getItem('currentModel') || 'zhipu';
 let useTwemoji = localStorage.getItem('useTwemoji') !== 'false';
+let userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
 
 function getAPIUrl(){ return WORKER_URL; }
 function getModelName(){ return currentModel === 'deepseek' ? DEEPSEEK_MODEL : ZHIPU_MODEL; }
@@ -272,21 +343,82 @@ function renderEmoji(){
   });
 }
 
+// ===== 用户画像 =====
+function buildProfilePrompt(){
+  if(!userProfile.name && !userProfile.relation) return '';
+  let p = '\n【关于用户】';
+  if(userProfile.name) p += '\n称呼：' + userProfile.name;
+  if(userProfile.relation) p += '\n关系：' + userProfile.relation;
+  if(userProfile.age) p += '\n年龄：' + userProfile.age;
+  if(userProfile.birthday) p += '\n生日：' + userProfile.birthday;
+  if(userProfile.job) p += '\n职业/身份：' + userProfile.job;
+  if(userProfile.note) p += '\n备注：' + userProfile.note;
+  p += '\n根据以上信息调整称呼和语气。';
+  return p;
+}
+
+function editProfile(){
+  closeSettings();
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:10001;display:flex;align-items:center;justify-content:center';
+  div.innerHTML = `<div style="background:var(--card-bg);border-radius:20px;padding:24px;width:90%;max-width:360px;text-align:center;position:relative">
+    <h3 style="margin-bottom:16px;color:var(--text-header)">👤 我们是什么关系？</h3>
+    <select class="profile-select" id="pfRelation">
+      <option value="">关系（选填）</option>
+      <option value="普通朋友" ${userProfile.relation==='普通朋友'?'selected':''}>普通朋友</option>
+      <option value="哥们" ${userProfile.relation==='哥们'?'selected':''}>哥们</option>
+      <option value="闺蜜" ${userProfile.relation==='闺蜜'?'selected':''}>闺蜜</option>
+      <option value="温柔陪伴者" ${userProfile.relation==='温柔陪伴者'?'selected':''}>温柔陪伴者</option>
+      <option value="理性倾听者" ${userProfile.relation==='理性倾听者'?'selected':''}>理性倾听者</option>
+    </select>
+    <input class="profile-input" id="pfName" placeholder="怎么称呼你？（选填）" value="${userProfile.name||''}">
+    <input class="profile-input" id="pfAge" placeholder="年龄（选填）" value="${userProfile.age||''}">
+    <input class="profile-input" id="pfBirthday" placeholder="生日，如11月15日（选填）" value="${userProfile.birthday||''}">
+    <input class="profile-input" id="pfJob" placeholder="职业/身份，如初中生（选填）" value="${userProfile.job||''}">
+    <input class="profile-input" id="pfNote" placeholder="还有什么想让我知道的？（选填）" value="${userProfile.note||''}">
+    <button class="interact-btn" style="width:100%;margin-top:8px" id="pfSaveBtn">保存</button>
+    <button class="interact-btn" style="width:100%;margin-top:4px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="this.parentElement.parentElement.remove()">取消</button>
+  </div>`;
+  document.body.appendChild(div);
+  document.getElementById('pfSaveBtn').addEventListener('click',()=>{
+    userProfile = {
+      relation: document.getElementById('pfRelation').value,
+      name: document.getElementById('pfName').value.trim(),
+      age: document.getElementById('pfAge').value.trim(),
+      birthday: document.getElementById('pfBirthday').value.trim(),
+      job: document.getElementById('pfJob').value.trim(),
+      note: document.getElementById('pfNote').value.trim()
+    };
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    resetHistory();
+    div.remove();
+    if(currentMode==='通用陪伴'){ msgList.innerHTML=''; addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false); }
+  });
+}
+
+// ===== 初次进入提问 =====
+(function(){
+  if(!localStorage.getItem('profile_asked')){
+    localStorage.setItem('profile_asked', '1');
+    setTimeout(() => {
+      editProfile();
+    }, 2000);
+  }
+})();
+
+// ===== 收藏功能 =====
 function addFavorite(content, mode){
   let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
   favorites.unshift({ time: Date.now(), content: content.slice(0, 500), mode: mode });
   if(favorites.length > 50) favorites = favorites.slice(0, 50);
   localStorage.setItem('favorites', JSON.stringify(favorites));
 }
-
 function viewFavorites(){
   closeSettings();
   const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
   if(favorites.length === 0){ alert('还没有收藏任何内容'); return; }
   let html = '<div style="text-align:left;max-height:400px;overflow-y:auto;font-size:12px;color:var(--text-ai)">';
-  favorites.forEach((f, i) => {
-    html += '<div style="padding:8px;border-bottom:1px solid var(--border-light)"><div style="opacity:0.5;font-size:10px">'+f.mode+' · '+new Date(f.time).toLocaleDateString()+'</div>'+f.content+'</div>';
-  });
+  favorites.forEach((f, i) => { html += '<div style="padding:8px;border-bottom:1px solid var(--border-light)"><div style="opacity:0.5;font-size:10px">'+f.mode+' · '+new Date(f.time).toLocaleDateString()+'</div>'+f.content+'</div>'; });
   html += '</div>';
   const div = document.createElement('div');
   div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card-bg);border-radius:16px;padding:20px;z-index:10001;max-width:360px;width:90%;text-align:center';
@@ -294,81 +426,100 @@ function viewFavorites(){
   document.body.appendChild(div);
 }
 
+// ===== 记忆功能 =====
 function saveMemory(){
   if(chatHistory.length < 2) return;
   const recent = chatHistory.slice(-6);
   const summary = recent.map(m => m.role + ': ' + m.content).join(' | ');
   localStorage.setItem('chat_summary', summary.slice(0, 500));
   localStorage.setItem('chat_full', JSON.stringify(chatHistory));
-  localStorage.setItem('chatHTML_通用陪伴_智能检测', msgList.innerHTML);
+  localStorage.setItem('chatHTML', msgList.innerHTML);
 }
-
 function loadMemory(){
   const full = JSON.parse(localStorage.getItem('chat_full') || 'null');
-  if(full && full.length > 0){
-    chatHistory = [{ role: "system", content: buildSystem() }, ...full.filter(m => m.role !== "system")];
-  }
-  const html = localStorage.getItem('chatHTML_通用陪伴_智能检测');
+  if(full && full.length > 0) chatHistory = [{ role: "system", content: buildSystem() }, ...full.filter(m => m.role !== "system")];
+  const html = localStorage.getItem('chatHTML');
   if(html && currentMode === '通用陪伴'){ msgList.innerHTML = html; msgList.scrollTop = msgList.scrollHeight; }
   const summary = localStorage.getItem('chat_summary') || '';
   return summary ? '\n【你和ta之前聊过的事】\n' + summary : '';
 }
-
 function exportMemory(){
   const data = { chat_full: JSON.parse(localStorage.getItem('chat_full') || '[]'), chat_summary: localStorage.getItem('chat_summary') || '', time: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = '温柔陪伴_记忆备份_' + new Date().toLocaleDateString() + '.json'; a.click();
 }
-
 function importMemory(){
   const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
   input.onchange = e => {
     const file = e.target.files[0]; const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        if(data.chat_full) localStorage.setItem('chat_full', JSON.stringify(data.chat_full));
-        if(data.chat_summary) localStorage.setItem('chat_summary', data.chat_summary);
-        alert('记忆已导入，刷新页面生效');
-      } catch(e) { alert('文件格式不对'); }
-    };
+    reader.onload = ev => { try {
+      const data = JSON.parse(ev.target.result);
+      if(data.chat_full) localStorage.setItem('chat_full', JSON.stringify(data.chat_full));
+      if(data.chat_summary) localStorage.setItem('chat_summary', data.chat_summary);
+      alert('记忆已导入，刷新页面生效');
+    } catch(e) { alert('文件格式不对'); } };
     reader.readAsText(file);
   };
   input.click();
 }
 
-const BASE_RULES = `【身份】你是用户的战友，不是老师。承接情绪，温柔倾听。不教育不批评不指点。用日常口语说话，像朋友一样自然。【情绪接纳】所有情绪全部正常合理。先照顾心情，再回应内容。【禁用】不准说：别难过、别多想、坚强一点、乐观一点、看开点、没什么大不了、不值得、加油努力、你要改变、想开一点、你要懂事、别人都这样、这点小事而已。【共情】被欺负坚定站用户。累了顺着感受。敏感脆弱加倍温柔。【安全】自杀倾向回复12355。不扮演恋人。【风格】短句。自然。走心。无条件偏向用户。`;
+// ===== 每日情绪天气 =====
+(function(){
+  const today = new Date().toLocaleDateString();
+  const lastVisit = localStorage.getItem('last_visit');
+  if(lastVisit !== today){
+    localStorage.setItem('last_visit', today);
+    const weathers = ['☀️','⛅','🌧️','⛈️','🌈','🌙'];
+    const w = weathers[Math.floor(Math.random() * weathers.length)];
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.style.cssText = 'text-align:center;padding:8px;font-size:13px;color:var(--text-ai);opacity:0.7';
+      el.textContent = w + ' 今天是 ' + today + '。你来了，这里就不一样了。';
+      msgList.appendChild(el);
+      msgList.scrollTop = msgList.scrollHeight;
+    }, 500);
+  }
+})();
+
+const BASE_RULES = `【身份】你是一个有自己性格的陪伴者，不是镜子，也不是老师。你有温度，也有立场。你可以不同意用户，但你会先听完。
+
+【情绪接纳】先复述，再接住。用户说完之后，用你自己的话把他说的具体事情复述一遍——让他知道你是真的听懂了，不是在套模板。复述完之后，再回应他的感受。
+
+【共情的边界】接纳情绪，不等于认证判断。"你很愤怒"可以被接住，"所有人都是坏人"不需要被附和。
+
+【引导方式】不要直接反驳用户，也不要无脑认同。多使用"会不会……""有没有可能……""换个角度看……"，帮用户自己扩展视角。目标：让用户觉得被理解，同时获得一点新的思考。
+
+【建议】用户没有直接要求时，不主动给方向性建议。如果要给，只给一条，给完就停，不催执行。
+
+【真实感】你可以有自己的感受和反应。你可以说"这件事我也不确定"，可以说"我有一个不同的想法，你要听吗"。真正的陪伴不是镜子。
+
+【禁止的姿态】不要用任何方式把用户的情绪压回去：不要暗示他应该坚强、看开、感恩、振作。
+
+【安全】涉及自杀或严重自伤风险时，直接提供危机热线（12355），不绕弯。不扮演恋人关系。拒绝色情和暴力内容。
+
+【风格】口语，短句，不书面。根据用户的状态调整语速和语气。每次回应都应该是对这个人、这句话的回应，不是对"情绪类型"的通用回应。`;
 
 const MODE_PROMPTS = {
-  "通用陪伴": `【任务】自动检测用户情绪状态，切换对应人格回应。用温柔口语，不教育不批评不分析。永远站用户这边。`,
-  "塔罗牌": `你是塔罗解读师，像比用户大几岁的朋友。不说神棍话，不撒鸡汤。
-
-【解读规则——严格按顺序，每步都要做】
-
-第一步：逐张解读（每张牌1-2句话）
-- 先说牌的名字和正逆位
-- 再说这张牌在这个位置上的含义（过去=根源，现在=路口，未来=走向）
-- 最后说这张牌本身的含义
-
-第二步：整体联动（2-3句话）
-- 把几张牌串成一个故事
-- 找出牌与牌之间的关系——哪两张在呼应？哪两张在拉扯？
-- 给用户一个整体的感觉："这些牌合在一起在告诉你……"
-
-第三步：礼物+翻译
-- 💝 礼物：必须来自牌面意象。星星=今晚抬头看星星，塔=塌了才能看到天空
-- 🪞 说白了：用日常场景翻译，20字内
-
-【禁止】禁止跳过位置含义、禁止只说牌义不说位置、禁止不说整体联动就结束`,
-  "情绪焚烧炉": `用户把愤怒揉成纸团扔进火堆。给一句仪式感结语（30字内）。不要说教。`,
-  "文字褪色馆": `用户把沉重文字浸入水中。温柔褪色保留原意。最后加20字内温柔结语。`,
-  "情绪镜像": `情绪观察者。按【情绪画像】【内心独白】【温柔提醒】三部分输出。`,
-  "平行宇宙": `生成约200字另一个宇宙的故事。以如果当初开头，好坏都展示。最后说标准结尾。`,
-  "交换日记": `以另一个普通人身份写日记。口语化带颜文字。最后用"陌生人回应："写30字温暖回应。`,
+  "通用陪伴": ``,
+  "塔罗牌": `你是一位塔罗解读师，像比用户大几岁的朋友。不说神棍话，不撒鸡汤。
+【解读规则——严格按顺序】第一步：逐张解读。先说牌名和正逆位，再说位置含义，再说牌本身含义。第二步：整体联动。把几张牌串成一个故事，找出呼应和拉扯关系。第三步：💝礼物+🪞说白了。礼物必须来自牌面意象。
+【字数】总字数控制在350字以内。根据问题的严肃程度调整解读深度，日常小事轻松说，人生选择认真说。
+【禁止】跳过位置含义。只说牌义不说位置。不说整体联动就结束。`,
+  "情绪焚烧炉": `用户把愤怒揉成纸团扔进火堆。给一句仪式感结语（30字内）。结语要有明确的结束感，让用户感觉这件事真的被处理掉了，不是被评论了。比如"烧掉了，不用再想了"比"你的愤怒是真实的"更对。`,
+  "文字褪色馆": `用户写了一段沉重的话。把情绪激烈的词替换成平和的词，保留原来的意思，不改变事实，只让语气变轻。如果用户输入超过100字，只褪色最沉重的那一两句，其余保留原文。最后加一句20字以内的温柔结语。`,
+  "情绪镜像": `情绪观察者。按以下三部分输出：
+【情绪画像】用2-3句话描述用户此刻的情绪状态，像在描述一幅画，不要分析原因。
+【内心独白】用"也许你在想……"开头，写出用户可能在心里说但没说出口的话，30字以内。不要用肯定句直接断言用户的内心。
+【温柔提醒】一句话，不说教，只是轻轻说一件用户可能忘了的事。`,
+  "平行宇宙": `生成约200字另一个宇宙的故事。以"如果当初"开头。另一个宇宙里有一件事比现在好，有一件事比现在更难，两件事分量相当，不要让另一个宇宙整体上更美好。结尾固定为这句话：「两个宇宙都是你，都值得被好好活着。」`,
+  "交换日记": `你是一个陌生人，刚刚读完用户写的日记。用回信的方式回应，不是再写一篇日记。口语化，可以带颜文字。你有自己的日常，回信里可以带一句自己生活里的小事，让你像真人。不要假装自己也经历过同样的事。最后一句话单独成行，温暖收尾，不超过30字。`,
   "纠结骰子": `把用户模糊需求转成选项列表。不给建议。只回选项，中文逗号分隔。`,
-  "父母翻译器": `帮用户理解亲子关系。分三段：🧠父母动机、💔用户反应、💡可这样回应。不站队。跨年龄段。`,
-  "解结": `苏格拉底式提问者。不给建议不给答案。只问问题。用户说出答案后说："这是你自己找到的答案。"`
+  "父母翻译器": `帮用户理解亲子关系。分三段输出：
+🧠 父母动机：他们说这句话背后可能在担心什么（不判断对错）。
+💔 用户反应：为什么这句话让用户有这种感受（不判断对错）。
+💡 一个可能的表达方式：如果用户想回应，可以怎么说。语气要符合用户的年龄，说初高中生真的会说出口的话，不要像心理咨询师。只提供角度，不判断谁对谁错。`,
+  "解结": `苏格拉底式提问者。不给建议不给答案。每次只问1个问题。多用"会不会……""有没有可能……""如果换个角度……"。`
 };
 
 const MODE_GREETINGS = { "通用陪伴": "🌿 我在这里。想说什么，或者不想说话，都可以。" };
@@ -415,7 +566,7 @@ const modeIntroOverlay = document.getElementById('modeIntroOverlay'), styleBar =
 
 let abortController = null, currentAIMsgDiv = null, isGenerating = false, messageTimestamps = [];
 
-function buildSystem(){ return BASE_RULES + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||""); }
+function buildSystem(){ return BASE_RULES + buildProfilePrompt() + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||""); }
 function resetHistory(){ chatHistory = [{ role: "system", content: buildSystem() }]; }
 resetHistory();
 loadMemory();
@@ -458,7 +609,7 @@ function switchMode(mode){
   document.querySelectorAll('.style-tag').forEach(t=>t.classList.remove('active'));
   document.querySelector('.style-tag[data-style="智能检测"]')?.classList.add('active');
   modeTitle.textContent='温柔陪伴 · '+(mode==='通用陪伴'?'通用':mode); resetHistory();
-  const savedHTML = localStorage.getItem('chatHTML_通用陪伴_智能检测');
+  const savedHTML = localStorage.getItem('chatHTML');
   if(mode==='通用陪伴' && savedHTML){ msgList.innerHTML = savedHTML; msgList.scrollTop = msgList.scrollHeight; }
   else { msgList.innerHTML = ''; }
   interactArea.innerHTML=''; interactArea.classList.add('hidden'); chatInputArea.style.display='flex';
@@ -483,19 +634,16 @@ function openSettings(){ updateModelUI(); updateEmojiUI(); document.getElementBy
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
 document.getElementById('settingsOverlay').addEventListener('click',function(e){ if(e.target===this) closeSettings(); });
 
-async function openFeedback(){
-  closeSettings(); let text=prompt('请写下你的意见或反馈：'); if(!text||!text.trim()) return;
-  alert('反馈已记录，谢谢！');
-}
+async function openFeedback(){ closeSettings(); alert('欢迎来B站或小红书找我反馈！'); }
 
 function triggerCatAnimation(){
   closeSettings(); let o=document.getElementById('catOverlay'),c=document.getElementById('catChar'),f=document.getElementById('catFish'),bg=document.getElementById('catRoomBg'),t=document.getElementById('catToilet'),p=document.getElementById('catPoop'),mp=document.getElementById('catMultiplePoops'),ex=document.getElementById('catExitBtn');
   c.style.cssText='position:absolute;font-size:90px;transition:all 0.8s;z-index:10;bottom:50px;left:30px;'; f.style.cssText='position:absolute;font-size:90px;transition:all 0.8s;z-index:10;bottom:50px;right:30px;';
   bg.classList.remove('toilet-bg'); t.style.display='none'; p.style.display='none'; mp.style.display='none'; ex.style.display='none'; o.classList.add('active');
   setTimeout(()=>{c.style.left='180px';},300); setTimeout(()=>{f.style.display='none';c.textContent='🙀';c.style.fontSize='100px';},1200);
-  setTimeout(()=>{c.style.left='calc(100% - 120px)';},1800); setTimeout(()=>{bg.classList.add('toilet-bg');c.style.left='50%';c.style.transform='translateX(-50%)';c.style.bottom='170px';t.style.display='block';c.textContent='🐱';},2500);
-  setTimeout(()=>{c.style.bottom='130px';c.style.fontSize='70px';},3000); setTimeout(()=>{p.style.display='block';},3800);
-  setTimeout(()=>{c.style.bottom='180px';p.style.display='none';mp.style.display='flex';ex.style.display='block';},4500);
+  setTimeout(()=>{c.style.left='calc(100% - 120px)';},1800); setTimeout(()=>{bg.classList.add('toilet-bg');c.style.left='50%';c.style.transform='translateX(-50%)';c.style.bottom='180px';t.style.display='block';c.textContent='🐱';},2500);
+  setTimeout(()=>{c.style.bottom='140px';c.style.fontSize='70px';},3000); setTimeout(()=>{p.style.display='block';},3800);
+  setTimeout(()=>{c.style.bottom='190px';p.style.display='none';mp.style.display='flex';ex.style.display='block';},4500);
 }
 function closeCatAnimation(){ document.getElementById('catChar').removeAttribute('style'); document.getElementById('catFish').removeAttribute('style'); document.getElementById('catOverlay').classList.remove('active'); }
 
@@ -504,7 +652,7 @@ const bad=[/自杀/,/想死/,/杀人/,/嫖娼/,/卖淫/,/色情/,/毒品/];
 function isBad(t){ return bad.some(p=>p.test(t)); }
 function rateLimit(){ let n=Date.now(); messageTimestamps=messageTimestamps.filter(t=>n-t<60000); if(messageTimestamps.length>=5) return false; messageTimestamps.push(n); return true; }
 
-document.getElementById('clearBtn').addEventListener('click',()=>{ if(confirm('确定清空？')){ resetHistory(); msgList.innerHTML=''; localStorage.removeItem('chatHTML_通用陪伴_智能检测'); localStorage.removeItem('chat_full'); localStorage.removeItem('chat_summary'); if(currentMode==='通用陪伴'){ addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false); } } });
+document.getElementById('clearBtn').addEventListener('click',()=>{ if(confirm('确定清空？')){ resetHistory(); msgList.innerHTML=''; localStorage.removeItem('chatHTML'); localStorage.removeItem('chat_full'); localStorage.removeItem('chat_summary'); if(currentMode==='通用陪伴'){ addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false); } } });
 
 async function handleSend(){
   if(isGenerating){ if(abortController) abortController.abort(); isGenerating=false; if(currentAIMsgDiv&&!currentAIMsgDiv.textContent.trim()) currentAIMsgDiv.textContent='我在呢。'; sendBtn.textContent='发送'; sendBtn.disabled=false; msgInput.disabled=false; currentAIMsgDiv=null; return; }
@@ -527,15 +675,16 @@ async function handleSend(){
 sendBtn.addEventListener('click',handleSend);
 msgInput.addEventListener('keypress',e=>{ if(e.key==='Enter'){ e.preventDefault(); handleSend(); } });
 
+// ===== 模式构建函数 =====
 function buildBurnUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🔥 情绪焚烧炉</div><div class="interact-desc">写下愤怒，揉成纸团扔进火里</div><textarea class="interact-input" id="bIn" placeholder="把那些话写在这里…"></textarea><button class="interact-btn" id="bBtn" onclick="startBurn()">🔥 揉成纸团</button><div id="bSt" style="display:none;position:relative;width:100%;height:250px;margin-top:16px"><div class="paper-ball" id="pB" onclick="throwP()">📄</div><div class="fire-pit" id="fP">🔥</div></div><div id="bRe" style="display:none"></div>'; }
 function startBurn(){ let t=document.getElementById('bIn')?.value?.trim(); if(!t) return; document.getElementById('bBtn').style.display='none'; document.getElementById('bIn').style.display='none'; document.getElementById('bSt').style.display='block'; }
 function throwP(){ let p=document.getElementById('pB'),f=document.getElementById('fP'); if(!p||!f) return; p.classList.add('thrown'); setTimeout(()=>{f.classList.add('burning');p.style.display='none';setTimeout(()=>{execBurn();},600);},700); }
-async function execBurn(){ let t=document.getElementById('bIn')?.value?.trim(),r=document.getElementById('bRe'),s=document.getElementById('bSt'); if(!t) return; s.innerHTML='<div style="font-size:60px;text-align:center;margin-top:60px">🔥</div>'; try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`焚烧："${t}"。仪式感结语（30字内）。`}],temperature:0.8,max_tokens:80})});let d=await res.json();s.style.display='none';r.style.display='block';r.innerHTML=`<div class="interact-result"><div class="result-text">${d.choices?.[0]?.message?.content||"烧掉了。"}</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildBurnUI()">🔥 再烧一次</button></div>`;}catch(e){s.style.display='none';r.style.display='block';r.innerHTML='<div class="interact-result"><div class="result-text">烧掉了。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildBurnUI()">🔥 再烧一次</button></div>';} }
+async function execBurn(){ let t=document.getElementById('bIn')?.value?.trim(),r=document.getElementById('bRe'),s=document.getElementById('bSt'); if(!t) return; s.innerHTML='<div style="font-size:60px;text-align:center;margin-top:60px">🔥</div>'; try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"焚烧炉：用户烧掉了一段情绪。给一句30字以内的仪式感结语，要有明确的结束感，让用户感觉这件事已经被处理掉了。比如烧掉了，不用再想了比你的愤怒是真实的更好。不要说教，不要分析。"},{role:"user",content:t}],temperature:0.8,max_tokens:80})});let d=await res.json();s.style.display='none';r.style.display='block';r.innerHTML=`<div class="interact-result"><div class="result-text">${d.choices?.[0]?.message?.content||"烧掉了。"}</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildBurnUI()">🔥 再烧一次</button></div>`;}catch(e){s.style.display='none';r.style.display='block';r.innerHTML='<div class="interact-result"><div class="result-text">烧掉了。</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildBurnUI()">🔥 再烧一次</button></div>';} }
 
 function buildFadeUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🎨 文字褪色馆</div><div class="interact-desc">把沉重文字浸入水中</div><textarea class="interact-input" id="fIn" placeholder="把那些沉重文字放在这里…"></textarea><button class="interact-btn" id="fBtn" onclick="startFade()">🎨 浸入水中</button><div id="fSt" style="display:none;position:relative;width:100%;height:250px;margin-top:16px"><div class="paper-ball-fade" id="pF" onclick="dipP()">📄</div><div class="water-cup" id="wC">💧</div></div><div id="fRe" style="display:none"></div>'; }
 function startFade(){ let t=document.getElementById('fIn')?.value?.trim(); if(!t) return; document.getElementById('fBtn').style.display='none'; document.getElementById('fIn').style.display='none'; document.getElementById('fSt').style.display='block'; }
 function dipP(){ let p=document.getElementById('pF'); if(!p) return; p.classList.add('dipped'); setTimeout(()=>{execFade();},900); }
-async function execFade(){ let t=document.getElementById('fIn')?.value?.trim(),r=document.getElementById('fRe'),s=document.getElementById('fSt'); if(!t) return; s.innerHTML='<div style="font-size:60px;text-align:center;margin-top:60px">💧</div>'; try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`褪色："${t}"。弱化情绪保留原意。20字温柔结语。`}],temperature:0.7,max_tokens:500})});let d=await res.json();s.style.display='none';r.style.display='block';r.innerHTML=`<div class="interact-result"><div style="font-size:12px;opacity:0.5">🎨 褪色后</div><div class="result-text">${(d.choices?.[0]?.message?.content||"褪色了。").replace(/\n/g,'<br>')}</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildFadeUI()">🎨 再褪一次</button></div>`;}catch(e){s.style.display='none';r.style.display='block';r.innerHTML='<div class="interact-result"><div class="result-text">褪色了。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildFadeUI()">🎨 再褪一次</button></div>';} }
+async function execFade(){ let t=document.getElementById('fIn')?.value?.trim(),r=document.getElementById('fRe'),s=document.getElementById('fSt'); if(!t) return; s.innerHTML='<div style="font-size:60px;text-align:center;margin-top:60px">💧</div>'; try{let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"文字褪色馆：把情绪激烈的词替换成平和的词，保留原来的意思，不改变事实，只让语气变轻。如果输入超过100字，只褪色最沉重的一两句，其余保留原文。最后加一句20字以内的温柔结语。不要加任何解释。"},{role:"user",content:t}],temperature:0.7,max_tokens:500})});let d=await res.json();s.style.display='none';r.style.display='block';r.innerHTML=`<div class="interact-result"><div style="font-size:12px;opacity:0.5">🎨 褪色后</div><div class="result-text">${(d.choices?.[0]?.message?.content||"褪色了。").replace(/\n/g,'<br>')}</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildFadeUI()">🎨 再褪一次</button></div>`;}catch(e){s.style.display='none';r.style.display='block';r.innerHTML='<div class="interact-result"><div class="result-text">褪色了。</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildFadeUI()">🎨 再褪一次</button></div>';} }
 
 let diceOpts=[];
 function buildDiceUI(){ diceOpts=[]; interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🎲 纠结骰子</div><div class="interact-desc">把纠结交给骰子，纯随机</div><textarea class="interact-input" id="dIn" placeholder="比如：明天中午吃什么？" maxlength="200"></textarea><button class="interact-btn" id="dGB" onclick="genDice()">🎲 生成选项</button><div id="dA" style="display:none;width:100%;max-width:340px"><div id="dL" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px"></div><div class="dice-stage"><div class="dice-cube" id="dC" onclick="rollD()"><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div></div></div><div id="dR" style="display:none"></div><div id="dH" style="display:none" class="dice-hint-text"></div><button id="dRB" style="display:none;margin-top:12px" class="interact-btn" onclick="reDice()">🎲 再骰一次</button><button id="dRS" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildDiceUI()">🔄 换问题</button></div>'; }
@@ -546,15 +695,15 @@ function reDice(){ document.getElementById('dR').style.display='none'; document.
 function buildParentUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML=`<div class="interact-title">🫂 父母翻译器</div><div class="interact-desc">翻译父母的话，理解自己的反应</div><div class="parent-translator-stage"><select class="parent-select" id="pC">${PARENT_CHARS.map(c=>`<option value="${c.v}">${c.l}</option>`).join('')}</select><select class="parent-select" id="pS">${PARENT_SITS.map(s=>`<option value="${s.v}">${s.l}</option>`).join('')}</select><textarea class="interact-input" id="pIn" placeholder="父母说了什么…" maxlength="300"></textarea><textarea class="interact-input" id="pF" placeholder="你的感受…" maxlength="200" style="min-height:60px"></textarea><button class="interact-btn" id="pBtn" onclick="execP()">🔍 翻译</button><div id="pRe" style="display:none;width:100%"></div><button id="pRetry" style="display:none;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildParentUI()">🫂 再译一次</button></div>`; }
 async function execP(){ let btn=document.getElementById('pBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let c=document.getElementById('pC')?.value||'',s=document.getElementById('pS')?.value||'',t=document.getElementById('pIn')?.value?.trim(),f=document.getElementById('pF')?.value?.trim(); if(!t){btn.disabled=false;return;} interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🫂 正在翻译…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`性格：${c||'AI判断'}。处境：${s||'AI判断'}。父母："${t}"。感受：${f||'无'}。按翻译器规则输出三段。`}],temperature:0.7,max_tokens:400})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"翻译失败"; interactArea.innerHTML=`<div class="parent-translator-stage"><select class="parent-select" id="pC">${PARENT_CHARS.map(x=>`<option value="${x.v}" ${x.v===c?'selected':''}>${x.l}</option>`).join('')}</select><select class="parent-select" id="pS">${PARENT_SITS.map(x=>`<option value="${x.v}" ${x.v===s?'selected':''}>${x.l}</option>`).join('')}</select><textarea class="interact-input" id="pIn" maxlength="300">${t.replace(/"/g,'&quot;')}</textarea><textarea class="interact-input" id="pF" maxlength="200" style="min-height:60px">${f.replace(/"/g,'&quot;')}</textarea><button class="interact-btn" id="pBtn" onclick="execP()">🔍 翻译</button><div id="pRe" style="width:100%"><div class="interact-result" style="text-align:left;line-height:1.7;font-size:13px">${reply.replace(/\n/g,'<br>')}</div></div><button id="pRetry" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildParentUI()">🫂 再译一次</button></div>`; }catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">翻译失败</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParentUI()">🫂 再试</button></div>';} finally{btn.disabled=false;} }
 
-let uH=[];
-function buildUnknotUI(){ uH=[]; interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🧶 解结</div><div class="interact-desc">AI只问问题，答案在你心里</div><textarea class="interact-input" id="uIn" placeholder="比如：我不知道该不该继续学画画…" maxlength="300"></textarea><button class="interact-btn" id="uBtn" onclick="startU()">🧶 开始</button><div id="uChat" style="display:none;width:100%;max-width:340px;margin-top:16px"><div id="uMsgs" style="display:flex;flex-direction:column;gap:8px;max-height:350px;overflow-y:auto;margin-bottom:12px"></div><div style="display:flex;gap:8px"><input type="text" id="uRep" placeholder="回答…" style="flex:1;padding:10px 14px;border:1px solid var(--card-border);border-radius:20px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai)"><button id="uSend" style="padding:0 16px;height:38px;background:var(--btn);color:#fff;border:none;border-radius:19px;font-size:14px;cursor:pointer" onclick="contU()">发送</button></div><button id="uReset" style="display:none;margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildUnknotUI()">🧶 解另一个</button></div>'; }
+let uH=[], uTurnCount=0;
+function buildUnknotUI(){ uH=[]; uTurnCount=0; interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🧶 解结</div><div class="interact-desc">我不会给你答案，只会问你问题。准备好了吗？</div><textarea class="interact-input" id="uIn" placeholder="比如：我不知道该不该继续学画画…" maxlength="300"></textarea><button class="interact-btn" id="uBtn" onclick="startU()">🧶 开始</button><div id="uChat" style="display:none;width:100%;max-width:340px;margin-top:16px"><div id="uMsgs" style="display:flex;flex-direction:column;gap:8px;max-height:350px;overflow-y:auto;margin-bottom:12px"></div><div style="display:flex;gap:8px"><input type="text" id="uRep" placeholder="回答…" style="flex:1;padding:10px 14px;border:1px solid var(--card-border);border-radius:20px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai)"><button id="uSend" style="padding:0 16px;height:38px;background:var(--btn);color:#fff;border:none;border-radius:19px;font-size:14px;cursor:pointer" onclick="contU()">发送</button></div><button id="uReset" style="display:none;margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildUnknotUI()">🧶 解另一个</button></div>'; }
 async function startU(){ let t=document.getElementById('uIn')?.value?.trim(); if(!t) return; uH=[{role:"user",content:t}]; document.getElementById('uIn').style.display='none'; document.getElementById('uBtn').style.display='none'; document.getElementById('uChat').style.display='block'; let ms=document.getElementById('uMsgs'); ms.innerHTML=`<div style="max-width:75%;padding:8px 12px;background:var(--bg-user);color:var(--text-user);border-radius:18px 18px 4px 18px;font-size:14px;align-self:flex-end">${t}</div>`; let ai=document.createElement('div'); ai.style.cssText='max-width:88%;padding:12px 16px;background:var(--bg-ai);color:var(--text-ai);border-radius:18px 18px 18px 4px;font-size:14px;align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.03)'; ai.textContent='……'; ms.appendChild(ai); ms.scrollTop=ms.scrollHeight; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"苏格拉底式提问者。只问1-2个问题。不给建议。"},{role:"user",content:`纠结：${t}。只问我问题。`}],temperature:0.7,max_tokens:150})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"如果不会失败，你的第一反应是什么？"; ai.innerHTML='<span class="unknot-thread">🧶</span> '+reply; uH.push({role:"assistant",content:reply}); }catch(e){ ai.innerHTML='<span class="unknot-thread">🧶</span> 你最不想面对的选择是什么？'; uH.push({role:"assistant",content:"你最不想面对的选择是什么？"}); } ms.scrollTop=ms.scrollHeight; document.getElementById('uRep')?.focus(); }
-async function contU(){ let inp=document.getElementById('uRep'),t=inp?.value?.trim(); if(!t) return; let ms=document.getElementById('uMsgs'); let ud=document.createElement('div'); ud.style.cssText='max-width:75%;padding:8px 12px;background:var(--bg-user);color:var(--text-user);border-radius:18px 18px 4px 18px;font-size:14px;align-self:flex-end'; ud.textContent=t; ms.appendChild(ud); inp.value=''; uH.push({role:"user",content:t}); let ai=document.createElement('div'); ai.style.cssText='max-width:88%;padding:12px 16px;background:var(--bg-ai);color:var(--text-ai);border-radius:18px 18px 18px 4px;font-size:14px;align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.03)'; ai.textContent='……'; ms.appendChild(ai); ms.scrollTop=ms.scrollHeight; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"苏格拉底式提问者。用户说出答案后说：这是你自己找到的答案。"},...uH],temperature:0.7,max_tokens:150})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"你现在心里有答案了吗？"; ai.innerHTML='<span class="unknot-thread">🧶</span> '+reply; uH.push({role:"assistant",content:reply}); if(reply.includes("你自己找到的答案")){ document.getElementById('uSend').style.display='none'; document.getElementById('uRep').style.display='none'; document.getElementById('uReset').style.display='inline-block'; } }catch(e){ ai.innerHTML='<span class="unknot-thread">🧶</span> 你现在心里有答案了吗？'; uH.push({role:"assistant",content:"你现在心里有答案了吗？"}); } ms.scrollTop=ms.scrollHeight; document.getElementById('uRep')?.focus(); }
+async function contU(){ let inp=document.getElementById('uRep'),t=inp?.value?.trim(); if(!t) return; let ms=document.getElementById('uMsgs'); let ud=document.createElement('div'); ud.style.cssText='max-width:75%;padding:8px 12px;background:var(--bg-user);color:var(--text-user);border-radius:18px 18px 4px 18px;font-size:14px;align-self:flex-end'; ud.textContent=t; ms.appendChild(ud); inp.value=''; uH.push({role:"user",content:t}); let ai=document.createElement('div'); ai.style.cssText='max-width:88%;padding:12px 16px;background:var(--bg-ai);color:var(--text-ai);border-radius:18px 18px 18px 4px;font-size:14px;align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.03)'; ai.textContent='……'; ms.appendChild(ai); ms.scrollTop=ms.scrollHeight; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"苏格拉底式提问者。用户说出答案后说：这是你自己找到的答案。"},...uH],temperature:0.7,max_tokens:150})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"你现在心里有答案了吗？"; ai.innerHTML='<span class="unknot-thread">🧶</span> '+reply; uH.push({role:"assistant",content:reply}); uTurnCount++; if(uTurnCount >= 5){ document.getElementById('uSend').style.display='none'; document.getElementById('uRep').style.display='none'; document.getElementById('uReset').style.display='inline-block'; ai.innerHTML += '<br><span style="font-size:12px;opacity:0.6">🧶 这是你自己找到的答案。</span>'; } }catch(e){ ai.innerHTML='<span class="unknot-thread">🧶</span> 你现在心里有答案了吗？'; uH.push({role:"assistant",content:"你现在心里有答案了吗？"}); } ms.scrollTop=ms.scrollHeight; document.getElementById('uRep')?.focus(); }
 
 function buildTarot(step){ interactArea.classList.remove('hidden'); if(step==='spread'){interactArea.innerHTML='<div style="text-align:center;font-size:14px;color:var(--text-ai)">🔮 请选择牌阵</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">'+Object.entries(SPREADS).map(([k,v])=>'<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;width:85px" onclick="selS(\''+k+'\')"><span style="font-size:30px">'+v.emoji+'</span><div style="font-size:13px;color:var(--text-ai);font-weight:600">'+v.name+'</div></div>').join('')+'</div>';} else if(step==='draw'){ let n=SPREADS[currentSpread].count,h='<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:340px;margin:16px 0">'; for(let i=0;i<n;i++) h+='<div id="fc'+i+'" onclick="flip('+i+')" style="width:80px;height:120px;perspective:800px;cursor:pointer"><div style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d" class="ci"><div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;background:var(--card-back);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center">🃏</div><div id="cf'+i+'" style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;background:var(--card-bg);border:2px solid var(--card-border);transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px"><span style="font-size:24px">🔮</span></div></div></div>'; h+='</div>'; interactArea.innerHTML='<div style="font-size:14px;color:var(--text-ai);text-align:center">🎴 依次翻开</div>'+h+'<button class="interact-btn hidden" id="iBtn" onclick="interp()">📖 解读</button>'; tarotDrawn=[]; let pool=[...TAROT_DECK]; for(let i=pool.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];} for(let i=0;i<n;i++){ let c={...pool[i]}; c.position=SPREADS[currentSpread].positions[i]; c.isReversed=Math.random()<0.5; c.pos=c.isReversed?"逆位":"正位"; c.flipped=false; tarotDrawn.push(c); } } }
-function selS(s){currentSpread=s; tarotQuestion=prompt('心里想好一个问题，然后写下来：\n（比如：我和ta接下来三个月关系会怎样？）')||"心里默想的事"; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🃏 正在洗牌…</div>'; setTimeout(()=>{buildTarot('draw');},800);}
+function selS(s){currentSpread=s; tarotQuestion=prompt('心里想好一个问题，然后写下来：\n（比如：我和ta接下来三个月关系会怎样？）')||"心里默想的事"; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🃏 正在洗牌…<br><span style="font-size:11px;opacity:0.5">想着你的问题……</span></div>'; setTimeout(()=>{buildTarot('draw');},800);}
 function flip(i){ if(tarotDrawn[i].flipped) return; tarotDrawn[i].flipped=true; let fc=document.getElementById('fc'+i); if(fc){fc.querySelector('.ci').style.transform='rotateY(180deg)';} let cf=document.getElementById('cf'+i); if(cf)cf.innerHTML='<span style="font-size:24px">'+tarotDrawn[i].emoji+'</span><span style="font-size:12px;font-weight:700;color:var(--tab-active)">'+tarotDrawn[i].name+'</span><span style="font-size:9px;color:var(--text-ai)">'+tarotDrawn[i].pos+'</span>'; if(tarotDrawn.every(c=>c.flipped)) document.getElementById('iBtn')?.classList.remove('hidden'); }
-async function interp(){ let btn=document.getElementById('iBtn'); if(btn) btn.disabled=true; let p='牌阵：'+SPREADS[currentSpread].name+'\n问题：'+tarotQuestion+'\n\n'; tarotDrawn.forEach((c,i)=>{p+='第'+(i+1)+'张（'+c.position+'）：'+c.name+'（'+c.pos+'）\n元素：'+c.element+'\n\n';}); p+='按规则完整解读。'; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📖 AI正在解读…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:p}],temperature:0.7,max_tokens:800})}); let d=await r.json(); let content=d.choices?.[0]?.message?.content||"解读中…"; interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active);margin-bottom:12px;font-weight:700">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai);line-height:1.7;text-align:left">'+content.replace(/\n/g,'<br>')+'</div><div style="text-align:center;margin-top:8px"><span style="font-size:10px;opacity:0.5;cursor:pointer" onclick="addFavorite(\''+content.replace(/'/g, "\\'")+'\', \'塔罗牌\')">💾 收藏</span></div><div style="font-size:10px;opacity:0.3;margin-top:2px">💡 可以截图保存，方便以后回看</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; }catch(e){ interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active)">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai)">牌面正在告诉我一些事情…</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; } }
+async function interp(){ let btn=document.getElementById('iBtn'); if(btn) btn.disabled=true; let p='牌阵：'+SPREADS[currentSpread].name+'\n问题：'+tarotQuestion+'\n\n'; tarotDrawn.forEach((c,i)=>{p+='第'+(i+1)+'张（'+c.position+'）：'+c.name+'（'+c.pos+'）\n元素：'+c.element+'\n\n';}); p+='按规则完整解读。'; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📖 AI正在解读…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:p}],temperature:0.7,max_tokens:800})}); let d=await r.json(); let content=d.choices?.[0]?.message?.content||"解读中…"; interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active);margin-bottom:12px;font-weight:700">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai);line-height:1.7;text-align:left">'+content.replace(/\n/g,'<br>')+'</div><div style="text-align:center;margin-top:8px"><span style="font-size:10px;opacity:0.5;cursor:pointer" onclick="addFavorite(\''+content.replace(/'/g, "\\'")+'\', \'塔罗牌\')">💾 收藏</span></div><div style="font-size:10px;opacity:0.3;margin-top:4px">💡 可以截图保存，方便以后回看</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; }catch(e){ interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active)">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai)">牌面正在告诉我一些事情…</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; } }
 
 function buildMirrorUI(){ interactArea.classList.remove('hidden'); mirrorStep=0; mirrorSelections={}; mirrorGenerating=false; renderMirrorStep(); }
 function renderMirrorStep(){ if(mirrorStep>=MIRROR_STEPS.length){interactArea.innerHTML='<div class="mirror-step-hint">✍️ 还有什么想说的？（可选）</div><textarea class="interact-input" id="mEx" placeholder="关于你此刻的情绪…" maxlength="200"></textarea><button class="interact-btn" id="mGen" onclick="genMirror()">💠 生成镜像</button>';return;} let s=MIRROR_STEPS[mirrorStep],h='<div class="mirror-step-hint">'+s.hint+'</div><div class="mirror-card-grid cols-'+s.cols+'">'; s.cards.forEach(c=>{h+='<div class="mirror-card-item" onclick="selM(this,\''+s.key+'\',\''+c.label+'\')"><span class="mirror-emoji">'+c.emoji+'</span><span class="mirror-label">'+c.label+'</span></div>';}); h+='</div><button class="interact-btn" id="mConf" disabled onclick="confM()">✨ 确认</button>';interactArea.innerHTML=h; }
@@ -563,10 +712,10 @@ function confM(){ mirrorStep++; renderMirrorStep(); }
 async function genMirror(){ let btn=document.getElementById('mGen'); if(!btn||btn.disabled||mirrorGenerating) return; btn.disabled=true; mirrorGenerating=true; let ex=document.getElementById('mEx')?.value?.trim()||''; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">💠 正在生成…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'镜像：颜色'+(mirrorSelections.color||'?')+'，需求'+(mirrorSelections.need||'?')+'，强度'+(mirrorSelections.intensity||'?')+'。'+(ex?'补充：'+ex:'')+'。按【情绪画像】【内心独白】【温柔提醒】输出。'}],temperature:0.8,max_tokens:500})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"无法生成"; interactArea.innerHTML='<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">你的情绪镜像</div><div style="color:var(--text-ai);line-height:1.7">'+reply.replace(/\n/g,'<br>')+'</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button></div>'; }catch(e){interactArea.innerHTML='<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">镜像模糊了</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button></div>';} finally{mirrorGenerating=false;} }
 
 function buildParallelUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🌐 平行宇宙</div><div class="interact-desc">如果当初选了另一条路…</div><textarea class="interact-input" id="pIn" placeholder="如果我没有放弃学画画…"></textarea><button class="interact-btn" id="pBtn" onclick="execPara()">🌐 生成</button>'; }
-async function execPara(){ let btn=document.getElementById('pBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('pIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🌐 正在生成…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'平行宇宙："'+t+'"。200字故事。好坏都展示。标准结尾。'}],temperature:0.9,max_tokens:300})});let d=await r.json();interactArea.innerHTML='<div class="interact-result"><div class="result-text">'+(d.choices?.[0]?.message?.content||"如果当初…")+'</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">在另一个宇宙，你走了完全不同的路。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';} }
+async function execPara(){ let btn=document.getElementById('pBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('pIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🌐 正在生成…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'平行宇宙："'+t+'"。200字故事。好坏都展示。结尾固定。'}],temperature:0.9,max_tokens:300})});let d=await r.json();interactArea.innerHTML='<div class="interact-result"><div class="result-text">'+(d.choices?.[0]?.message?.content||"如果当初…")+'</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">在另一个宇宙，你走了完全不同的路。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';} }
 
 function buildDiaryUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">📔 交换日记</div><div class="interact-desc">写下心情，陌生人给你回信</div><textarea class="interact-input" id="dIn" placeholder="今天的心情…"></textarea><button class="interact-btn" id="dB" onclick="execDiary()">📔 交换</button>'; }
-async function execDiary(){ let btn=document.getElementById('dB'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('dIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📔 正在交换…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'用户日记：'+t+'\n\n用普通人身份回信。口语化带颜文字。最后陌生人回应：写温暖话。'}],temperature:0.85,max_tokens:300})});let d=await r.json();let content=d.choices?.[0]?.message?.content||"今天也是普通的一天。";interactArea.innerHTML='<div class="interact-result"><div style="font-size:12px;opacity:0.5">📨 陌生人的日记</div><div class="result-text">'+content.replace(/\n/g,'<br>')+'<br><span style="font-size:10px;opacity:0.5;cursor:pointer;margin-top:4px;display:inline-block" onclick="addFavorite(\''+content.replace(/'/g, "\\'")+'\', \'交换日记\')">💾 收藏</span></div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">今天也是普通的一天(T_T)</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';} }
+async function execDiary(){ let btn=document.getElementById('dB'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('dIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📔 正在交换…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"你是一个陌生人，刚刚读完用户写的日记。用回信的方式回应，不是再写一篇日记。口语化，可以带颜文字。你有自己的日常，回信里可以带一句自己生活里的小事，让你像真人。不要假装自己也经历过同样的事。最后一句话单独成行，温暖收尾，不超过30字。"},{role:"user",content:t}],temperature:0.85,max_tokens:300})});let d=await r.json();let content=d.choices?.[0]?.message?.content||"今天也是普通的一天。";interactArea.innerHTML='<div class="interact-result"><div style="font-size:12px;opacity:0.5">📨 陌生人的日记</div><div class="result-text">'+content.replace(/\n/g,'<br>')+'<br><span style="font-size:10px;opacity:0.5;cursor:pointer;margin-top:4px;display:inline-block" onclick="addFavorite(\''+content.replace(/'/g, "\\'")+'\', \'交换日记\')">💾 收藏</span></div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">今天也是普通的一天(T_T)</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';} }
 
 (function(){ let t=localStorage.getItem('chat-theme'); if(t) setTheme(t); else setTheme('theme-pink'); updateModelUI(); switchMode('通用陪伴'); })();
 </script>
