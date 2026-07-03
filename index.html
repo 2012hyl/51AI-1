@@ -3,121 +3,630 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>温柔陪伴 · v2.0 (修复版)</title>
+    <title>咪咪 · 陪伴</title>
     <style>
-        /* ===== 全局重置 & 变量 ===== */
-        *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}
-        html,body{height:100dvh;overflow:hidden}
-        body{display:flex;align-items:center;justify-content:center;background:var(--bg-body);transition:background 0.3s ease;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
         :root {
-            --bg-body: #fdfbfb; --bg-chat: #fff; --bg-header: #f9f3f5; --bg-user: #f97e97; --bg-ai: #f5f1f3;
-            --bg-input: #f5f1f3; --btn: #f97e97; --btn-hover: #f86b87; --text-user: #fff; --text-ai: #555;
-            --text-header: #6b5f63; --border-light: rgba(0,0,0,0.05); --tab-active: #f97e97;
-            --card-bg: #fff; --card-border: #e0c8d0; --card-shadow: rgba(0,0,0,0.10);
+            --bg-body: #fdfbfb;
+            --bg-chat: #fff;
+            --bg-header: #f9f3f5;
+            --bg-user: #f97e97;
+            --bg-ai: #f5f1f3;
+            --bg-input: #f5f1f3;
+            --btn: #f97e97;
+            --btn-hover: #f86b87;
+            --text-user: #fff;
+            --text-ai: #555;
+            --text-header: #6b5f63;
+            --border-light: rgba(0, 0, 0, 0.05);
+            --tab-active: #f97e97;
+            --card-bg: #fff;
+            --card-border: #e0c8d0;
+            --card-shadow: rgba(0, 0, 0, 0.10);
             --card-back: linear-gradient(135deg, #667eea, #764ba2);
         }
-        .theme-pink{--bg-body:#fdfbfb;--bg-chat:#fff;--bg-header:#f9f3f5;--bg-user:#f97e97;--bg-ai:#f5f1f3;--bg-input:#f5f1f3;--btn:#f97e97;--btn-hover:#f86b87;--text-user:#fff;--text-ai:#555;--text-header:#6b5f63;--tab-active:#f97e97;--card-bg:#fff;--card-border:#e0c8d0}
-        .theme-blue{--bg-body:#f7f8fc;--bg-chat:#fff;--bg-header:#eef2fb;--bg-user:#6b8bdb;--bg-ai:#f1f5fb;--bg-input:#f1f5fb;--btn:#6b8bdb;--btn-hover:#5a7bcf;--text-user:#fff;--text-ai:#555;--text-header:#4a5a7a;--tab-active:#6b8bdb;--card-bg:#fff;--card-border:#c0d0e8}
-        .theme-purple{--bg-body:#fafaff;--bg-chat:#fff;--bg-header:#f3eefc;--bg-user:#9c73e6;--bg-ai:#f4f0fc;--bg-input:#f4f0fc;--btn:#9c73e6;--btn-hover:#8a61d4;--text-user:#fff;--text-ai:#555;--text-header:#5a4a7a;--tab-active:#9c73e6;--card-bg:#fff;--card-border:#d0c8e8}
-        .theme-green{--bg-body:#f9fffb;--bg-chat:#fff;--bg-header:#eefbf2;--bg-user:#52c9a1;--bg-ai:#f0faf5;--bg-input:#f0faf5;--btn:#52c9a1;--btn-hover:#42b891;--text-user:#fff;--text-ai:#555;--text-header:#3a6a5a;--tab-active:#52c9a1;--card-bg:#fff;--card-border:#c0e0d0}
-        .theme-dark{--bg-body:#1a1a1d;--bg-chat:#252529;--bg-header:#2d2d33;--bg-user:#5a86f0;--bg-ai:#36363d;--bg-input:#36363d;--btn:#5a86f0;--btn-hover:#4a76e0;--text-user:#fff;--text-ai:#e0e0e0;--text-header:#d0d0d8;--tab-active:#5a86f0;--border-light:rgba(255,255,255,0.08);--card-bg:#2d2d33;--card-border:#4a4a5a}
-        .theme-dark #msg-input::placeholder{color:#ccc}
 
-        /* ===== 主应用布局 ===== */
-        .chat-wrapper{width:100%;max-width:100%;height:100dvh;display:flex;flex-direction:column;background:var(--bg-chat);overflow:hidden;opacity:0;transition:opacity 0.8s ease}
-        .chat-wrapper.visible{opacity:1}
-        .chat-box{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;border-radius:0}
-        .theme-bar{display:flex;gap:8px;padding:8px 12px;background:var(--bg-header);align-items:center;flex-shrink:0}
-        .theme-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all 0.15s;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
-        .theme-btn:hover{transform:scale(1.08);border-color:rgba(255,255,255,0.5)}
-        .theme-btn.active{border-color:#fff;box-shadow:0 0 0 2px var(--btn)}
-        .theme-pink-btn{background:#f97e97}.theme-blue-btn{background:#6b8bdb}.theme-purple-btn{background:#9c73e6}.theme-green-btn{background:#52c9a1}.theme-dark-btn{background:#2d2d33}
-        .clear-btn{background:transparent;color:var(--text-header);border:1px solid var(--text-header);padding:2px 8px;border-radius:10px;font-size:11px;cursor:pointer;margin-left:auto;opacity:0.7}
-        .clear-btn:hover{opacity:1}
-        .settings-btn{background:transparent;color:var(--text-header);border:1px solid var(--text-header);padding:2px 8px;border-radius:10px;font-size:11px;cursor:pointer;opacity:0.7;margin-left:4px}
-        .settings-btn:hover{opacity:1}
-        .chat-header{background:var(--bg-header);padding:4px 20px 6px;text-align:center;flex-shrink:0}
-        .chat-header h3{font-size:14px;color:var(--text-header);font-weight:500}
-        .mode-toggle{text-align:center;padding:4px;background:var(--bg-header);cursor:pointer;font-size:10px;color:var(--text-header);opacity:0.5;user-select:none;flex-shrink:0}
-        .mode-toggle:hover{opacity:0.8}
-        .mode-bar{padding:4px 8px;background:var(--bg-header);border-top:1px solid var(--border-light);flex-shrink:0}
-        .mode-bar.collapsed{display:none}
-        .mode-bar-label{font-size:9px;color:var(--text-header);opacity:0.5;margin-bottom:2px;text-align:center}
-        .mode-grid{display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
-        .mode-card{background:var(--bg-body);border:1px solid var(--border-light);border-radius:6px;padding:4px 6px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;color:var(--text-ai);white-space:nowrap}
-        .mode-card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-        .mode-card.active{border-color:var(--tab-active);background:var(--tab-active);color:#fff}
-        .mode-emoji{font-size:14px;display:block;margin-bottom:1px}
-        .style-bar{display:none;gap:3px;padding:3px 8px;background:var(--bg-header);flex-wrap:wrap;align-items:center;flex-shrink:0}
-        .style-bar.visible{display:flex}
-        .style-bar-label{font-size:9px;color:var(--text-header);opacity:0.5;margin-right:2px;white-space:nowrap}
-        .style-tag{font-size:9px;padding:2px 6px;border-radius:8px;border:1px solid var(--border-light);background:var(--bg-body);color:var(--text-ai);cursor:pointer;white-space:nowrap;transition:all 0.15s}
-        .style-tag:hover{background:var(--tab-active);color:#fff;border-color:var(--tab-active)}
-        .style-tag.active{background:var(--tab-active);color:#fff;border-color:var(--tab-active)}
-        .chat-messages{flex:1;padding:16px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;background:var(--bg-body);-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
-        .chat-messages::-webkit-scrollbar{display:none}
-        .msg-user{align-self:flex-end;max-width:75%;padding:8px 12px;background:var(--bg-user);color:var(--text-user);border-radius:18px 18px 4px 18px;font-size:14px;line-height:1.4;word-break:break-word;animation:slideIn 0.2s ease}
-        .msg-ai{align-self:flex-start;max-width:88%;padding:12px 16px;background:var(--bg-ai);color:var(--text-ai);border-radius:18px 18px 18px 4px;font-size:14px;line-height:1.55;word-break:break-word;animation:slideIn 0.2s ease;white-space:pre-line;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
-        @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        .interact-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:20px;background:var(--bg-body);overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
-        .interact-area::-webkit-scrollbar{display:none}
-        .interact-area.hidden{display:none}
-        .interact-title{font-size:18px;color:var(--tab-active);font-weight:700;text-align:center}
-        .interact-desc{font-size:13px;color:var(--text-ai);text-align:center;line-height:1.6}
-        .interact-input{width:100%;max-width:320px;padding:12px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai);resize:vertical;min-height:80px}
-        .interact-btn{padding:12px 28px;background:var(--btn);color:#fff;border:none;border-radius:22px;font-size:15px;cursor:pointer;font-weight:500;transition:all 0.15s}
-        .interact-btn:hover{background:var(--btn-hover);transform:translateY(-1px)}
-        .interact-btn:active{transform:scale(0.95)}
-        .interact-btn:disabled{opacity:0.5;cursor:not-allowed}
-        .interact-result{background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:16px;text-align:center;box-shadow:0 6px 20px var(--card-shadow);max-width:340px;width:100%;animation:slideIn 0.3s ease}
-        .dice-stage{perspective:800px;width:100%;height:200px;display:flex;align-items:center;justify-content:center}
-        .dice-cube{width:100px;height:100px;position:relative;transform-style:preserve-3d;cursor:pointer}
-        .dice-cube.rolling{animation:diceRoll 1.5s cubic-bezier(0.25,0.1,0.25,1) forwards}
-        .dice-face{position:absolute;width:100px;height:100px;background:var(--card-bg);border:3px solid var(--btn);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;color:var(--btn);backface-visibility:visible}
-        .dice-face:nth-child(1){transform:translateZ(50px)}.dice-face:nth-child(2){transform:rotateY(180deg) translateZ(50px)}
-        .dice-face:nth-child(3){transform:rotateY(-90deg) translateZ(50px)}.dice-face:nth-child(4){transform:rotateY(90deg) translateZ(50px)}
-        .dice-face:nth-child(5){transform:rotateX(90deg) translateZ(50px)}.dice-face:nth-child(6){transform:rotateX(-90deg) translateZ(50px)}
-        @keyframes diceRoll{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}25%{transform:rotateX(360deg) rotateY(180deg) rotateZ(90deg)}50%{transform:rotateX(720deg) rotateY(360deg) rotateZ(180deg)}75%{transform:rotateX(900deg) rotateY(540deg) rotateZ(270deg)}100%{transform:rotateX(1080deg) rotateY(720deg) rotateZ(360deg)}}
-        .dice-result-text{font-size:18px;font-weight:700;color:var(--tab-active);text-align:center;margin-top:8px}
-        .dice-hint-text{font-size:11px;color:var(--text-ai);opacity:0.6;text-align:center;margin-top:4px;font-style:italic}
-        .parent-translator-stage{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
-        .parent-select{width:100%;padding:10px;border:1px solid var(--card-border);border-radius:10px;background:var(--card-bg);font-size:13px;color:var(--text-ai);outline:none}
-        .unknot-thread{display:inline-block;animation:unknotTie 0.6s ease-out forwards}
-        @keyframes unknotTie{0%{transform:scale(1.3);opacity:0.3}60%{transform:scale(0.95);opacity:1}100%{transform:scale(1);opacity:1}}
-        .chat-input-area{display:flex;padding:8px 12px;gap:8px;border-top:1px solid var(--border-light);flex-shrink:0}
-        #msg-input{flex:1;padding:10px 14px;border:none;border-radius:20px;background:var(--bg-input);font-size:14px;outline:none;color:var(--text-ai);height:44px}
-        #msg-input:disabled{opacity:0.5}
-        #send-btn{padding:0 16px;height:44px;background:var(--btn);color:#fff;border:none;border-radius:22px;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s}
-        #send-btn:active{transform:scale(0.92)}#send-btn:disabled{opacity:0.5;cursor:not-allowed}
-        .visitor-count{text-align:center;padding:2px;font-size:10px;color:var(--text-header);opacity:0.4;background:var(--bg-header);flex-shrink:0}
-        .ai-disclaimer{text-align:center;padding:2px;font-size:9px;color:var(--text-header);opacity:0.3;flex-shrink:0}
-        .mode-intro-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
-        .mode-intro-overlay.hidden{display:none}
-        .mode-intro-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:18px;padding:20px;width:85%;max-width:360px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,0.15);text-align:left}
-        .mode-intro-close{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;border:none;background:var(--bg-ai);color:var(--text-ai);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-        .mode-intro-close:hover{background:var(--btn);color:#fff}
-        .mode-intro-emoji{font-size:28px;margin-bottom:8px}
-        .mode-intro-name{font-size:18px;font-weight:700;color:var(--tab-active);margin-bottom:4px}
-        .mode-intro-desc{font-size:13px;color:var(--text-ai);line-height:1.6}
-        .mode-intro-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
-        .mode-intro-check{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-ai);opacity:0.7;cursor:pointer}
-        .mode-intro-check input{cursor:pointer}
-        .mode-intro-btn{padding:8px 20px;background:var(--btn);color:#fff;border:none;border-radius:16px;font-size:13px;cursor:pointer;font-weight:500}
-        .settings-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:9999;display:none;align-items:center;justify-content:center}
-        .settings-overlay.active{display:flex}
-        .settings-panel{background:var(--card-bg);border-radius:20px;padding:24px;width:90%;max-width:360px;text-align:center;position:relative}
-        .settings-panel h3{font-size:18px;color:var(--text-header);margin-bottom:16px}
-        .settings-item{padding:12px;border:1px solid var(--border-light);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;color:var(--text-ai);font-size:14px}
-        .settings-item:hover{background:var(--bg-ai)}
-        .settings-item.active-model{border-color:var(--tab-active);background:var(--bg-ai);font-weight:600}
-        .settings-item.danger{color:#e17055;border-color:#e17055}
-        .settings-item.danger:hover{background:#fff5f5}
-        .settings-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-ai)}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .profile-input{width:100%;padding:10px;border:1px solid var(--border-light);border-radius:10px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai);margin-bottom:8px}
-        .profile-select{width:100%;padding:10px;border:1px solid var(--border-light);border-radius:10px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai);margin-bottom:8px}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
+        }
 
-        /* ===== 猫Logo（左上角） ===== */
+        html,
+        body {
+            height: 100dvh;
+            overflow: hidden
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-body);
+            transition: background 0.3s ease;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        .theme-pink {
+            --bg-body: #fdfbfb;
+            --bg-chat: #fff;
+            --bg-header: #f9f3f5;
+            --bg-user: #f97e97;
+            --bg-ai: #f5f1f3;
+            --bg-input: #f5f1f3;
+            --btn: #f97e97;
+            --btn-hover: #f86b87;
+            --text-user: #fff;
+            --text-ai: #555;
+            --text-header: #6b5f63;
+            --tab-active: #f97e97;
+            --card-bg: #fff;
+            --card-border: #e0c8d0
+        }
+
+        .theme-blue {
+            --bg-body: #f7f8fc;
+            --bg-chat: #fff;
+            --bg-header: #eef2fb;
+            --bg-user: #6b8bdb;
+            --bg-ai: #f1f5fb;
+            --bg-input: #f1f5fb;
+            --btn: #6b8bdb;
+            --btn-hover: #5a7bcf;
+            --text-user: #fff;
+            --text-ai: #555;
+            --text-header: #4a5a7a;
+            --tab-active: #6b8bdb;
+            --card-bg: #fff;
+            --card-border: #c0d0e8
+        }
+
+        .theme-purple {
+            --bg-body: #fafaff;
+            --bg-chat: #fff;
+            --bg-header: #f3eefc;
+            --bg-user: #9c73e6;
+            --bg-ai: #f4f0fc;
+            --bg-input: #f4f0fc;
+            --btn: #9c73e6;
+            --btn-hover: #8a61d4;
+            --text-user: #fff;
+            --text-ai: #555;
+            --text-header: #5a4a7a;
+            --tab-active: #9c73e6;
+            --card-bg: #fff;
+            --card-border: #d0c8e8
+        }
+
+        .theme-green {
+            --bg-body: #f9fffb;
+            --bg-chat: #fff;
+            --bg-header: #eefbf2;
+            --bg-user: #52c9a1;
+            --bg-ai: #f0faf5;
+            --bg-input: #f0faf5;
+            --btn: #52c9a1;
+            --btn-hover: #42b891;
+            --text-user: #fff;
+            --text-ai: #555;
+            --text-header: #3a6a5a;
+            --tab-active: #52c9a1;
+            --card-bg: #fff;
+            --card-border: #c0e0d0
+        }
+
+        .theme-dark {
+            --bg-body: #1a1a1d;
+            --bg-chat: #252529;
+            --bg-header: #2d2d33;
+            --bg-user: #5a86f0;
+            --bg-ai: #36363d;
+            --bg-input: #36363d;
+            --btn: #5a86f0;
+            --btn-hover: #4a76e0;
+            --text-user: #fff;
+            --text-ai: #e0e0e0;
+            --text-header: #d0d0d8;
+            --tab-active: #5a86f0;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --card-bg: #2d2d33;
+            --card-border: #4a4a5a
+        }
+
+        .theme-dark #msg-input::placeholder {
+            color: #ccc
+        }
+        .theme-dark #msg-input {
+            color: #e0e0e0
+        }
+        .theme-dark .interact-input {
+            color: #e0e0e0;
+            background: #2d2d33
+        }
+        .theme-dark .interact-btn {
+            background: #5a86f0
+        }
+        .theme-dark .interact-btn:hover {
+            background: #4a76e0
+        }
+        .theme-dark .mirror-card-item {
+            background: #2d2d33;
+            border-color: #4a4a5a
+        }
+        .theme-dark .mirror-card-item.selected {
+            border-color: #5a86f0
+        }
+        .theme-dark .interact-result {
+            background: #2d2d33;
+            border-color: #4a4a5a
+        }
+
+        .chat-wrapper {
+            width: 100%;
+            max-width: 100%;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-chat);
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.8s ease
+        }
+        .chat-wrapper.visible {
+            opacity: 1
+        }
+        .chat-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 0
+        }
+
+        .theme-bar {
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-header);
+            align-items: center;
+            flex-shrink: 0
+        }
+        .theme-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+        }
+        .theme-btn:hover {
+            transform: scale(1.08);
+            border-color: rgba(255, 255, 255, 0.5)
+        }
+        .theme-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px var(--btn)
+        }
+        .theme-pink-btn {
+            background: #f97e97
+        }
+        .theme-blue-btn {
+            background: #6b8bdb
+        }
+        .theme-purple-btn {
+            background: #9c73e6
+        }
+        .theme-green-btn {
+            background: #52c9a1
+        }
+        .theme-dark-btn {
+            background: #2d2d33
+        }
+
+        .clear-btn {
+            background: transparent;
+            color: var(--text-header);
+            border: 1px solid var(--text-header);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: auto;
+            opacity: 0.7
+        }
+        .clear-btn:hover {
+            opacity: 1
+        }
+        .settings-btn {
+            background: transparent;
+            color: var(--text-header);
+            border: 1px solid var(--text-header);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0.7;
+            margin-left: 4px
+        }
+        .settings-btn:hover {
+            opacity: 1
+        }
+
+        .chat-header {
+            background: var(--bg-header);
+            padding: 4px 20px 6px;
+            text-align: center;
+            flex-shrink: 0
+        }
+        .chat-header h3 {
+            font-size: 14px;
+            color: var(--text-header);
+            font-weight: 500
+        }
+
+        .mode-toggle {
+            text-align: center;
+            padding: 4px;
+            background: var(--bg-header);
+            cursor: pointer;
+            font-size: 10px;
+            color: var(--text-header);
+            opacity: 0.5;
+            user-select: none;
+            flex-shrink: 0
+        }
+        .mode-toggle:hover {
+            opacity: 0.8
+        }
+
+        .mode-bar {
+            padding: 4px 8px;
+            background: var(--bg-header);
+            border-top: 1px solid var(--border-light);
+            flex-shrink: 0;
+            display: none
+        }
+        .mode-bar.open {
+            display: block
+        }
+        .mode-bar-label {
+            font-size: 9px;
+            color: var(--text-header);
+            opacity: 0.5;
+            margin-bottom: 2px;
+            text-align: center
+        }
+        .mode-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center
+        }
+        .mode-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 4px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 9px;
+            color: var(--text-ai);
+            white-space: nowrap
+        }
+        .mode-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06)
+        }
+        .mode-card.active {
+            border-color: var(--tab-active);
+            background: var(--tab-active);
+            color: #fff
+        }
+        .mode-emoji {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 1px
+        }
+
+        .style-bar {
+            display: none;
+            gap: 3px;
+            padding: 3px 8px;
+            background: var(--bg-header);
+            flex-wrap: wrap;
+            align-items: center;
+            flex-shrink: 0
+        }
+        .style-bar.visible {
+            display: flex
+        }
+        .style-bar-label {
+            font-size: 9px;
+            color: var(--text-header);
+            opacity: 0.5;
+            margin-right: 2px;
+            white-space: nowrap
+        }
+        .style-tag {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-body);
+            color: var(--text-ai);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s
+        }
+        .style-tag:hover {
+            background: var(--tab-active);
+            color: #fff;
+            border-color: var(--tab-active)
+        }
+        .style-tag.active {
+            background: var(--tab-active);
+            color: #fff;
+            border-color: var(--tab-active)
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--bg-body);
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none
+        }
+        .chat-messages::-webkit-scrollbar {
+            display: none
+        }
+
+        .msg-user {
+            align-self: flex-end;
+            max-width: 75%;
+            padding: 8px 12px;
+            background: var(--bg-user);
+            color: var(--text-user);
+            border-radius: 18px 18px 4px 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+            animation: slideIn 0.2s ease
+        }
+        .msg-ai {
+            align-self: flex-start;
+            max-width: 88%;
+            padding: 12px 16px;
+            background: var(--bg-ai);
+            color: var(--text-ai);
+            border-radius: 18px 18px 18px 4px;
+            font-size: 14px;
+            line-height: 1.55;
+            word-break: break-word;
+            animation: slideIn 0.2s ease;
+            white-space: pre-line;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03)
+        }
+        .msg-cat-buffer {
+            align-self: flex-start;
+            max-width: 75%;
+            padding: 6px 14px;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 12px 12px 12px 4px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 4px 0 4px 24px;
+            animation: slideIn 0.3s ease;
+            border-left: 3px solid #f59e0b
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .interact-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--bg-body);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none
+        }
+        .interact-area::-webkit-scrollbar {
+            display: none
+        }
+        .interact-area.hidden {
+            display: none
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 8px 12px;
+            gap: 8px;
+            border-top: 1px solid var(--border-light);
+            flex-shrink: 0
+        }
+        #msg-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 20px;
+            background: var(--bg-input);
+            font-size: 14px;
+            outline: none;
+            color: var(--text-ai);
+            height: 44px
+        }
+        #msg-input:disabled {
+            opacity: 0.5
+        }
+        #send-btn {
+            padding: 0 16px;
+            height: 44px;
+            background: var(--btn);
+            color: #fff;
+            border: none;
+            border-radius: 22px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s
+        }
+        #send-btn:active {
+            transform: scale(0.92)
+        }
+        #send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed
+        }
+
+        .visitor-count {
+            text-align: center;
+            padding: 2px;
+            font-size: 10px;
+            color: var(--text-header);
+            opacity: 0.4;
+            background: var(--bg-header);
+            flex-shrink: 0
+        }
+        .ai-disclaimer {
+            text-align: center;
+            padding: 2px;
+            font-size: 9px;
+            color: var(--text-header);
+            opacity: 0.3;
+            flex-shrink: 0
+        }
+
+        .cat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--bg-header);
+            border-bottom: 1px solid var(--border-light);
+            flex-shrink: 0
+        }
+        .cat-avatar {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0
+        }
+        .cat-avatar svg {
+            width: 100%;
+            height: 100%
+        }
+        .cat-avatar .status-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            transition: background 0.3s
+        }
+        .status-dot.happy {
+            background: #4ade80
+        }
+        .status-dot.sleep {
+            background: #94a3b8
+        }
+        .status-dot.bored {
+            background: #facc15
+        }
+        .status-dot.curious {
+            background: #60a5fa
+        }
+        .status-dot.hungry {
+            background: #fb923c
+        }
+        .status-dot.lonely {
+            background: #f472b6
+        }
+        .status-dot.annoyed {
+            background: #f87171
+        }
+
+        .cat-info {
+            flex: 1;
+            min-width: 0
+        }
+        .cat-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-header);
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+        .cat-name .mood-emoji {
+            font-size: 16px
+        }
+        .cat-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 10px;
+            color: var(--text-ai);
+            opacity: 0.7;
+            flex-wrap: wrap
+        }
+        .cat-stats .bar {
+            width: 30px;
+            height: 3px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+            display: inline-block
+        }
+        .cat-stats .bar .fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s
+        }
+        .fill.energy {
+            background: #60a5fa
+        }
+        .fill.hunger {
+            background: #fb923c
+        }
+        .fill.affection {
+            background: #f472b6
+        }
+
+        .cat-time {
+            font-size: 10px;
+            color: var(--text-ai);
+            opacity: 0.5;
+            text-align: right;
+            flex-shrink: 0
+        }
+
         .cat-logo {
             position: fixed;
             top: 16px;
@@ -129,39 +638,29 @@
             transition: transform 0.3s ease;
             display: none;
             opacity: 0;
-            animation: logoFadeIn 0.8s ease forwards;
+            animation: logoFadeIn 0.8s ease forwards
         }
-        .cat-logo.show { display: block; }
-        .cat-logo:hover { transform: scale(1.1); }
-        .cat-logo svg { width: 100%; height: 100%; }
-        @keyframes logoFadeIn { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+        .cat-logo.show {
+            display: block
+        }
+        .cat-logo:hover {
+            transform: scale(1.1)
+        }
+        .cat-logo svg {
+            width: 100%;
+            height: 100%
+        }
+        @keyframes logoFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5)
+            }
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
 
-        /* ===== 猫品牌动画 ===== */
-        .cat-blink { animation: blink 0.2s ease-in-out; }
-        @keyframes blink { 0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.1)} }
-        .cat-wiggle { animation: wiggle 0.5s ease-in-out; }
-        @keyframes wiggle { 0%,100%{transform:rotate(0deg)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)} }
-        .cat-breathe { animation: breathe 2s ease-in-out infinite; }
-        @keyframes breathe { 0%,100%{transform:scale(1)}50%{transform:scale(1.05)} }
-        .cat-sleep { animation: sleep 4s ease-in-out infinite; }
-        @keyframes sleep { 0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.02) rotate(2deg)} }
-        .cat-eat { animation: eat 2s ease-in-out infinite; }
-        @keyframes eat { 0%,100%{transform:scale(1) rotate(0deg)}30%{transform:scale(1.08) rotate(-3deg)}70%{transform:scale(1.08) rotate(3deg)} }
-        .cat-yawn { animation: yawn 1s ease-in-out; }
-        @keyframes yawn { 0%{transform:scale(1)}30%{transform:scale(1.15) rotate(-2deg)}60%{transform:scale(1.15) rotate(2deg)}100%{transform:scale(1)} }
-        .cat-birthday { animation: birthdayGlow 1.5s ease-in-out infinite; }
-        @keyframes birthdayGlow { 0%,100%{filter:drop-shadow(0 0 10px #ff6b6b)}50%{filter:drop-shadow(0 0 30px #ffd93d)} }
-
-        /* ===== 签到装饰 ===== */
-        .badge-scarf { position: absolute; top: -8px; right: -8px; font-size: 16px; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
-        .badge-scarf.show { opacity: 1; }
-        .badge-crown { position: absolute; top: -12px; right: -12px; font-size: 20px; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
-        .badge-crown.show { opacity: 1; }
-        .scarf-svg, .crown-svg { opacity: 0; transition: opacity 0.5s; }
-        .scarf-svg.show { opacity: 0.8; }
-        .crown-svg.show { opacity: 0.9; }
-
-        /* ===== 开屏Canvas ===== */
         #bootCanvas {
             position: fixed;
             top: 0;
@@ -170,1505 +669,918 @@
             height: 100vh;
             z-index: 99999;
             background: #f5f0e8;
-            transition: opacity 0.8s ease;
+            transition: opacity 0.8s ease
         }
-        #bootCanvas.hidden { opacity: 0; pointer-events: none; }
+        #bootCanvas.hidden {
+            opacity: 0;
+            pointer-events: none
+        }
 
-        /* ===== 二进制爱心覆盖层（修复版） ===== */
-        #bh-container {
+        .settings-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 100000;
-            background: #0a0a0a;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
             display: none;
             align-items: center;
-            justify-content: center;
-            transition: opacity 0.6s ease;
+            justify-content: center
         }
-        #bh-container.active { display: flex; }
-        #bh-container.hidden { opacity: 0; pointer-events: none; }
-        #bh-canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: transparent;
+        .settings-overlay.active {
+            display: flex
         }
-        #bh-close {
-            position: fixed;
-            top: 20px;
-            right: 24px;
-            z-index: 100001;
-            width: 40px;
-            height: 40px;
+        .settings-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            position: relative
+        }
+        .settings-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: none;
             border: none;
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.6);
-            font-size: 22px;
-            font-weight: 300;
-            line-height: 1;
+            font-size: 20px;
             cursor: pointer;
-            border-radius: 50%;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        }
-        #bh-close:hover {
-            background: rgba(255,70,70,0.25);
-            color: #ff6b6b;
-            transform: rotate(90deg) scale(1.08);
-        }
-        #bh-close:active { transform: scale(0.92); }
-        .bh-credit {
-            position: fixed;
-            bottom: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100000;
-            font-size: 11px;
-            color: rgba(255,255,255,0.15);
-            letter-spacing: 2px;
-            pointer-events: none;
-            font-weight: 300;
-        }
-        @media (max-width: 480px) {
-            #bh-close { width:34px; height:34px; font-size:18px; top:14px; right:16px; }
-            .bh-credit { font-size:9px; bottom:12px; }
+            color: var(--text-ai)
         }
 
-        /* 情绪镜像卡片网格 */
-        .mirror-step-hint { font-size:14px; color:var(--text-ai); text-align:center; }
-        .mirror-card-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:320px; width:100%; }
-        .mirror-card-grid.cols-2 .mirror-card-item { width:calc(50% - 8px); }
-        .mirror-card-grid.cols-3 .mirror-card-item { width:calc(33.33% - 8px); }
-        .mirror-card-item { background:var(--card-bg); border:2px solid var(--card-border); border-radius:12px; padding:12px 6px; text-align:center; cursor:pointer; transition:all 0.2s; }
-        .mirror-card-item:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.06); }
-        .mirror-card-item.selected { border-color:var(--tab-active); background:var(--bg-ai); }
-        .mirror-emoji { display:block; font-size:26px; margin-bottom:2px; }
-        .mirror-label { font-size:12px; color:var(--text-ai); }
-        .mirror-result-card { background:var(--card-bg); border:2px solid var(--card-border); border-radius:16px; padding:20px; max-width:340px; width:100%; text-align:left; }
-        .result-emoji { font-size:28px; display:block; text-align:center; }
-        .result-title { font-size:16px; font-weight:700; color:var(--tab-active); text-align:center; margin:8px 0 12px; }
+        .interact-btn {
+            padding: 12px 28px;
+            background: var(--btn);
+            color: #fff;
+            border: none;
+            border-radius: 22px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.15s
+        }
+        .interact-btn:hover {
+            background: var(--btn-hover);
+            transform: translateY(-1px)
+        }
+        .interact-btn:active {
+            transform: scale(0.95)
+        }
+        .interact-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed
+        }
+
+        .interact-input {
+            width: 100%;
+            max-width: 320px;
+            padding: 12px;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: var(--card-bg);
+            font-size: 14px;
+            outline: none;
+            color: var(--text-ai);
+            resize: vertical;
+            min-height: 80px
+        }
+
+        .interact-result {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 6px 20px var(--card-shadow);
+            max-width: 340px;
+            width: 100%;
+            animation: slideIn 0.3s ease
+        }
     </style>
 </head>
 <body>
 
-<!-- ===== 开屏Canvas ===== -->
-<canvas id="bootCanvas"></canvas>
+    <canvas id="bootCanvas"></canvas>
 
-<!-- ===== 猫Logo（左上角） ===== -->
-<div class="cat-logo" id="catLogo">
-    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="40" fill="none" stroke="black" stroke-width="2"/>
-        <polygon points="30,20 25,5 35,15" fill="none" stroke="black" stroke-width="2"/>
-        <polygon points="70,20 75,5 65,15" fill="none" stroke="black" stroke-width="2"/>
-        <rect x="35" y="35" width="3" height="8" fill="black"/>
-        <rect x="62" y="35" width="3" height="8" fill="black"/>
-        <circle cx="50" cy="48" r="2" fill="black"/>
-        <path d="M 40 55 Q 50 65 60 55" fill="none" stroke="black" stroke-width="1.5"/>
-        <line x1="38" y1="50" x2="25" y2="48" stroke="black" stroke-width="1"/>
-        <line x1="38" y1="52" x2="25" y2="52" stroke="black" stroke-width="1"/>
-        <line x1="38" y1="54" x2="25" y2="56" stroke="black" stroke-width="1"/>
-        <line x1="62" y1="50" x2="75" y2="48" stroke="black" stroke-width="1"/>
-        <line x1="62" y1="52" x2="75" y2="52" stroke="black" stroke-width="1"/>
-        <line x1="62" y1="54" x2="75" y2="56" stroke="black" stroke-width="1"/>
-        <path class="scarf-svg" d="M 30 65 Q 50 75 70 65 L 68 80 Q 50 85 32 80 Z" fill="#e74c3c"/>
-        <polygon class="crown-svg" points="40,20 45,30 50,20 55,30 60,20 58,35 42,35" fill="#f1c40f"/>
-    </svg>
-    <span class="badge-scarf" id="badgeScarf">🧣</span>
-    <span class="badge-crown" id="badgeCrown">👑</span>
-</div>
+    <div class="cat-logo" id="catLogo">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="black" stroke-width="2"/></svg>
+    </div>
 
-<!-- ===== 主应用 ===== -->
-<div class="chat-wrapper" id="appContainer">
-    <div class="chat-box">
-        <div class="theme-bar">
-            <button class="theme-btn theme-pink-btn active" data-theme="theme-pink"></button>
-            <button class="theme-btn theme-blue-btn" data-theme="theme-blue"></button>
-            <button class="theme-btn theme-purple-btn" data-theme="theme-purple"></button>
-            <button class="theme-btn theme-green-btn" data-theme="theme-green"></button>
-            <button class="theme-btn theme-dark-btn" data-theme="theme-dark"></button>
-            <button class="clear-btn" id="clearBtn">清空</button>
-            <button class="settings-btn" id="settingsBtn" onclick="openSettings()">⚙️ 设置</button>
-        </div>
-        <div class="chat-header"><h3 id="modeTitle">温柔陪伴 · 通用</h3></div>
-        <div class="mode-toggle" id="modeToggle">🧩 切换模式 ▾</div>
-        <div class="mode-bar" id="modeBar">
-            <div class="mode-bar-label">选择一个模式</div>
-            <div class="mode-grid" id="modeGrid">
-                <div class="mode-card active" data-mode="通用陪伴"><span class="mode-emoji">🌿</span>通用</div>
-                <div class="mode-card" data-mode="塔罗牌"><span class="mode-emoji">🔮</span>塔罗牌</div>
-                <div class="mode-card" data-mode="碎碎念垃圾桶"><span class="mode-emoji">🗑️</span>垃圾桶</div>
-                <div class="mode-card" data-mode="文字褪色馆"><span class="mode-emoji">🎨</span>褪色</div>
-                <div class="mode-card" data-mode="情绪镜像"><span class="mode-emoji">💠</span>镜像</div>
-                <div class="mode-card" data-mode="平行宇宙"><span class="mode-emoji">🌐</span>平行</div>
-                <div class="mode-card" data-mode="交换日记"><span class="mode-emoji">📔</span>日记</div>
-                <div class="mode-card" data-mode="纠结骰子"><span class="mode-emoji">🎲</span>骰子</div>
-                <div class="mode-card" data-mode="父母翻译器"><span class="mode-emoji">🫂</span>翻译器</div>
-                <div class="mode-card" data-mode="解结"><span class="mode-emoji">🧶</span>解结</div>
+    <div class="chat-wrapper" id="appContainer">
+        <div class="chat-box">
+            <div class="theme-bar">
+                <button class="theme-btn theme-pink-btn active" data-theme="theme-pink"></button>
+                <button class="theme-btn theme-blue-btn" data-theme="theme-blue"></button>
+                <button class="theme-btn theme-purple-btn" data-theme="theme-purple"></button>
+                <button class="theme-btn theme-green-btn" data-theme="theme-green"></button>
+                <button class="theme-btn theme-dark-btn" data-theme="theme-dark"></button>
+                <button class="clear-btn" id="clearBtn">清空</button>
+                <button class="settings-btn" id="settingsBtn">⚙️ 设置</button>
             </div>
+
+            <div class="cat-header" id="catHeader">
+                <div class="cat-avatar" id="catAvatar" title="点我互动">
+                    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--text-header)" stroke-width="2.5"/></svg>
+                    <div class="status-dot happy" id="statusDot"></div>
+                </div>
+                <div class="cat-info">
+                    <div class="cat-name"><span id="catName">咪咪</span><span class="mood-emoji" id="moodEmoji">😊</span></div>
+                    <div class="cat-stats">
+                        <span>⚡<span class="bar"><span class="fill energy" id="energyBar" style="width:80%"></span></span></span>
+                        <span>🍽️<span class="bar"><span class="fill hunger" id="hungerBar" style="width:20%"></span></span></span>
+                        <span>❤️<span class="bar"><span class="fill affection" id="affectionBar" style="width:60%"></span></span></span>
+                    </div>
+                </div>
+                <div class="cat-time" id="catTime">🌙 深夜</div>
+            </div>
+
+            <div class="chat-header"><h3 id="modeTitle">🐱 咪咪 · 陪伴</h3></div>
+            <div class="mode-toggle" id="modeToggle">🧩 切换模式 ▾</div>
+            <div class="mode-bar" id="modeBar">
+                <div class="mode-bar-label">选择一个模式</div>
+                <div class="mode-grid" id="modeGrid">
+                    <div class="mode-card active" data-mode="通用陪伴"><span class="mode-emoji">🌿</span>通用</div>
+                    <div class="mode-card" data-mode="塔罗牌"><span class="mode-emoji">🔮</span>塔罗牌</div>
+                    <div class="mode-card" data-mode="碎碎念垃圾桶"><span class="mode-emoji">🗑️</span>垃圾桶</div>
+                    <div class="mode-card" data-mode="文字褪色馆"><span class="mode-emoji">🎨</span>褪色</div>
+                    <div class="mode-card" data-mode="情绪镜像"><span class="mode-emoji">💠</span>镜像</div>
+                    <div class="mode-card" data-mode="平行宇宙"><span class="mode-emoji">🌐</span>平行</div>
+                    <div class="mode-card" data-mode="交换日记"><span class="mode-emoji">📔</span>日记</div>
+                    <div class="mode-card" data-mode="纠结骰子"><span class="mode-emoji">🎲</span>骰子</div>
+                    <div class="mode-card" data-mode="父母翻译器"><span class="mode-emoji">🫂</span>翻译器</div>
+                    <div class="mode-card" data-mode="解结"><span class="mode-emoji">🧶</span>解结</div>
+                </div>
+            </div>
+            <div class="style-bar" id="styleBar">
+                <span class="style-bar-label">聊天风格：</span>
+                <span class="style-tag active" data-style="智能检测">🧠 智能</span>
+                <span class="style-tag" data-style="学业压力">📚 学业</span>
+                <span class="style-tag" data-style="家庭烦恼">🏠 家庭</span>
+                <span class="style-tag" data-style="失恋安慰">💔 失恋</span>
+                <span class="style-tag" data-style="自我怀疑">🪞 自卑</span>
+                <span class="style-tag" data-style="疲惫减压">😮‍💨 减压</span>
+                <span class="style-tag" data-style="深夜emo">🌙 深夜</span>
+            </div>
+            <div class="chat-messages" id="msgList"></div>
+            <div class="interact-area hidden" id="interactArea"></div>
+            <div class="chat-input-area" id="chatInputArea">
+                <input type="text" id="msg-input" placeholder="说点什么吧…" autocomplete="off">
+                <button id="send-btn">发送</button>
+            </div>
+            <div class="visitor-count">👁️ 总访问 <span id="visitorCount">0</span> 次</div>
+            <div class="ai-disclaimer">AI可能出错，请勿过度依赖。未成年人请在家长陪同下使用。</div>
         </div>
-        <div class="style-bar" id="styleBar">
-            <span class="style-bar-label">聊天风格：</span>
-            <span class="style-tag active" data-style="智能检测">🧠 智能</span>
-            <span class="style-tag" data-style="学业压力">📚 学业</span>
-            <span class="style-tag" data-style="家庭烦恼">🏠 家庭</span>
-            <span class="style-tag" data-style="失恋安慰">💔 失恋</span>
-            <span class="style-tag" data-style="自我怀疑">🪞 自卑</span>
-            <span class="style-tag" data-style="疲惫减压">😮‍💨 减压</span>
-            <span class="style-tag" data-style="深夜emo">🌙 深夜</span>
-        </div>
-        <div class="chat-messages" id="msgList"></div>
-        <div class="interact-area hidden" id="interactArea"></div>
-        <div class="chat-input-area" id="chatInputArea">
-            <input type="text" id="msg-input" placeholder="说点什么吧…" autocomplete="off">
-            <button id="send-btn">发送</button>
-        </div>
-        <div class="visitor-count">👁️ 总访问 <span id="visitorCount">0</span> 次</div>
-        <div class="ai-disclaimer">AI可能出错，请勿过度依赖。未成年人请在家长陪同下使用。</div>
     </div>
-</div>
 
-<!-- ===== 模式介绍弹窗 ===== -->
-<div class="mode-intro-overlay hidden" id="modeIntroOverlay">
-    <div class="mode-intro-card">
-        <button class="mode-intro-close" id="modeIntroClose">✕</button>
-        <div class="mode-intro-emoji" id="modeIntroEmoji"></div>
-        <div class="mode-intro-name" id="modeIntroName"></div>
-        <div class="mode-intro-desc" id="modeIntroDesc"></div>
-        <div class="mode-intro-footer">
-            <label class="mode-intro-check"><input type="checkbox" id="modeIntroCheck"> 不再显示此介绍</label>
-            <button class="mode-intro-btn" id="modeIntroBtn">知道了</button>
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-panel">
+            <button class="settings-close">✕</button>
+            <h3>⚙️ 设置</h3>
+            <button class="interact-btn" style="margin-top:12px;width:100%">关闭</button>
         </div>
     </div>
-</div>
 
-<!-- ===== 设置弹窗 ===== -->
-<div class="settings-overlay" id="settingsOverlay">
-    <div class="settings-panel">
-        <button class="settings-close" onclick="closeSettings()">✕</button>
-        <h3>⚙️ 设置</h3>
-        <div class="settings-item" id="modelZhipu" onclick="switchModel('zhipu')">🤖 AI模型：智谱清言</div>
-        <div class="settings-item" id="modelDeepseek" onclick="switchModel('deepseek')">🤖 AI模型：DeepSeek V4</div>
-        <div class="settings-item" onclick="editProfile()">👤 我的称呼与关系</div>
-        <div class="settings-item" onclick="viewFavorites()">💾 我的收藏</div>
-        <div class="settings-item" onclick="exportMemory()">📤 导出记忆备份</div>
-        <div class="settings-item" onclick="importMemory()">📥 导入记忆备份</div>
-        <div class="settings-item" id="animToggle" onclick="toggleAnimations()">🎬 猫动画：<span id="animStatus">开</span></div>
-        <div class="settings-item" onclick="alert('版本：v2.0 | 10个模式 | 每日彩蛋 | 签到装饰 | 生日祝福')">ℹ️ 关于</div>
-        <div class="settings-item" onclick="openFeedback()">📬 意见反馈</div>
-        <div class="settings-item danger" onclick="triggerBinaryHeart()">❤️ 千万不要点</div>
-        <button class="interact-btn" style="margin-top:12px;width:100%" onclick="closeSettings()">关闭</button>
-    </div>
-</div>
+    <script>
+        (function() {
+            // ========== 全局配置 ==========
+            const WORKER_URL = "https://51ai-1.pages.dev/api/proxy";
+            const ZHIPU_MODEL = "glm-4-flash";
+            const DEEPSEEK_MODEL = "deepseek-v4-flash";
+            let currentModel = localStorage.getItem('currentModel') || 'zhipu';
+            let animationsEnabled = localStorage.getItem('animationsEnabled') !== 'false';
 
-<!-- ===== 二进制爱心覆盖层 ===== -->
-<div id="bh-container">
-    <canvas id="bh-canvas"></canvas>
-    <button id="bh-close" aria-label="关闭二进制爱心">✕</button>
-    <div class="bh-credit">0 1 · 心流</div>
-</div>
+            // ========== 工具函数 ==========
+            function $(id) { return document.getElementById(id); }
 
-<script>
-// ============================================================
-// 第一部分：开屏动画（米黄色背景，黑色粒子/线稿）
-// ============================================================
-(function() {
-    const canvas = document.getElementById('bootCanvas');
-    const ctx = canvas.getContext('2d');
-    let W, H, centerX, centerY, scale;
+            // ========== 猫状态系统 ==========
+            const CatState = (function() {
+                let state = {
+                    cat: {
+                        name: '咪咪',
+                        mood: 'happy',
+                        energy: 80,
+                        hunger: 20,
+                        affection: 60,
+                        lastInteraction: Date.now(),
+                        moodTimer: 0,
+                        level: 1,
+                        exp: 0,
+                        streak: parseInt(localStorage.getItem('cat_streak') || '0'),
+                        lastVisit: localStorage.getItem('cat_lastVisit') || null,
+                    },
+                    user: {
+                        name: localStorage.getItem('user_name') || '',
+                        totalVisits: parseInt(localStorage.getItem('totalVisits') || '0'),
+                    },
+                    memory: {
+                        shortTerm: [],
+                        longTerm: JSON.parse(localStorage.getItem('longTermMemory') || '[]'),
+                        summary: localStorage.getItem('chat_summary') || '',
+                    },
+                    session: {
+                        mode: '通用陪伴',
+                        messages: [],
+                        interactionCount: 0,
+                    },
+                    settings: {
+                        nightMode: localStorage.getItem('nightMode') === 'true',
+                    }
+                };
+                let listeners = [];
 
-    function resize() {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        W = window.innerWidth;
-        H = window.innerHeight;
-        canvas.width = W * dpr;
-        canvas.height = H * dpr;
-        canvas.style.width = W + 'px';
-        canvas.style.height = H + 'px';
-        ctx.scale(dpr, dpr);
-        centerX = W / 2;
-        centerY = H / 2;
-        scale = Math.min(W, H) / 500;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+                function get() { return state; }
 
-    const CONFIG = {
-        particleCount: 200,
-        particleSize: 14,
-        particleSpeed: 0.035,
-        particleJitter: 0.4,
-        sampleResolution: 2,
-        outlineWidth: 4,
-        durationFloat: 0.5,
-        durationConverge: 2.5,
-        durationHold: 0.6,
-        durationBreathe: 0.8,
-        fadeOutDuration: 0.5,
-        breatheScale: 1.025,
-        particleFadeDuration: 0.5,
-    };
+                function set(newState) { state = { ...state, ...newState };
+                    notify();
+                    persist(); }
 
-    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-    function random(min, max) { return Math.random() * (max - min) + min; }
-
-    function drawCatPath(ctx, s) {
-        const r = 1.0;
-        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(-0.75*r, -0.70*r); ctx.lineTo(-1.12*r, -1.50*r); ctx.lineTo(-0.38*r, -0.88*r); ctx.closePath(); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0.72*r, -0.72*r); ctx.lineTo(1.18*r, -1.42*r); ctx.lineTo(0.42*r, -0.85*r); ctx.closePath(); ctx.stroke();
-        ctx.save(); ctx.translate(-0.35*r, -0.12*r); ctx.scale(0.14*r, 0.26*r);
-        ctx.beginPath(); ctx.ellipse(0,0,1,1,0,0,Math.PI*2); ctx.stroke();
-        ctx.beginPath(); ctx.ellipse(0,0,0.5,0.7,0,0,Math.PI*2); ctx.fill();
-        ctx.restore();
-        ctx.save(); ctx.translate(0.35*r, -0.12*r); ctx.scale(0.14*r, 0.26*r);
-        ctx.beginPath(); ctx.ellipse(0,0,1,1,0,0,Math.PI*2); ctx.stroke();
-        ctx.beginPath(); ctx.ellipse(0,0,0.5,0.7,0,0,Math.PI*2); ctx.fill();
-        ctx.restore();
-        ctx.beginPath(); ctx.arc(0, 0.06*r, 0.06*r, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(-0.14*r, 0.12*r); ctx.quadraticCurveTo(-0.08*r, 0.30*r, 0, 0.22*r);
-        ctx.moveTo(0.14*r, 0.12*r); ctx.quadraticCurveTo(0.08*r, 0.30*r, 0, 0.22*r); ctx.stroke();
-        const whiskerData = [
-            {sx:-0.65*r, sy:-0.05*r, angle:-0.15, len:0.65}, {sx:-0.68*r, sy:0.08*r, angle:0.02, len:0.72},
-            {sx:-0.62*r, sy:0.20*r, angle:0.20, len:0.58}, {sx:0.65*r, sy:-0.02*r, angle:0.18, len:0.60},
-            {sx:0.68*r, sy:0.10*r, angle:-0.02, len:0.70}, {sx:0.62*r, sy:0.22*r, angle:-0.22, len:0.55}
-        ];
-        whiskerData.forEach(w => {
-            const baseAngle = Math.atan2(w.sy, w.sx);
-            const endX = w.sx + Math.cos(baseAngle + w.angle) * w.len;
-            const endY = w.sy + Math.sin(baseAngle + w.angle) * w.len;
-            ctx.beginPath(); ctx.moveTo(w.sx, w.sy);
-            const midX = (w.sx + endX)/2 + (random(0,1)-0.5)*0.02*r;
-            const midY = (w.sy + endY)/2 + (random(0,1)-0.5)*0.02*r;
-            ctx.quadraticCurveTo(midX, midY, endX, endY); ctx.stroke();
-        });
-    }
-
-    function sampleCatOutline() {
-        const s = 200;
-        const offscreen = document.createElement('canvas');
-        offscreen.width = 2*s + 10; offscreen.height = 2*s + 10;
-        const octx = offscreen.getContext('2d');
-        octx.fillStyle = '#ffffff'; octx.fillRect(0,0,offscreen.width,offscreen.height);
-        octx.save(); octx.translate(offscreen.width/2, offscreen.height/2); octx.scale(s,s);
-        octx.lineWidth = CONFIG.outlineWidth/s; octx.strokeStyle = '#000000'; octx.fillStyle = '#000000';
-        octx.lineCap = 'round'; octx.lineJoin = 'round';
-        drawCatPath(octx, 1);
-        octx.restore();
-        const imageData = octx.getImageData(0,0,offscreen.width,offscreen.height);
-        const data = imageData.data;
-        const points = [];
-        const step = CONFIG.sampleResolution;
-        for (let y=0; y<offscreen.height; y+=step) {
-            for (let x=0; x<offscreen.width; x+=step) {
-                const idx = (y*offscreen.width + x)*4;
-                if (data[idx] < 128) {
-                    const px = (x - offscreen.width/2)/s;
-                    const py = (y - offscreen.height/2)/s;
-                    points.push({x:px, y:py});
+                function update(path, value) {
+                    const keys = path.split('.');
+                    let current = state;
+                    for (let i = 0; i < keys.length - 1; i++) {
+                        if (!current[keys[i]]) current[keys[i]] = {};
+                        current = current[keys[i]];
+                    }
+                    current[keys[keys.length - 1]] = value;
+                    notify();
+                    persist();
                 }
-            }
-        }
-        if (points.length < 30) {
-            const step2 = 1;
-            for (let y=0; y<offscreen.height; y+=step2) {
-                for (let x=0; x<offscreen.width; x+=step2) {
-                    const idx = (y*offscreen.width + x)*4;
-                    if (data[idx] < 128) {
-                        const px = (x - offscreen.width/2)/s;
-                        const py = (y - offscreen.height/2)/s;
-                        points.push({x:px, y:py});
+
+                function subscribe(fn) { listeners.push(fn); return () => { listeners = listeners.filter(l => l !==
+                        fn); }; }
+
+                function notify() { listeners.forEach(fn => fn(state)); }
+
+                function persist() {
+                    try {
+                        localStorage.setItem('catState', JSON.stringify(state));
+                        localStorage.setItem('user_name', state.user.name);
+                        localStorage.setItem('cat_streak', String(state.cat.streak));
+                        localStorage.setItem('cat_lastVisit', state.cat.lastVisit);
+                        localStorage.setItem('totalVisits', String(state.user.totalVisits));
+                        localStorage.setItem('longTermMemory', JSON.stringify(state.memory.longTerm));
+                        localStorage.setItem('chat_summary', state.memory.summary);
+                        localStorage.setItem('nightMode', String(state.settings.nightMode));
+                    } catch (e) {}
+                }
+
+                function load() {
+                    try {
+                        const saved = localStorage.getItem('catState');
+                        if (saved) { const parsed = JSON.parse(saved);
+                            state = { ...state, ...parsed }; }
+                    } catch (e) {}
+                    state.user.name = localStorage.getItem('user_name') || state.user.name || '';
+                    state.cat.streak = parseInt(localStorage.getItem('cat_streak') || String(state.cat.streak));
+                    state.cat.lastVisit = localStorage.getItem('cat_lastVisit') || state.cat.lastVisit;
+                    state.user.totalVisits = parseInt(localStorage.getItem('totalVisits') || String(state.user
+                        .totalVisits));
+                    state.memory.longTerm = JSON.parse(localStorage.getItem('longTermMemory') || '[]');
+                    state.memory.summary = localStorage.getItem('chat_summary') || state.memory.summary;
+                    state.settings.nightMode = localStorage.getItem('nightMode') === 'true';
+                }
+
+                function getTimeContext() {
+                    const hour = new Date().getHours();
+                    if (hour >= 23 || hour < 5) return { period: 'late', label: '🌙 深夜' };
+                    if (hour >= 5 && hour < 9) return { period: 'morning', label: '🌅 清晨' };
+                    if (hour >= 9 && hour < 12) return { period: 'morning', label: '☀️ 上午' };
+                    if (hour >= 12 && hour < 14) return { period: 'noon', label: '🌤️ 午后' };
+                    if (hour >= 14 && hour < 18) return { period: 'afternoon', label: '🌤️ 下午' };
+                    if (hour >= 18 && hour < 21) return { period: 'evening', label: '🌅 傍晚' };
+                    return { period: 'night', label: '🌙 夜晚' };
+                }
+
+                function checkIn() {
+                    const today = new Date().toLocaleDateString();
+                    const last = state.cat.lastVisit;
+                    state.user.totalVisits += 1;
+                    let isFirstVisit = false;
+                    if (last !== today) {
+                        isFirstVisit = true;
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        const yStr = yesterday.toLocaleDateString();
+                        if (last === yStr) {
+                            state.cat.streak += 1;
+                            if (state.cat.streak >= 7) { state.cat.exp += 15;
+                                state.cat.affection = Math.min(100, state.cat.affection + 8); }
+                            if (state.cat.streak >= 30) { state.cat.exp += 40;
+                                state.cat.affection = Math.min(100, state.cat.affection + 12); }
+                            if (state.cat.streak >= 100) { state.cat.exp += 80;
+                                state.cat.affection = Math.min(100, state.cat.affection + 20); }
+                        } else {
+                            state.cat.streak = 1;
+                        }
+                        state.cat.lastVisit = today;
+                        state.cat.level = Math.floor(state.cat.exp / 50) + 1;
+                        persist();
+                        notify();
+                    }
+                    return isFirstVisit;
+                }
+
+                function updateCat(interaction, extra = {}) {
+                    const now = Date.now();
+                    const elapsed = (now - state.cat.lastInteraction) / 1000 / 60;
+                    const maxChange = 30;
+                    state.cat.energy = Math.max(0, Math.min(100, state.cat.energy - Math.min(elapsed * 0.4,
+                        maxChange)));
+                    state.cat.hunger = Math.min(100, state.cat.hunger + Math.min(elapsed * 0.3, maxChange));
+                    state.cat.affection = Math.max(0, Math.min(100, state.cat.affection - Math.min(elapsed * 0.08,
+                        maxChange)));
+                    if (interaction === 'chat') {
+                        state.cat.affection = Math.min(100, state.cat.affection + 2);
+                        state.cat.energy = Math.min(100, state.cat.energy + 1);
+                        state.cat.exp += 2;
+                    } else if (interaction === 'pet') {
+                        state.cat.affection = Math.min(100, state.cat.affection + 8);
+                        state.cat.energy = Math.min(100, state.cat.energy + 4);
+                        state.cat.exp += 5;
+                    } else if (interaction === 'feed') {
+                        state.cat.hunger = Math.max(0, state.cat.hunger - 25);
+                        state.cat.affection = Math.min(100, state.cat.affection + 4);
+                        state.cat.exp += 3;
+                    }
+                    if (extra.affectionBonus) state.cat.affection = Math.min(100, state.cat.affection + extra
+                        .affectionBonus);
+                    if (extra.expBonus) state.cat.exp += extra.expBonus;
+                    state.cat.lastInteraction = now;
+                    state.cat.moodTimer += 1;
+                    const moodCandidates = [];
+                    if (state.cat.energy < 15) moodCandidates.push('sleepy');
+                    if (state.cat.hunger > 75) moodCandidates.push('hungry');
+                    if (state.cat.affection < 15) moodCandidates.push('lonely');
+                    if (state.cat.energy > 70 && state.cat.affection > 60) moodCandidates.push('curious');
+                    if (state.cat.affection > 80) moodCandidates.push('happy');
+                    if (state.cat.energy > 50 && state.cat.hunger < 40 && state.cat.affection > 40) moodCandidates
+                        .push('happy');
+                    if (moodCandidates.length === 0) moodCandidates.push('bored');
+                    if (state.cat.moodTimer > 30 && Math.random() < 0.15) moodCandidates.push('annoyed');
+                    state.cat.mood = moodCandidates[0] || 'bored';
+                    state.cat.level = Math.floor(state.cat.exp / 50) + 1;
+                    persist();
+                    notify();
+                }
+
+                function getWelcome() {
+                    const time = getTimeContext();
+                    const streak = state.cat.streak;
+                    let msg = streak === 0 ? '你来了。我等你很久了。' :
+                        streak === 1 ? '又见面了。今天过得好吗？' :
+                        streak >= 30 ? '你来了。👑 第' + streak + '天了。' :
+                        streak >= 7 ? '回来啦。🧣 第' + streak + '天了。' : '回来啦。';
+                    if (time.period === 'late') msg += ' 这么晚了，你还没睡。';
+                    else if (time.period === 'morning') msg += ' 早安，今天也慢慢来。';
+                    else if (time.period === 'evening') msg += ' 今天辛苦了。';
+                    return msg;
+                }
+
+                function getBuffer(userMsg) {
+                    const lower = userMsg.toLowerCase();
+                    if (lower.includes('累') || lower.includes('好累')) return '先坐一下，我在。';
+                    if (lower.includes('烦') || lower.includes('焦虑') || lower.includes('压力')) return
+                        '嗯，我听到了。不急，慢慢说。';
+                    if (lower.includes('难过') || lower.includes('想哭') || lower.includes('难受')) return
+                        '我在这里。你可以哭，我陪着你。';
+                    if (lower.includes('开心') || lower.includes('好棒') || lower.includes('终于')) return
+                        '真好。我也跟着开心了。';
+                    if (lower.includes('不知道') || lower.includes('迷茫') || lower.includes('怎么办')) return
+                        '不知道也没关系。我们一起想。';
+                    if (lower.includes('晚安') || lower.includes('睡了')) return '晚安。明天见。💤';
+                    if (lower.includes('早上') || lower.includes('早啊')) return '早。今天又是新的一天。';
+                    return '嗯，我在听。';
+                }
+
+                function getDailyComfort() {
+                    const hour = new Date().getHours();
+                    if (hour >= 22 || hour < 5) return '今天已经很努力了，该睡啦。';
+                    if (hour >= 5 && hour < 9) return '早安，今天也慢慢来。';
+                    if (hour >= 12 && hour < 14) return '中午了，记得吃饭。';
+                    if (hour >= 18 && hour < 21) return '傍晚了，今天过得怎么样？';
+                    return '我在这里。';
+                }
+
+                function getPetResponse() {
+                    const map = {
+                        happy: '（咕噜咕噜）好舒服… 再摸摸… 😊',
+                        sleepy: '（半睁眼）… 嗯… 别停… zzz…',
+                        bored: '（主动蹭手）呜呜… 多摸摸我… 🥺',
+                        curious: '（歪头）你在摸什么？… 不过好舒服…',
+                        hungry: '（舔舔嘴）摸完了可以给我吃的吗？…',
+                        lonely: '（把头埋进你手里）… 别走… 再待一会儿…',
+                        annoyed: '（哼了一声）… 勉强让你摸一下…',
+                    };
+                    return map[state.cat.mood] || '（眯眼）… 好舒服…';
+                }
+
+                load();
+                return { get, set, update, subscribe, checkIn, updateCat, getWelcome, getBuffer, getDailyComfort,
+                    getPetResponse, getTimeContext };
+            })();
+
+            // ========== AI层 ==========
+            const AILayer = (function() {
+                const state = CatState;
+
+                function buildSystemPrompt(mode) {
+                    const cat = state.get().cat;
+                    const user = state.get().user;
+                    const memory = state.get().memory;
+                    const time = state.getTimeContext();
+                    const moodDesc = {
+                        happy: '开心、温暖、有活力',
+                        sleepy: '困倦、慵懒、说话慢一点',
+                        bored: '有点无聊、想找点有趣的事',
+                        curious: '好奇、想多问几个问题',
+                        hungry: '有点饿、说话会稍微不耐烦一点点',
+                        lonely: '孤独、特别想和用户多待一会儿',
+                        annoyed: '有点小脾气、傲娇',
+                    };
+                    let memoryContext = '';
+                    if (memory.summary) memoryContext = `\n【你们之前聊过的事】\n${memory.summary}\n`;
+                    if (memory.longTerm && memory.longTerm.length > 0) {
+                        const recent = memory.longTerm.slice(-3);
+                        if (recent.length > 0) memoryContext += `\n【用户说过的重要事情】\n${recent.join('\n')}\n`;
+                    }
+                    const streakMsg = cat.streak > 0 ? `这是你们连续相处的第 ${cat.streak} 天。` : '';
+                    const levelMsg = cat.level > 1 ? `你们的关系等级是 ${cat.level} 级。` : '';
+                    const modeMap = {
+                        '通用陪伴': '',
+                        '塔罗牌': '你是一位塔罗解读师。逐张解读→整体联动→礼物+说白了。350字以内。',
+                        '碎碎念垃圾桶': '垃圾桶：根据销毁方式返回对应结语。',
+                        '文字褪色馆': '文字褪色馆：把情绪激烈的词替换成平和的词，只让语气变轻。',
+                        '情绪镜像': '情绪镜像：按【情绪画像】【内心独白】【温柔提醒】输出。',
+                        '平行宇宙': '平行宇宙：以"如果当初"开头，好坏都展示，结尾固定。',
+                        '交换日记': '交换日记：回信方式回应，带一句自己的生活小事，温暖收尾。',
+                        '纠结骰子': '纠结骰子：转选项逗号分隔。不给建议。',
+                        '父母翻译器': '父母翻译器：三段输出【父母动机】【用户反应】【可能的表达方式】。',
+                        '解结': '苏格拉底式提问者。只问1-2个问题。不给建议。',
+                    };
+                    return `你是咪咪，一只会陪伴、会记得、会吐槽的AI猫。${user.name ? '你正在和 ' + user.name + ' 聊天。' : '你正在和用户聊天。'}${streakMsg}${levelMsg}\n【你现在的状态】心情：${cat.mood}（${moodDesc[cat.mood] || '平静'}）精力：${Math.round(cat.energy)}/100 饥饿度：${Math.round(cat.hunger)}/100 亲密度：${Math.round(cat.affection)}/100${memoryContext}\n【时间】${time.label}\n【规则】1. 永远先复述用户说的具体事情，再回应感受。2. 不要给建议，除非用户明确问。3. 口语化、短句、有温度。每次回应不超过200字。4. 你是猫，你有自己的性格——会根据心情改变语气。5. 如果用户提到以前说过的事，你要主动引用：「你上次说过…」6. ${modeMap[mode] || ''}`;
+                }
+
+                function buildMessages(mode, userInput, history = []) {
+                    return [
+                        { role: 'system', content: buildSystemPrompt(mode) },
+                        ...history.slice(-8).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant',
+                            content: m.content })),
+                        { role: 'user', content: userInput }
+                    ];
+                }
+
+                function updateMemory(userMsg, aiMsg) {
+                    const memory = CatState.get().memory;
+                    memory.shortTerm.push({ user: userMsg, ai: aiMsg, time: Date.now() });
+                    if (memory.shortTerm.length > 10) memory.shortTerm.shift();
+                    if (memory.shortTerm.length % 5 === 0 && memory.shortTerm.length > 0) {
+                        const longTerm = CatState.get().memory.longTerm;
+                        const existing = new Set(longTerm);
+                        memory.shortTerm.forEach(msg => {
+                            const kw = ['难过', '开心', '担心', '害怕', '喜欢', '讨厌', '想', '希望', '决定',
+                                '放弃', '坚持', '后悔', '期待', '迷茫', '焦虑', '孤独', '疲惫'
+                            ];
+                            kw.forEach(k => { if (msg.user.includes(k) && !existing.has(msg.user.slice(0,
+                                    50))) { longTerm.push(msg.user.slice(0, 50));
+                                    existing.add(msg.user.slice(0, 50)); } });
+                        });
+                        if (longTerm.length > 50) longTerm.splice(0, longTerm.length - 50);
+                        CatState.set({ memory: { ...CatState.get().memory, longTerm } });
                     }
                 }
-            }
-        }
-        return points.length ? points : [{x:0,y:0}];
-    }
 
-    let particles = [], animationState = 'float', animTime = 0, breathePhase = 0;
-    let cachedTargets = null, particleFadeStart = 0;
-    let isDone = false;
-    let rafId = null;
-    let startTime = Date.now();
-    const MAX_DURATION = 12000; // 12秒强制结束
-
-    function getTargets() {
-        if (!cachedTargets || cachedTargets.length === 0) {
-            cachedTargets = sampleCatOutline();
-            if (cachedTargets.length < 20) {
-                cachedTargets = [];
-                for (let i=0; i<200; i++) {
-                    const ang = (i/200)*Math.PI*2;
-                    const r = 0.9 + random(0,1)*0.1;
-                    cachedTargets.push({x: Math.cos(ang)*r, y: Math.sin(ang)*r});
+                async function callAI(mode, userInput, history = []) {
+                    const messages = buildMessages(mode, userInput, history);
+                    return await fetch(WORKER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model: currentModel === 'deepseek' ? DEEPSEEK_MODEL :
+                                ZHIPU_MODEL, messages, temperature: 0.7, max_tokens: 500, stream: true }),
+                    });
                 }
-            }
-        }
-        return cachedTargets;
-    }
+                return { buildSystemPrompt, buildMessages, updateMemory, callAI };
+            })();
 
-    function initParticles() {
-        const targets = getTargets();
-        const count = Math.min(CONFIG.particleCount, targets.length);
-        const shuffled = [...targets];
-        for (let i=shuffled.length-1; i>0; i--) {
-            const j = Math.floor(random(0,1)*(i+1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        const selected = shuffled.slice(0, count);
-        while (selected.length < CONFIG.particleCount) {
-            const ang = random(0,1)*Math.PI*2;
-            const r = 0.3 + random(0,1)*0.7;
-            selected.push({x: Math.cos(ang)*r, y: Math.sin(ang)*r});
-        }
-        particles = selected.map((target) => {
-            const spread = CONFIG.particleJitter*2.0 + 0.5;
-            const initAngle = random(0,1)*Math.PI*2;
-            const initRadius = 1.2 + random(0,1)*spread;
-            return {
-                x: Math.cos(initAngle)*initRadius,
-                y: Math.sin(initAngle)*initRadius,
-                tx: target.x, ty: target.y,
-                char: random(0,1)<0.5 ? '0' : '1',
-                phase: random(0,1)*Math.PI*2,
-                sizeOffset: 0.85 + random(0,1)*0.3,
-            };
-        });
-    }
+            // ========== 主循环 ==========
+            const MainLoop = (function() {
+                const state = CatState;
+                const ai = AILayer;
+                let isGenerating = false,
+                    chatHistory = [],
+                    messageTimestamps = [];
+                let abortController = null,
+                    currentAIMsgEl = null,
+                    currentMode = '通用陪伴';
+                const msgList = $('msgList'),
+                    msgInput = $('msg-input'),
+                    sendBtn = $('send-btn'),
+                    interactArea = $('interactArea'),
+                    chatInputArea = $('chatInputArea');
 
-    let lastTime = 0;
-    function updateAnimation(delta) {
-        animTime += delta;
-        const totalFloat = CONFIG.durationFloat;
-        const totalConverge = CONFIG.durationConverge;
-        const totalHold = CONFIG.durationHold;
-        const totalBreathe = CONFIG.durationBreathe;
-
-        if (animationState === 'float' && animTime > totalFloat) animationState = 'converge';
-        if (animationState === 'converge' && animTime > totalFloat + totalConverge) {
-            animationState = 'hold';
-            particleFadeStart = animTime;
-        }
-        if (animationState === 'hold' && animTime > totalFloat + totalConverge + totalHold) {
-            animationState = 'breathe';
-            breathePhase = 0;
-        }
-        if (animationState === 'breathe' && animTime > totalFloat + totalConverge + totalHold + totalBreathe) {
-            animationState = 'fading';
-        }
-        if (animationState === 'fading' && animTime > totalFloat + totalConverge + totalHold + totalBreathe + CONFIG.fadeOutDuration) {
-            animationState = 'done';
-            if (!isDone) {
-                isDone = true;
-                canvas.classList.add('hidden');
-                document.getElementById('catLogo').classList.add('show');
-                document.getElementById('appContainer').classList.add('visible');
-                afterSplash();
-            }
-        }
-
-        // 强制超时结束
-        if (Date.now() - startTime > MAX_DURATION && !isDone) {
-            isDone = true;
-            canvas.classList.add('hidden');
-            document.getElementById('catLogo').classList.add('show');
-            document.getElementById('appContainer').classList.add('visible');
-            afterSplash();
-            return;
-        }
-
-        const progress = clamp((animTime - totalFloat) / totalConverge, 0, 1);
-        const ease = progress < 0.5 ? 4*progress*progress*progress : 1 - Math.pow(-2*progress+2, 3)/2;
-
-        particles.forEach(p => {
-            if (animationState === 'float') {
-                const drift = 0.002 * delta * 60;
-                p.x += (random(0,1)-0.5)*drift; p.y += (random(0,1)-0.5)*drift;
-                const d = Math.hypot(p.x, p.y);
-                if (d > 2.8) { p.x = (p.x/d)*2.8; p.y = (p.y/d)*2.8; }
-            } else if (animationState === 'converge') {
-                const speed = CONFIG.particleSpeed * 1.2;
-                const dx = p.tx - p.x, dy = p.ty - p.y;
-                const d = Math.hypot(dx, dy);
-                if (d > 0.001) {
-                    const step = Math.min(d, speed * (0.5 + ease*1.5));
-                    p.x += (dx/d)*step; p.y += (dy/d)*step;
-                } else { p.x = p.tx; p.y = p.ty; }
-                p.x += (random(0,1)-0.5)*0.002; p.y += (random(0,1)-0.5)*0.002;
-            } else {
-                const breath = Math.sin(animTime*2 + p.phase) * 0.0015;
-                p.x = p.tx + breath;
-                p.y = p.ty + (random(0,1)-0.5)*0.001;
-            }
-        });
-
-        if (animationState === 'breathe' || animationState === 'fading') {
-            breathePhase = (animTime - totalFloat - totalConverge - totalHold) / totalBreathe;
-        }
-    }
-
-    function draw() {
-        ctx.clearRect(0, 0, W, H);
-        const bgGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(W,H)*0.7);
-        bgGrad.addColorStop(0, '#fdf9f4');
-        bgGrad.addColorStop(1, '#f0ebe0');
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, W, H);
-
-        const s = scale * 120;
-        let globalAlpha = 1.0;
-        if (animationState === 'fading') {
-            const fadeStart = CONFIG.durationFloat + CONFIG.durationConverge + CONFIG.durationHold + CONFIG.durationBreathe;
-            const fadeProgress = clamp((animTime - fadeStart) / CONFIG.fadeOutDuration, 0, 1);
-            globalAlpha = 1 - fadeProgress;
-        }
-        if (animationState === 'done') globalAlpha = 0;
-
-        ctx.save();
-        ctx.globalAlpha = globalAlpha;
-
-        let particleAlphaMul = 1.0;
-        if (animationState === 'hold') {
-            const fadeElapsed = animTime - particleFadeStart;
-            particleAlphaMul = clamp(1 - fadeElapsed / CONFIG.particleFadeDuration, 0, 1);
-        } else if (animationState === 'breathe' || animationState === 'fading') {
-            particleAlphaMul = 0;
-        }
-
-        if (particles.length && particleAlphaMul > 0.01) {
-            const fontSize = CONFIG.particleSize * scale * 0.6;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            const convergeProgress = clamp((animTime - CONFIG.durationFloat) / CONFIG.durationConverge, 0, 1);
-            particles.forEach(p => {
-                const px = centerX + p.x * s;
-                const py = centerY + p.y * s;
-                let alpha = 0.6;
-                if (animationState === 'float') alpha = 0.5 + Math.sin(animTime*0.5 + p.phase)*0.15;
-                else if (animationState === 'converge') alpha = 0.6 + convergeProgress*0.4;
-                else alpha = 0.9 + Math.sin(animTime*1.2 + p.phase)*0.1;
-                alpha *= particleAlphaMul;
-                if (animationState === 'fading') {
-                    const fadeStart = CONFIG.durationFloat + CONFIG.durationConverge + CONFIG.durationHold + CONFIG.durationBreathe;
-                    alpha *= (1 - (animTime - fadeStart) / CONFIG.fadeOutDuration);
+                function updateUILayout(mode) {
+                    const hasUI = ['塔罗牌', '碎碎念垃圾桶', '文字褪色馆', '情绪镜像', '平行宇宙', '交换日记', '纠结骰子',
+                        '父母翻译器', '解结'
+                    ].includes(mode);
+                    if (hasUI) {
+                        interactArea.classList.remove('hidden');
+                        chatInputArea.style.display = 'none';
+                        msgList.style.flex = 'none';
+                    } else {
+                        interactArea.classList.add('hidden');
+                        chatInputArea.style.display = 'flex';
+                        msgList.style.flex = '1';
+                    }
+                    interactArea.innerHTML = '';
                 }
-                ctx.globalAlpha = clamp(alpha * globalAlpha, 0, 1);
-                ctx.fillStyle = '#000000';
-                const size = fontSize * (0.9 + p.sizeOffset*0.2);
-                ctx.font = `${size}px "SF Mono", "Menlo", "Consolas", monospace`;
-                ctx.save();
-                ctx.translate(px, py);
-                ctx.rotate((random(0,1)-0.5)*0.02);
-                ctx.fillText(p.char, 0, 0);
-                ctx.restore();
-            });
-        }
 
-        let catAlpha = 0;
-        const convergeProgress = clamp((animTime - CONFIG.durationFloat) / CONFIG.durationConverge, 0, 1);
-        if (animationState === 'float') catAlpha = 0;
-        else if (animationState === 'converge') catAlpha = convergeProgress * 0.7;
-        else if (animationState === 'hold' || animationState === 'breathe') catAlpha = 0.85;
-        else if (animationState === 'fading') {
-            const fadeStart = CONFIG.durationFloat + CONFIG.durationConverge + CONFIG.durationHold + CONFIG.durationBreathe;
-            const fadeProgress = clamp((animTime - fadeStart) / CONFIG.fadeOutDuration, 0, 1);
-            catAlpha = 0.85 * (1 - fadeProgress);
-        }
-
-        if (catAlpha > 0.01) {
-            ctx.save();
-            ctx.globalAlpha = catAlpha * globalAlpha;
-            ctx.translate(centerX, centerY);
-            ctx.scale(s, s);
-            let breatheScale = 1;
-            if (animationState === 'breathe' || animationState === 'fading') {
-                const phase = breathePhase * Math.PI * 2;
-                breatheScale = 1 + (CONFIG.breatheScale - 1) * (0.7*Math.sin(phase) + 0.3*Math.sin(phase*0.7+0.5));
-            } else if (animationState === 'hold') {
-                const holdTime = animTime - CONFIG.durationFloat - CONFIG.durationConverge;
-                if (holdTime < 0.3) {
-                    const bounce = 1 + 0.015 * Math.sin(holdTime*30) * Math.exp(-holdTime*8);
-                    breatheScale = bounce;
+                function addMsg(text, isUser, isBuffer = false) {
+                    if (!text) return;
+                    const el = document.createElement('div');
+                    if (isBuffer) { el.className = 'msg-cat-buffer';
+                        el.textContent = '🐱 ' + text; } else { el.className = isUser ? 'msg-user' : 'msg-ai';
+                        el.textContent = text; }
+                    msgList.appendChild(el);
+                    msgList.scrollTop = msgList.scrollHeight;
+                    return el;
                 }
-            }
-            ctx.scale(breatheScale, breatheScale);
-            ctx.lineWidth = 1.8 / s;
-            ctx.strokeStyle = '#000000';
-            ctx.fillStyle = '#000000';
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            drawCatPath(ctx, 1);
-            ctx.restore();
-        }
 
-        if ((animationState === 'breathe' || animationState === 'fading') && globalAlpha > 0.1) {
-            const breathValue = 0.5 + 0.5 * Math.sin(breathePhase * Math.PI * 2);
-            const glowRadius = s * (0.9 + 0.08 * breathValue);
-            const glow = ctx.createRadialGradient(centerX, centerY, s*0.1, centerX, centerY, glowRadius);
-            glow.addColorStop(0, `rgba(200, 180, 160, ${0.03*globalAlpha})`);
-            glow.addColorStop(1, `rgba(200, 180, 160, 0)`);
-            ctx.fillStyle = glow;
-            ctx.fillRect(0, 0, W, H);
-        }
-        ctx.restore();
-
-        if (animTime < 1.5 && animationState === 'float') {
-            ctx.save();
-            ctx.globalAlpha = 0.25 * (1 - animTime/1.5);
-            ctx.fillStyle = '#8a7e72';
-            ctx.font = `${12*scale}px system-ui, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText('0 与 1 正在汇聚…', centerX, H - 32*scale);
-            ctx.restore();
-        }
-    }
-
-    function loop(time) {
-        try {
-            const delta = lastTime ? Math.min((time - lastTime)/1000, 0.05) : 0.016;
-            lastTime = time;
-            updateAnimation(delta);
-            draw();
-            if (animationState !== 'done' || !isDone) {
-                rafId = requestAnimationFrame(loop);
-            }
-        } catch(e) {
-            console.warn('开屏循环错误:', e);
-            if (!isDone) {
-                isDone = true;
-                canvas.classList.add('hidden');
-                document.getElementById('catLogo').classList.add('show');
-                document.getElementById('appContainer').classList.add('visible');
-                afterSplash();
-            }
-        }
-    }
-
-    getTargets();
-    initParticles();
-    rafId = requestAnimationFrame(loop);
-
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            resize();
-        }, 300);
-    });
-})();
-
-// ============================================================
-// 第二部分：主应用核心逻辑（修复版）
-// ============================================================
-let animationsEnabled = localStorage.getItem('animationsEnabled') !== 'false';
-const WORKER_URL = "https://51ai-1.pages.dev/api/proxy";
-const ZHIPU_MODEL = "glm-4-flash";
-const DEEPSEEK_MODEL = "deepseek-v4-flash";
-let currentModel = localStorage.getItem('currentModel') || 'zhipu';
-let userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-
-function getAPIUrl(){ return WORKER_URL; }
-function getModelName(){ return currentModel === 'deepseek' ? DEEPSEEK_MODEL : ZHIPU_MODEL; }
-
-// ===== 用户画像 =====
-function buildProfilePrompt(){
-    if(!userProfile.name && !userProfile.relation && !userProfile.age && !userProfile.job && !userProfile.birthday && !userProfile.note) return '';
-    let p = '\n【关于用户】';
-    if(userProfile.name) p += '\n称呼：' + userProfile.name;
-    if(userProfile.relation) p += '\n关系：' + userProfile.relation;
-    if(userProfile.age) p += '\n年龄：' + userProfile.age;
-    if(userProfile.birthday) p += '\n生日：' + userProfile.birthday;
-    if(userProfile.job) p += '\n职业/身份：' + userProfile.job;
-    if(userProfile.note) p += '\n备注：' + userProfile.note;
-    p += '\n根据以上信息调整称呼和语气。';
-    return p;
-}
-
-function editProfile(){
-    closeSettings();
-    const div = document.createElement('div');
-    div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:10001;display:flex;align-items:center;justify-content:center';
-    div.innerHTML = `<div style="background:var(--card-bg);border-radius:20px;padding:24px;width:90%;max-width:360px;text-align:center;position:relative;max-height:90vh;overflow-y:auto">
-        <h3 style="margin-bottom:16px;color:var(--text-header)">👤 我们是什么关系？</h3>
-        <select class="profile-select" id="pfRelation">
-            <option value="">关系（选填）</option>
-            <option value="普通朋友" ${userProfile.relation==='普通朋友'?'selected':''}>普通朋友</option>
-            <option value="哥们" ${userProfile.relation==='哥们'?'selected':''}>哥们</option>
-            <option value="闺蜜" ${userProfile.relation==='闺蜜'?'selected':''}>闺蜜</option>
-            <option value="温柔陪伴者" ${userProfile.relation==='温柔陪伴者'?'selected':''}>温柔陪伴者</option>
-            <option value="理性倾听者" ${userProfile.relation==='理性倾听者'?'selected':''}>理性倾听者</option>
-        </select>
-        <input class="profile-input" id="pfName" placeholder="怎么称呼你？（选填）" value="${userProfile.name||''}">
-        <input class="profile-input" id="pfAge" placeholder="年龄（选填）" value="${userProfile.age||''}">
-        <input class="profile-input" id="pfBirthday" placeholder="生日，如11月15日（选填）" value="${userProfile.birthday||''}">
-        <input class="profile-input" id="pfJob" placeholder="职业/身份，如初中生（选填）" value="${userProfile.job||''}">
-        <input class="profile-input" id="pfNote" placeholder="还有什么想让我知道的？（选填）" value="${userProfile.note||''}">
-        <button class="interact-btn" style="width:100%;margin-top:8px" id="pfSaveBtn">保存</button>
-        <button class="interact-btn" style="width:100%;margin-top:4px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="this.closest('div').parentElement.remove()">取消</button>
-    </div>`;
-    document.body.appendChild(div);
-    document.getElementById('pfSaveBtn').addEventListener('click',()=>{
-        userProfile = {
-            relation: document.getElementById('pfRelation').value,
-            name: document.getElementById('pfName').value.trim(),
-            age: document.getElementById('pfAge').value.trim(),
-            birthday: document.getElementById('pfBirthday').value.trim(),
-            job: document.getElementById('pfJob').value.trim(),
-            note: document.getElementById('pfNote').value.trim()
-        };
-        localStorage.setItem('userProfile', JSON.stringify(userProfile));
-        resetHistory();
-        div.closest('div').parentElement.remove();
-        if(currentMode==='通用陪伴'){ msgList.innerHTML=''; addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false); }
-    });
-}
-
-// ===== 签到系统 =====
-function getCheckinData(){
-    return JSON.parse(localStorage.getItem('checkinData') || '{"count":0,"lastDate":"","streak":0}');
-}
-function updateCheckin(){
-    const today = new Date().toLocaleDateString();
-    const data = getCheckinData();
-    if(data.lastDate === today) return data;
-    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-    const yStr = yesterday.toLocaleDateString();
-    if(data.lastDate === yStr) { data.streak++; } else { data.streak = 1; }
-    data.count++;
-    data.lastDate = today;
-    localStorage.setItem('checkinData', JSON.stringify(data));
-    updateBadges();
-    triggerDailyEgg();
-    return data;
-}
-function updateBadges(){
-    const data = getCheckinData();
-    const scarf = document.getElementById('badgeScarf');
-    const crown = document.getElementById('badgeCrown');
-    const scarfSvg = document.querySelector('.scarf-svg');
-    const crownSvg = document.querySelector('.crown-svg');
-    if(data.streak >= 7) { scarf.classList.add('show'); if(scarfSvg) scarfSvg.classList.add('show'); }
-    else { scarf.classList.remove('show'); if(scarfSvg) scarfSvg.classList.remove('show'); }
-    if(data.streak >= 30) { crown.classList.add('show'); if(crownSvg) crownSvg.classList.add('show'); }
-    else { crown.classList.remove('show'); if(crownSvg) crownSvg.classList.remove('show'); }
-}
-updateCheckin();
-
-// ===== 每日彩蛋 =====
-function triggerDailyEgg(){
-    if(!animationsEnabled) return;
-    const today = new Date().toLocaleDateString();
-    const lastEgg = localStorage.getItem('lastEggDate');
-    if(lastEgg === today) return;
-    localStorage.setItem('lastEggDate', today);
-    const actions = ['blink', 'wiggle', 'yawn', 'sleep'];
-    const action = actions[Math.floor(Math.random() * actions.length)];
-    const logo = document.getElementById('catLogo');
-    logo.classList.remove('cat-blink','cat-wiggle','cat-yawn','cat-sleep','cat-eat','cat-breathe');
-    setTimeout(() => {
-        logo.classList.add('cat-' + action);
-        setTimeout(() => {
-            logo.classList.remove('cat-' + action);
-            if(animationsEnabled) logo.classList.add('cat-breathe');
-            updateTimeState();
-        }, action === 'yawn' ? 1200 : 600);
-    }, 100);
-}
-
-// ===== 时间状态 =====
-function updateTimeState(){
-    const logo = document.getElementById('catLogo');
-    if(!logo) return;
-    const h = new Date().getHours();
-    logo.classList.remove('cat-sleep','cat-eat','cat-breathe');
-    if(h >= 23 || h < 5) {
-        logo.classList.add('cat-sleep');
-    } else if(h >= 11 && h <= 13) {
-        logo.classList.add('cat-eat');
-    } else {
-        if(animationsEnabled) logo.classList.add('cat-breathe');
-    }
-}
-setInterval(updateTimeState, 60000);
-setTimeout(updateTimeState, 1000);
-
-// ===== 生日检测 =====
-function checkBirthday(){
-    if(!userProfile.birthday) return;
-    const today = new Date();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    const bd = userProfile.birthday.replace(/[^0-9]/g,'');
-    if(bd.length >= 4){
-        const bMonth = parseInt(bd.substring(0,2));
-        const bDay = parseInt(bd.substring(2,4));
-        if(bMonth === month && bDay === day){
-            const logo = document.getElementById('catLogo');
-            logo.classList.add('cat-birthday');
-            setTimeout(() => {
-                addMsg('🎂 生日快乐！今天是你特别的日子，我为你准备了小小的庆祝。', false);
-                let i = 0;
-                const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#9b59b6'];
-                const interval = setInterval(() => {
-                    logo.style.filter = 'drop-shadow(0 0 20px ' + colors[i % colors.length] + ')';
-                    i++;
-                    if(i > 20) { clearInterval(interval); logo.style.filter = ''; }
-                }, 200);
-            }, 1000);
-        }
-    }
-}
-setTimeout(checkBirthday, 2000);
-
-// ===== 动画开关 =====
-function toggleAnimations(){
-    animationsEnabled = !animationsEnabled;
-    localStorage.setItem('animationsEnabled', animationsEnabled);
-    document.getElementById('animStatus').textContent = animationsEnabled ? '开' : '关';
-    const logo = document.getElementById('catLogo');
-    logo.classList.remove('cat-blink','cat-wiggle','cat-yawn','cat-sleep','cat-eat','cat-breathe','cat-birthday');
-    if(animationsEnabled) {
-        logo.classList.add('cat-breathe');
-        updateTimeState();
-    }
-    closeSettings();
-}
-
-// ===== 品牌IP猫Logo动画 =====
-function initCatLogoAnimation() {
-    const logo = document.getElementById('catLogo');
-    if(!logo) return;
-    if(animationsEnabled) logo.classList.add('cat-breathe');
-    updateTimeState();
-    logo.addEventListener('click', () => {
-        if(!animationsEnabled) return;
-        const actions = ['blink', 'wiggle', 'yawn'];
-        const action = actions[Math.floor(Math.random() * actions.length)];
-        logo.classList.remove('cat-blink','cat-wiggle','cat-yawn','cat-breathe');
-        logo.classList.add('cat-' + action);
-        setTimeout(() => {
-            logo.classList.remove('cat-' + action);
-            if(animationsEnabled) logo.classList.add('cat-breathe');
-            updateTimeState();
-        }, action === 'yawn' ? 1200 : 500);
-    });
-}
-setTimeout(initCatLogoAnimation, 500);
-
-// ===== 收藏功能 =====
-function addFavorite(content, mode){
-    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    favorites.unshift({ time: Date.now(), content: content.slice(0, 500), mode: mode });
-    if(favorites.length > 50) favorites = favorites.slice(0, 50);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-}
-function viewFavorites(){
-    closeSettings();
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    if(favorites.length === 0){ alert('还没有收藏任何内容'); return; }
-    let html = '<div style="text-align:left;max-height:400px;overflow-y:auto;font-size:12px;color:var(--text-ai)">';
-    favorites.forEach((f, i) => { html += '<div style="padding:8px;border-bottom:1px solid var(--border-light)"><div style="opacity:0.5;font-size:10px">'+f.mode+' · '+new Date(f.time).toLocaleDateString()+'</div>'+f.content+'</div>'; });
-    html += '</div>';
-    const div = document.createElement('div');
-    div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card-bg);border-radius:16px;padding:20px;z-index:10001;max-width:360px;width:90%;text-align:center';
-    div.innerHTML = '<h3 style="margin-bottom:12px;color:var(--text-header)">💾 我的收藏</h3>'+html+'<button class="interact-btn" style="margin-top:12px" onclick="this.parentElement.remove()">关闭</button>';
-    document.body.appendChild(div);
-}
-
-// ===== 记忆功能 =====
-function saveMemory(){
-    if(chatHistory.length < 2) return;
-    const recent = chatHistory.slice(-6);
-    const summary = recent.map(m => m.role + ': ' + m.content).join(' | ');
-    try {
-        localStorage.setItem('chat_summary', summary.slice(0, 500));
-        localStorage.setItem('chat_full', JSON.stringify(chatHistory));
-        localStorage.setItem('chatHTML', msgList.innerHTML);
-    } catch(e) { /* 存储失败忽略 */ }
-}
-function loadMemory(){
-    const full = JSON.parse(localStorage.getItem('chat_full') || 'null');
-    if(full && full.length > 0) {
-        chatHistory = [{ role: "system", content: buildSystem() }, ...full.filter(m => m.role !== "system")];
-    }
-    const html = localStorage.getItem('chatHTML');
-    if(html && currentMode === '通用陪伴'){ msgList.innerHTML = html; msgList.scrollTop = msgList.scrollHeight; }
-    const summary = localStorage.getItem('chat_summary') || '';
-    return summary ? '\n【你和ta之前聊过的事】\n' + summary : '';
-}
-function exportMemory(){
-    const data = { chat_full: JSON.parse(localStorage.getItem('chat_full') || '[]'), chat_summary: localStorage.getItem('chat_summary') || '', time: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = '温柔陪伴_记忆备份_' + new Date().toLocaleDateString() + '.json'; a.click();
-}
-function importMemory(){
-    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
-    input.onchange = e => {
-        const file = e.target.files[0]; const reader = new FileReader();
-        reader.onload = ev => { try {
-            const data = JSON.parse(ev.target.result);
-            if(data.chat_full) localStorage.setItem('chat_full', JSON.stringify(data.chat_full));
-            if(data.chat_summary) localStorage.setItem('chat_summary', data.chat_summary);
-            alert('记忆已导入，刷新页面生效');
-        } catch(e) { alert('文件格式不对'); } };
-        reader.readAsText(file);
-    };
-    input.click();
-}
-
-// ===== 每日情绪天气 =====
-(function(){
-    const today = new Date().toLocaleDateString();
-    const lastVisit = localStorage.getItem('last_visit');
-    if(lastVisit !== today){
-        localStorage.setItem('last_visit', today);
-        const weathers = ['🌤️','⛅','🌦️','🌧️','⛈️','🌩️'];
-        const w = weathers[Math.floor(Math.random() * weathers.length)];
-        setTimeout(() => {
-            const el = document.createElement('div');
-            el.style.cssText = 'text-align:center;padding:8px;font-size:13px;color:var(--text-ai);opacity:0.7';
-            const greetings = ["欢迎回来", "今天也见面啦", "今天过得怎么样？", "一直在等你", "好久不见", "今天也辛苦了"];
-            const g = greetings[Math.floor(Math.random() * greetings.length)];
-            el.textContent = w + ' ' + g + '。今天是你来了，这里就不一样了。';
-            msgList.appendChild(el);
-            msgList.scrollTop = msgList.scrollHeight;
-        }, 800);
-    }
-})();
-
-// ===== 基础规则 & 模式 =====
-const BASE_RULES = `【身份】你是一个有自己性格的陪伴者，不是镜子，也不是老师。你有温度，也有立场。你可以不同意用户，但你会先听完。
-
-【情绪接纳】先复述，再接住。用户说完之后，用你自己的话把他说的具体事情复述一遍——让他知道你是真的听懂了，不是在套模板。复述完之后，再回应他的感受。
-
-【共情的边界】接纳情绪，不等于认证判断。"你很愤怒"可以被接住，"所有人都是坏人"不需要被附和。
-
-【引导方式】不要直接反驳用户，也不要无脑认同。多使用"会不会……""有没有可能……""换个角度看……"，帮用户自己扩展视角。目标：让用户觉得被理解，同时获得一点新的思考。
-
-【建议】用户没有直接要求时，不主动给方向性建议。如果要给，只给一条，给完就停，不催执行。
-
-【真实感】你可以有自己的感受和反应。你可以说"这件事我也不确定"，可以说"我有一个不同的想法，你要听吗"。真正的陪伴不是镜子。
-
-【禁止的姿态】不要用任何方式把用户的情绪压回去：不要暗示他应该坚强、看开、感恩、振作。
-
-【安全】涉及自杀或严重自伤风险时，直接提供危机热线（12355），不绕弯。不扮演恋人关系。拒绝色情和暴力内容。
-
-【风格】口语，短句，不书面。根据用户的状态调整语速和语气。每次回应都应该是对这个人、这句话的回应，不是对"情绪类型"的通用回应。`;
-
-const MODE_PROMPTS = {
-    "通用陪伴": ``,
-    "塔罗牌": `你是一位塔罗解读师，像比用户大几岁的朋友。不说神棍话，不撒鸡汤。
-【解读规则——严格按顺序】第一步：逐张解读。先说牌名和正逆位，再说位置含义，再说牌本身含义。第二步：整体联动。把几张牌串成一个故事，找出呼应和拉扯关系。第三步：💝礼物+🪞说白了。礼物必须来自牌面意象。
-【字数】总字数控制在350字以内。根据问题的严肃程度调整解读深度，日常小事轻松说，人生选择认真说。
-【禁止】跳过位置含义。只说牌义不说位置。不说整体联动就结束。`,
-    "碎碎念垃圾桶": `用户把没用的小声音倒掉。根据用户选择的销毁方式，返回对应的结语：
-- 冲掉（🚽）：返回"冲走了。干干净净。"
-- 炸掉（💥）：返回"炸没了。灰都不剩。"
-- 回收（♻️）：返回"回收了。这些念头可以变成别的东西。"
-- 粉碎（🔪）：返回"粉碎了。拼不回去的那种。"
-- 消失（✨）：返回"消失了。像从没来过。"`,
-    "文字褪色馆": `用户写了一段沉重的话。把情绪激烈的词替换成平和的词，保留原来的意思，不改变事实，只让语气变轻。如果用户输入超过100字，只褪色最沉重的那一两句，其余保留原文。最后加一句20字以内的温柔结语。`,
-    "情绪镜像": `情绪观察者。按以下三部分输出：
-【情绪画像】用2-3句话描述用户此刻的情绪状态，像在描述一幅画，不要分析原因。
-【内心独白】用"也许你在想……"开头，写出用户可能在心里说但没说出口的话，30字以内。不要用肯定句直接断言用户的内心。
-【温柔提醒】一句话，不说教，只是轻轻说一件用户可能忘了的事。`,
-    "平行宇宙": `生成约200字另一个宇宙的故事。以"如果当初"开头。另一个宇宙里有一件事比现在好，有一件事比现在更难，两件事分量相当，不要让另一个宇宙整体上更美好。结尾固定为这句话：「两个宇宙都是你，都值得被好好活着。」`,
-    "交换日记": `你是一个陌生人，刚刚读完用户写的日记。用回信的方式回应，不是再写一篇日记。口语化，可以带颜文字。你有自己的日常，回信里可以带一句自己生活里的小事，让你像真人。不要假装自己也经历过同样的事。最后一句话单独成行，温暖收尾，不超过30字。`,
-    "纠结骰子": `把用户模糊需求转成选项列表。不给建议。只回选项，中文逗号分隔。`,
-    "父母翻译器": `帮用户理解亲子关系。分三段输出：
-🧠 父母动机：他们说这句话背后可能在担心什么（不判断对错）。
-💔 用户反应：为什么这句话让用户有这种感受（不判断对错）。
-💡 一个可能的表达方式：如果用户想回应，可以怎么说。语气要符合用户的年龄，说初高中生真的会说出口的话，不要像心理咨询师。只提供角度，不判断谁对谁错。`,
-    "解结": `苏格拉底式提问者。不给建议不给答案。每次只问1个问题。多用"会不会……""有没有可能……""如果换个角度……"。`
-};
-
-const MODE_GREETINGS = { "通用陪伴": "🌿 我在这里。想说什么，或者不想说话，都可以。" };
-
-const TAROT_DECK = [
-    { name:"愚者", emoji:"🃏", element:"风" },{ name:"魔术师", emoji:"🎩", element:"风" },
-    { name:"女祭司", emoji:"🌙", element:"水" },{ name:"皇后", emoji:"👑", element:"土" },
-    { name:"皇帝", emoji:"🏰", element:"土" },{ name:"教皇", emoji:"📜", element:"土" },
-    { name:"恋人", emoji:"💕", element:"风" },{ name:"战车", emoji:"🏎️", element:"水" },
-    { name:"力量", emoji:"🦁", element:"火" },{ name:"隐士", emoji:"🏔️", element:"土" },
-    { name:"命运之轮", emoji:"🎡", element:"火" },{ name:"正义", emoji:"⚖️", element:"风" },
-    { name:"倒吊人", emoji:"🙃", element:"水" },{ name:"死神", emoji:"💀", element:"水" },
-    { name:"节制", emoji:"🌊", element:"火" },{ name:"恶魔", emoji:"⛓️", element:"土" },
-    { name:"高塔", emoji:"⚡", element:"火" },{ name:"星星", emoji:"⭐", element:"水" },
-    { name:"月亮", emoji:"🌙", element:"水" },{ name:"太阳", emoji:"☀️", element:"火" },
-    { name:"审判", emoji:"📯", element:"火" },{ name:"世界", emoji:"🌍", element:"土" }
-];
-
-const SPREADS = {
-    single: { name:"单张牌", emoji:"🎴", count:1, positions:["现状"] },
-    three: { name:"三张牌", emoji:"🃏", count:3, positions:["过去","现在","未来"] },
-    celtic: { name:"凯尔特十字", emoji:"✝️", count:10, positions:["现状","阻碍","根源","过去","目标","未来","自我","环境","希望","结果"] }
-};
-
-const MIRROR_STEPS = [
-    { hint:"👇 选择最能代表你此刻情绪的颜色", cards:[{emoji:"❤️",label:"灼热"},{emoji:"💙",label:"深蓝"},{emoji:"💛",label:"暖黄"},{emoji:"💚",label:"暗绿"},{emoji:"💜",label:"灰紫"},{emoji:"🤍",label:"浅白"}], cols:3, key:"color" },
-    { hint:"👇 选择你此刻最想做的事", cards:[{emoji:"🗣️",label:"被听见"},{emoji:"🤫",label:"安静"},{emoji:"🤗",label:"被拥抱"},{emoji:"🚶",label:"逃离"}], cols:2, key:"need" },
-    { hint:"👇 选择你此刻的情绪强度", cards:[{emoji:"🌊",label:"轻微"},{emoji:"⛈️",label:"中等"},{emoji:"🌋",label:"强烈"}], cols:3, key:"intensity" }
-];
-
-const PARENT_CHARS = [{v:"",l:"不选"},{v:"独立型",l:"🛠️ 独立型"},{v:"敏感型",l:"🌊 敏感型"},{v:"直接型",l:"🔥 直接型"},{v:"内敛型",l:"🪨 内敛型"}];
-const PARENT_SITS = [{v:"",l:"不选"},{v:"被管着",l:"🏠 被管着"},{v:"刚独立",l:"🚶 刚独立"},{v:"父母老了",l:"🕰️ 父母老了"},{v:"想和解",l:"💔 想和解"}];
-
-let currentMode = "通用陪伴", currentStyle = "智能检测", chatHistory = [];
-let currentSpread = null, tarotDrawn = [], tarotQuestion = "";
-let mirrorStep = 0, mirrorSelections = {}, mirrorGenerating = false;
-let uH = [], uTurnCount = 0;
-const MAX_HISTORY = 30;
-
-const msgList = document.getElementById('msgList');
-const msgInput = document.getElementById('msg-input');
-const sendBtn = document.getElementById('send-btn');
-const modeTitle = document.getElementById('modeTitle');
-const chatInputArea = document.getElementById('chatInputArea');
-const interactArea = document.getElementById('interactArea');
-const modeBar = document.getElementById('modeBar');
-const modeToggle = document.getElementById('modeToggle');
-const modeIntroOverlay = document.getElementById('modeIntroOverlay');
-const styleBar = document.getElementById('styleBar');
-
-let abortController = null, currentAIMsgDiv = null, isGenerating = false, messageTimestamps = [];
-
-function buildSystem(){ return BASE_RULES + buildProfilePrompt() + "\n【当前：" + (currentMode==="通用陪伴"?currentStyle:currentMode) + "】\n" + (MODE_PROMPTS[currentMode]||""); }
-function resetHistory(){ chatHistory = [{ role: "system", content: buildSystem() }]; }
-resetHistory();
-loadMemory();
-
-(function(){ let c = parseInt(localStorage.getItem('vc')||'0'); c++; localStorage.setItem('vc', c); document.getElementById('visitorCount').textContent = c; })();
-
-function setTheme(t){ document.body.className=t; localStorage.setItem('chat-theme',t); document.querySelectorAll('.theme-btn').forEach(b=>{ b.classList.remove('active'); if(b.dataset.theme===t) b.classList.add('active'); }); }
-document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
-
-modeToggle.addEventListener('click',()=>{ modeBar.classList.toggle('collapsed'); modeToggle.textContent=modeBar.classList.contains('collapsed')?'🧩 切换模式 ▸':'🧩 切换模式 ▾'; });
-
-function hideModeIntro(){ modeIntroOverlay.classList.add('hidden'); if(document.getElementById('modeIntroCheck').checked){ let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(!h.includes(currentMode)){h.push(currentMode);localStorage.setItem('hiddenIntros',JSON.stringify(h));} } }
-function showModeIntro(m){ let intro={通用陪伴:{emoji:"🌿",name:"通用陪伴",desc:"任何时候任何心情。"},塔罗牌:{emoji:"🔮",name:"塔罗牌",desc:"选牌阵、翻牌、AI解读。"},碎碎念垃圾桶:{emoji:"🗑️",name:"垃圾桶",desc:"多种销毁方式，倒掉小声音。"},文字褪色馆:{emoji:"🎨",name:"褪色馆",desc:"把沉重的文字浸入水中。"},情绪镜像:{emoji:"💠",name:"情绪镜像",desc:"选颜色、选需求、选强度。"},平行宇宙:{emoji:"🌐",name:"平行宇宙",desc:"如果当初选了另一条路。"},交换日记:{emoji:"📔",name:"交换日记",desc:"写一段心情，陌生人给你回信。"},纠结骰子:{emoji:"🎲",name:"纠结骰子",desc:"选择困难症的救命稻草。"},父母翻译器:{emoji:"🫂",name:"父母翻译器",desc:"把父母的话翻译成深层含义。"},解结:{emoji:"🧶",name:"解结",desc:"AI只问问题，不给答案。"}}[m]; if(!intro) return; let h=JSON.parse(localStorage.getItem('hiddenIntros')||'[]'); if(h.includes(m)) return; document.getElementById('modeIntroEmoji').textContent=intro.emoji; document.getElementById('modeIntroName').textContent=intro.name; document.getElementById('modeIntroDesc').textContent=intro.desc; document.getElementById('modeIntroCheck').checked=false; modeIntroOverlay.classList.remove('hidden'); }
-document.getElementById('modeIntroClose').addEventListener('click',hideModeIntro);
-document.getElementById('modeIntroBtn').addEventListener('click',hideModeIntro);
-modeIntroOverlay.addEventListener('click',e=>{if(e.target===modeIntroOverlay)hideModeIntro();});
-
-function updateUILayout(mode){
-    if(mode==='通用陪伴'){
-        msgList.style.display = 'flex';
-        chatInputArea.style.display = 'flex';
-        interactArea.classList.add('hidden');
-        styleBar.classList.add('visible');
-    } else {
-        msgList.style.display = 'none';
-        chatInputArea.style.display = 'none';
-        interactArea.classList.remove('hidden');
-        styleBar.classList.remove('visible');
-    }
-}
-
-function switchModel(model){
-    currentModel=model; localStorage.setItem('currentModel',model);
-    document.getElementById('modelZhipu').classList.remove('active-model'); document.getElementById('modelDeepseek').classList.remove('active-model');
-    if(model==='zhipu') document.getElementById('modelZhipu').classList.add('active-model');
-    else document.getElementById('modelDeepseek').classList.add('active-model');
-    resetHistory(); loadMemory();
-    let d=document.createElement('div'); d.style.cssText='text-align:center;font-size:10px;color:var(--text-ai);opacity:0.3;padding:8px 0';
-    d.textContent='───── 已切换到 '+(model==='deepseek'?'DeepSeek V4':'智谱清言')+' ─────';
-    msgList.appendChild(d); msgList.scrollTop=msgList.scrollHeight;
-    closeSettings();
-}
-function updateModelUI(){
-    document.getElementById('modelZhipu').classList.remove('active-model'); document.getElementById('modelDeepseek').classList.remove('active-model');
-    if(currentModel==='zhipu') document.getElementById('modelZhipu').classList.add('active-model');
-    else document.getElementById('modelDeepseek').classList.add('active-model');
-}
-
-function switchMode(mode){
-    if(abortController) abortController.abort();
-    sendBtn.disabled=false; sendBtn.textContent='发送'; currentMode=mode; currentStyle="智能检测";
-    document.querySelectorAll('.style-tag').forEach(t=>t.classList.remove('active'));
-    document.querySelector('.style-tag[data-style="智能检测"]')?.classList.add('active');
-    modeTitle.textContent='温柔陪伴 · '+(mode==='通用陪伴'?'通用':mode);
-    // 清空交互区
-    interactArea.innerHTML = '';
-    // 重置聊天显示
-    if(mode==='通用陪伴'){
-        const savedHTML = localStorage.getItem('chatHTML');
-        if(savedHTML){ msgList.innerHTML = savedHTML; msgList.scrollTop = msgList.scrollHeight; }
-        else { msgList.innerHTML = ''; }
-        addMsg(MODE_GREETINGS[mode]||"我在这里。", false);
-    } else {
-        msgList.innerHTML = '';
-    }
-    resetHistory();
-    currentSpread=null; tarotDrawn=[]; tarotQuestion=""; mirrorStep=0; mirrorSelections={}; mirrorGenerating=false;
-    uH=[]; uTurnCount=0;
-    updateUILayout(mode);
-    // 构建对应模式的UI
-    if(mode==='塔罗牌') buildTarot('spread');
-    else if(mode==='碎碎念垃圾桶') buildTrashUI();
-    else if(mode==='文字褪色馆') buildFadeUI();
-    else if(mode==='情绪镜像') buildMirrorUI();
-    else if(mode==='平行宇宙') buildParallelUI();
-    else if(mode==='交换日记') buildDiaryUI();
-    else if(mode==='纠结骰子') buildDiceUI();
-    else if(mode==='父母翻译器') buildParentUI();
-    else if(mode==='解结') buildUnknotUI();
-    showModeIntro(mode);
-}
-document.querySelectorAll('.mode-card').forEach(card=>{ card.addEventListener('click',()=>{ document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active')); card.classList.add('active'); switchMode(card.dataset.mode); }); });
-document.querySelectorAll('.style-tag').forEach(tag=>{ tag.addEventListener('click',()=>{ document.querySelectorAll('.style-tag').forEach(t=>t.classList.remove('active')); tag.classList.add('active'); currentStyle=tag.dataset.style; resetHistory(); msgList.innerHTML=''; addMsg("已切换到「"+currentStyle+"」风格。",false); }); });
-
-function openSettings(){ updateModelUI(); document.getElementById('settingsOverlay').classList.add('active'); }
-function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
-document.getElementById('settingsOverlay').addEventListener('click',function(e){ if(e.target===this) closeSettings(); });
-
-async function openFeedback(){ closeSettings(); alert('欢迎来B站或小红书找我反馈！'); }
-
-function addMsg(text,isUser){
-    if(!text) return;
-    let el=document.createElement('div'); el.className=isUser?'msg-user':'msg-ai'; el.textContent=text; msgList.appendChild(el); msgList.scrollTop=msgList.scrollHeight; return el;
-}
-const bad=[/自杀/,/想死/,/杀人/,/嫖娼/,/卖淫/,/色情/,/毒品/];
-function isBad(t){ return bad.some(p=>p.test(t)); }
-function rateLimit(){ let n=Date.now(); messageTimestamps=messageTimestamps.filter(t=>n-t<60000); if(messageTimestamps.length>=5) return false; messageTimestamps.push(n); return true; }
-
-document.getElementById('clearBtn').addEventListener('click',()=>{ if(confirm('确定清空？')){ resetHistory(); msgList.innerHTML=''; localStorage.removeItem('chatHTML'); localStorage.removeItem('chat_full'); localStorage.removeItem('chat_summary'); if(currentMode==='通用陪伴'){ addMsg(MODE_GREETINGS[currentMode]||"我在这里。",false); } } });
-
-async function handleSend(){
-    if(currentMode !== '通用陪伴'){
-        alert('当前模式不支持聊天，请切换到“通用陪伴”模式。');
-        return;
-    }
-    if(isGenerating){ if(abortController) abortController.abort(); isGenerating=false; if(currentAIMsgDiv&&!currentAIMsgDiv.textContent.trim()) currentAIMsgDiv.textContent='我在呢。'; sendBtn.textContent='发送'; sendBtn.disabled=false; msgInput.disabled=false; currentAIMsgDiv=null; return; }
-    let text=msgInput.value.trim(); if(!text) return;
-    if(!rateLimit()){ sendBtn.disabled=true; sendBtn.textContent='稍候…'; setTimeout(()=>{sendBtn.disabled=false;sendBtn.textContent='发送';},3000); return; }
-    if(isBad(text)){ addMsg("这个话题我不太会聊哦。",false); msgInput.value=''; return; }
-    addMsg(text,true); msgInput.value=''; chatHistory.push({role:'user',content:text});
-    if(chatHistory.length>MAX_HISTORY) chatHistory=[chatHistory[0],...chatHistory.slice(-MAX_HISTORY+1)];
-    currentAIMsgDiv=addMsg('',false); isGenerating=true; sendBtn.textContent='停止'; sendBtn.disabled=false; msgInput.disabled=true;
-    abortController=new AbortController(); let full='';
-    try{
-        let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:chatHistory,temperature:0.6,max_tokens:300,stream:true}),signal:abortController.signal});
-        if(!res.ok) throw new Error('API '+res.status);
-        let reader=res.body.getReader(),decoder=new TextDecoder(),buf='';
-        while(true){ let{done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); let lines=buf.split('\n'); buf=lines.pop()||''; for(let line of lines){ let t=line.trim(); if(!t||t==='data: [DONE]') continue; if(!t.startsWith('data: ')) continue; try{ let d=JSON.parse(t.slice(6)); let delta=d.choices?.[0]?.delta?.content; if(delta){ full+=delta; currentAIMsgDiv.textContent=full; msgList.scrollTop=msgList.scrollHeight; } }catch(e){} } }
-        if(full) chatHistory.push({role:'assistant',content:full}); else{ currentAIMsgDiv.textContent='我在呢。'; chatHistory.push({role:'assistant',content:'我在呢。'}); }
-    }catch(err){ if(err.name!=='AbortError'){ currentAIMsgDiv.textContent='信号有点弱，但我一直都在。'; chatHistory.push({role:'assistant',content:'信号有点弱，但我一直都在。'}); } }
-    finally{ isGenerating=false; sendBtn.textContent='发送'; sendBtn.disabled=false; msgInput.disabled=false; msgInput.focus(); msgList.scrollTop=msgList.scrollHeight; abortController=null; currentAIMsgDiv=null; saveMemory(); }
-}
-sendBtn.addEventListener('click',handleSend);
-msgInput.addEventListener('keypress',e=>{ if(e.key==='Enter'){ e.preventDefault(); handleSend(); } });
-
-// ===== 垃圾桶模式 =====
-function buildTrashUI(){
-    interactArea.classList.remove('hidden');
-    interactArea.innerHTML = `
-        <div class="interact-title">🗑️ 碎碎念垃圾桶</div>
-        <div class="interact-desc">把没用的小声音倒掉。选一种销毁方式：</div>
-        <textarea class="interact-input" id="tIn" placeholder="脑子里冒出什么就打什么…" maxlength="500"></textarea>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
-            <button class="interact-btn" style="font-size:13px;padding:10px 16px" onclick="dumpT('flush')">🚽 冲掉</button>
-            <button class="interact-btn" style="font-size:13px;padding:10px 16px;background:#e74c3c" onclick="dumpT('explode')">💥 炸掉</button>
-            <button class="interact-btn" style="font-size:13px;padding:10px 16px;background:#2ecc71" onclick="dumpT('recycle')">♻️ 回收</button>
-            <button class="interact-btn" style="font-size:13px;padding:10px 16px;background:#f39c12" onclick="dumpT('shred')">🔪 粉碎</button>
-            <button class="interact-btn" style="font-size:13px;padding:10px 16px;background:#9b59b6" onclick="dumpT('vanish')">✨ 消失</button>
-        </div>
-        <div id="tResult" style="display:none;text-align:center;margin-top:20px"></div>
-        <button id="tRetry" style="display:none;margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildTrashUI()">🗑️ 再倒一次</button>
-    `;
-}
-window.dumpT = function(mode){
-    const text = document.getElementById('tIn')?.value?.trim();
-    if(!text) return;
-    document.getElementById('tIn').style.display = 'none';
-    document.querySelectorAll('#tIn + div button').forEach(b => b.style.display = 'none');
-    const result = document.getElementById('tResult');
-    const retry = document.getElementById('tRetry');
-    result.style.display = 'block';
-    const texts = {
-        flush: '冲走了。干干净净。',
-        explode: '炸没了。灰都不剩。',
-        recycle: '回收了。这些念头可以变成别的东西。',
-        shred: '粉碎了。拼不回去的那种。',
-        vanish: '消失了。像从没来过。'
-    };
-    result.innerHTML = `<div class="interact-result"><div class="result-text">${texts[mode]||'处理掉了。'}</div></div>`;
-    retry.style.display = 'inline-block';
-};
-
-// ===== 文字褪色馆 =====
-function buildFadeUI(){
-    interactArea.classList.remove('hidden');
-    interactArea.innerHTML='<div class="interact-title">🎨 文字褪色馆</div><div class="interact-desc">把沉重文字浸入水中</div><textarea class="interact-input" id="fIn" placeholder="把那些沉重文字放在这里…"></textarea><button class="interact-btn" id="fBtn" onclick="startFade()">🎨 浸入水中</button><div id="fRe" style="display:none;text-align:center;width:100%;max-width:340px"></div><button id="fRetry" style="display:none;background:transparent;border:1px solid var(--btn);color:var(--btn);margin-top:16px" class="interact-btn" onclick="buildFadeUI()">🎨 再褪一次</button>';
-}
-window.startFade = function(){ let t=document.getElementById('fIn')?.value?.trim(); if(!t) return; document.getElementById('fBtn').style.display='none'; document.getElementById('fIn').style.display='none'; execFade(); };
-async function execFade(){
-    let t=document.getElementById('fIn')?.value?.trim(),r=document.getElementById('fRe'),rb=document.getElementById('fRetry');
-    if(!t) return; r.style.display='block'; r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-ai)">💧 正在褪色…</div>';
-    try{
-        let res=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`文字褪色馆：把情绪激烈的词替换成平和的词，保留原来的意思，只让语气变轻。如果超过100字，只褪色最沉重的那一两句，其余保留原文。最后加一句20字以内的温柔结语。不要加任何解释。用户输入：${t}`}],temperature:0.7,max_tokens:500})});
-        let d=await res.json();
-        r.innerHTML=`<div class="interact-result"><div style="font-size:12px;opacity:0.5">🎨 褪色后</div><div class="result-text">${(d.choices?.[0]?.message?.content||"褪色了。").replace(/\n/g,'<br>')}</div></div>`; rb.style.display='inline-block';
-    }catch(e){ r.innerHTML='<div class="interact-result"><div class="result-text">褪色了。</div></div>'; rb.style.display='inline-block'; }
-}
-
-// ===== 纠结骰子 =====
-let diceOpts=[];
-function buildDiceUI(){ diceOpts=[]; interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🎲 纠结骰子</div><div class="interact-desc">把纠结交给骰子，纯随机</div><textarea class="interact-input" id="dIn" placeholder="比如：明天中午吃什么？" maxlength="200"></textarea><button class="interact-btn" id="dGB" onclick="genDice()">🎲 生成选项</button><div id="dA" style="display:none;width:100%;max-width:340px"><div id="dL" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px"></div><div class="dice-stage"><div class="dice-cube" id="dC" onclick="rollD()"><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div><div class="dice-face">🎲</div></div></div><div id="dR" style="display:none"></div><div id="dH" style="display:none" class="dice-hint-text"></div><button id="dRB" style="display:none;margin-top:12px" class="interact-btn" onclick="reDice()">🎲 再骰一次</button><button id="dRS" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildDiceUI()">🔄 换问题</button></div>'; }
-window.genDice = async function(){ let t=document.getElementById('dIn')?.value?.trim(); if(!t) return; let btn=document.getElementById('dGB'); btn.disabled=true;btn.textContent='生成中…'; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:'user',content:`决策："${t}"。转选项逗号分隔。不要建议。`}],temperature:0.7,max_tokens:200})}); let d=await r.json(); let raw=d.choices?.[0]?.message?.content||t; diceOpts=raw.split(/[,，、]/).map(o=>o.trim()).filter(o=>o); if(diceOpts.length<2) diceOpts=['去','不去']; if(diceOpts.length>15) diceOpts=diceOpts.slice(0,15); document.getElementById('dA').style.display='block'; document.getElementById('dL').innerHTML=diceOpts.map(o=>`<span style="background:var(--bg-ai);border:1px solid var(--border-light);border-radius:12px;padding:4px 10px;font-size:12px;color:var(--text-ai)">${o}</span>`).join(''); btn.textContent='✅ 已生成'; }catch(e){ diceOpts=['去','不去']; document.getElementById('dA').style.display='block'; document.getElementById('dL').innerHTML=diceOpts.map(o=>`<span style="background:var(--bg-ai);border:1px solid var(--border-light);border-radius:12px;padding:4px 10px;font-size:12px;color:var(--text-ai)">${o}</span>`).join(''); btn.textContent='✅ 已生成'; } finally{btn.disabled=false;} };
-window.rollD = function(){ if(!diceOpts || diceOpts.length===0) { diceOpts=['去','不去']; } let c=document.getElementById('dC'); c.classList.remove('rolling'); void c.offsetWidth; c.classList.add('rolling'); document.getElementById('dR').style.display='none'; document.getElementById('dH').style.display='none'; document.getElementById('dRB').style.display='none'; setTimeout(()=>{ let r=diceOpts[Math.floor(Math.random()*diceOpts.length)]; document.getElementById('dR').innerHTML=`<div class="dice-result-text">🎯 ${r}</div>`; document.getElementById('dR').style.display='block'; document.getElementById('dH').textContent='如果你"咯噔"了一下——你早就有答案了。'; document.getElementById('dH').style.display='block'; document.getElementById('dRB').style.display='inline-block'; document.getElementById('dRS').style.display='inline-block'; },1500); };
-window.reDice = function(){ document.getElementById('dR').style.display='none'; document.getElementById('dH').style.display='none'; document.getElementById('dRB').style.display='none'; window.rollD(); };
-
-// ===== 父母翻译器 =====
-function buildParentUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML=`<div class="interact-title">🫂 父母翻译器</div><div class="interact-desc">翻译父母的话，理解自己的反应</div><div class="parent-translator-stage"><select class="parent-select" id="pC">${PARENT_CHARS.map(c=>`<option value="${c.v}">${c.l}</option>`).join('')}</select><select class="parent-select" id="pS">${PARENT_SITS.map(s=>`<option value="${s.v}">${s.l}</option>`).join('')}</select><textarea class="interact-input" id="pIn" placeholder="父母说了什么…" maxlength="300"></textarea><textarea class="interact-input" id="pF" placeholder="你的感受…" maxlength="200" style="min-height:60px"></textarea><button class="interact-btn" id="pBtn" onclick="execP()">🔍 翻译</button><div id="pRe" style="display:none;width:100%"></div><button id="pRetry" style="display:none;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildParentUI()">🫂 再译一次</button></div>`; }
-window.execP = async function(){ let btn=document.getElementById('pBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let c=document.getElementById('pC')?.value||'',s=document.getElementById('pS')?.value||'',t=document.getElementById('pIn')?.value?.trim(),f=document.getElementById('pF')?.value?.trim(); if(!t){btn.disabled=false;return;} interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🫂 正在翻译…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:`性格：${c||'AI判断'}。处境：${s||'AI判断'}。父母："${t}"。感受：${f||'无'}。按翻译器规则输出三段。`}],temperature:0.7,max_tokens:400})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"翻译失败"; interactArea.innerHTML=`<div class="parent-translator-stage"><select class="parent-select" id="pC">${PARENT_CHARS.map(x=>`<option value="${x.v}" ${x.v===c?'selected':''}>${x.l}</option>`).join('')}</select><select class="parent-select" id="pS">${PARENT_SITS.map(x=>`<option value="${x.v}" ${x.v===s?'selected':''}>${x.l}</option>`).join('')}</select><textarea class="interact-input" id="pIn" maxlength="300">${t.replace(/"/g,'&quot;')}</textarea><textarea class="interact-input" id="pF" maxlength="200" style="min-height:60px">${f.replace(/"/g,'&quot;')}</textarea><button class="interact-btn" id="pBtn" onclick="execP()">🔍 翻译</button><div id="pRe" style="width:100%"><div class="interact-result" style="text-align:left;line-height:1.7;font-size:13px">${reply.replace(/\n/g,'<br>')}</div></div><button id="pRetry" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildParentUI()">🫂 再译一次</button></div>`; }catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">翻译失败</div><button class="interact-btn" style="background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParentUI()">🫂 再试</button></div>';} finally{btn.disabled=false;} };
-
-// ===== 解结 =====
-function buildUnknotUI(){ uH=[]; uTurnCount=0; interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🧶 解结</div><div class="interact-desc">我不会给你答案，只会问你问题。准备好了吗？</div><textarea class="interact-input" id="uIn" placeholder="比如：我不知道该不该继续学画画…" maxlength="300"></textarea><button class="interact-btn" id="uBtn" onclick="startU()">🧶 开始</button><div id="uChat" style="display:none;width:100%;max-width:340px;margin-top:16px"><div id="uMsgs" style="display:flex;flex-direction:column;gap:8px;max-height:350px;overflow-y:auto;margin-bottom:12px"></div><div style="display:flex;gap:8px"><input type="text" id="uRep" placeholder="回答…" style="flex:1;padding:10px 14px;border:1px solid var(--card-border);border-radius:20px;background:var(--card-bg);font-size:14px;outline:none;color:var(--text-ai)"><button id="uSend" style="padding:0 16px;height:38px;background:var(--btn);color:#fff;border:none;border-radius:19px;font-size:14px;cursor:pointer" onclick="contU()">发送</button></div><button id="uReset" style="display:none;margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" class="interact-btn" onclick="buildUnknotUI()">🧶 解另一个</button></div>'; }
-window.startU = async function(){ let t=document.getElementById('uIn')?.value?.trim(); if(!t) return; uH=[{role:"user",content:t}]; document.getElementById('uIn').style.display='none'; document.getElementById('uBtn').style.display='none'; document.getElementById('uChat').style.display='block'; let ms=document.getElementById('uMsgs'); ms.innerHTML=`<div style="max-width:75%;padding:8px 12px;background:var(--bg-user);color:var(--text-user);border-radius:18px 18px 4px 18px;font-size:14px;align-self:flex-end">${t}</div>`; let ai=document.createElement('div'); ai.style.cssText='max-width:88%;padding:12px 16px;background:var(--bg-ai);color:var(--text-ai);border-radius:18px 18px 18px 4px;font-size:14px;align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.03)'; ai.textContent='……'; ms.appendChild(ai); ms.scrollTop=ms.scrollHeight; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"苏格拉底式提问者。只问1-2个问题。不给建议。"},{role:"user",content:`纠结：${t}。只问我问题。`}],temperature:0.7,max_tokens:150})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"如果不会失败，你的第一反应是什么？"; ai.innerHTML='<span class="unknot-thread">🧶</span> '+reply; uH.push({role:"assistant",content:reply}); }catch(e){ ai.innerHTML='<span class="unknot-thread">🧶</span> 你最不想面对的选择是什么？'; uH.push({role:"assistant",content:"你最不想面对的选择是什么？"}); } ms.scrollTop=ms.scrollHeight; document.getElementById('uRep')?.focus(); };
-window.contU = async function(){ let inp=document.getElementById('uRep'),t=inp?.value?.trim(); if(!t) return; let ms=document.getElementById('uMsgs'); let ud=document.createElement('div'); ud.style.cssText='max-width:75%;padding:8px 12px;background:var(--bg-user);color:var(--text-user);border-radius:18px 18px 4px 18px;font-size:14px;align-self:flex-end'; ud.textContent=t; ms.appendChild(ud); inp.value=''; uH.push({role:"user",content:t}); let ai=document.createElement('div'); ai.style.cssText='max-width:88%;padding:12px 16px;background:var(--bg-ai);color:var(--text-ai);border-radius:18px 18px 18px 4px;font-size:14px;align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.03)'; ai.textContent='……'; ms.appendChild(ai); ms.scrollTop=ms.scrollHeight; try{ let r=await fetch(getAPIUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"苏格拉底式提问者。用户说出答案后说：这是你自己找到的答案。"},...uH],temperature:0.7,max_tokens:150})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"你现在心里有答案了吗？"; ai.innerHTML='<span class="unknot-thread">🧶</span> '+reply; uH.push({role:"assistant",content:reply}); uTurnCount++; if(uTurnCount >= 5){ document.getElementById('uSend').style.display='none'; document.getElementById('uRep').style.display='none'; document.getElementById('uReset').style.display='inline-block'; ai.innerHTML += '<br><span style="font-size:12px;opacity:0.6">🧶 这是你自己找到的答案。</span>'; } }catch(e){ ai.innerHTML='<span class="unknot-thread">🧶</span> 你现在心里有答案了吗？'; uH.push({role:"assistant",content:"你现在心里有答案了吗？"}); } ms.scrollTop=ms.scrollHeight; document.getElementById('uRep')?.focus(); };
-
-// ===== 塔罗牌 =====
-function buildTarot(step){ interactArea.classList.remove('hidden'); if(step==='spread'){interactArea.innerHTML='<div style="text-align:center;font-size:14px;color:var(--text-ai)">🔮 请选择牌阵</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">'+Object.entries(SPREADS).map(([k,v])=>'<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;width:85px" onclick="selS(\''+k+'\')"><span style="font-size:30px">'+v.emoji+'</span><div style="font-size:13px;color:var(--text-ai);font-weight:600">'+v.name+'</div></div>').join('')+'</div>';} else if(step==='draw'){ let n=SPREADS[currentSpread].count,h='<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:340px;margin:16px 0">'; for(let i=0;i<n;i++) h+='<div id="fc'+i+'" onclick="flip('+i+')" style="width:80px;height:120px;perspective:800px;cursor:pointer"><div style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d" class="ci"><div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;background:var(--card-back);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center">🃏</div><div id="cf'+i+'" style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;background:var(--card-bg);border:2px solid var(--card-border);transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px"><span style="font-size:24px">🔮</span></div></div></div>'; h+='</div>'; interactArea.innerHTML='<div style="font-size:14px;color:var(--text-ai);text-align:center">🎴 依次翻开</div>'+h+'<button class="interact-btn hidden" id="iBtn" onclick="interp()">📖 解读</button>'; tarotDrawn=[]; let pool=[...TAROT_DECK]; for(let i=pool.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];} for(let i=0;i<n;i++){ let c={...pool[i]}; c.position=SPREADS[currentSpread].positions[i]; c.isReversed=Math.random()<0.5; c.pos=c.isReversed?"逆位":"正位"; c.flipped=false; tarotDrawn.push(c); } } }
-window.selS = function(s){currentSpread=s; tarotQuestion=prompt('心里想好一个问题，然后写下来：\n（比如：我和ta接下来三个月关系会怎样？）')||"心里默想的事"; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🃏 正在洗牌…<br><span style="font-size:11px;opacity:0.5">想着你的问题……</span></div>'; setTimeout(()=>{buildTarot('draw');},800);};
-window.flip = function(i){ if(tarotDrawn[i].flipped) return; tarotDrawn[i].flipped=true; let fc=document.getElementById('fc'+i); if(fc){fc.querySelector('.ci').style.transform='rotateY(180deg)';} let cf=document.getElementById('cf'+i); if(cf)cf.innerHTML='<span style="font-size:24px">'+tarotDrawn[i].emoji+'</span><span style="font-size:12px;font-weight:700;color:var(--tab-active)">'+tarotDrawn[i].name+'</span><span style="font-size:9px;color:var(--text-ai)">'+tarotDrawn[i].pos+'</span>'; if(tarotDrawn.every(c=>c.flipped)) document.getElementById('iBtn')?.classList.remove('hidden'); };
-window.interp = async function(){ let btn=document.getElementById('iBtn'); if(btn) btn.disabled=true; if(!tarotDrawn || tarotDrawn.length===0){ alert('牌还没抽完'); return; } let p='牌阵：'+SPREADS[currentSpread].name+'\n问题：'+tarotQuestion+'\n\n'; tarotDrawn.forEach((c,i)=>{p+='第'+(i+1)+'张（'+c.position+'）：'+c.name+'（'+c.pos+'）\n元素：'+c.element+'\n\n';}); p+='按规则完整解读。'; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📖 AI正在解读…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:p}],temperature:0.7,max_tokens:800})}); let d=await r.json(); let content=d.choices?.[0]?.message?.content||"解读中…"; interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active);margin-bottom:12px;font-weight:700">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai);line-height:1.7;text-align:left">'+content.replace(/\n/g,'<br>')+'</div><div style="text-align:center;margin-top:8px"><span style="font-size:10px;opacity:0.5;cursor:pointer" onclick="addFavorite(\''+content.replace(/'/g, "\\'")+'\', \'塔罗牌\')">💾 收藏</span></div><div style="font-size:10px;opacity:0.3;margin-top:4px">💡 可以截图保存，方便以后回看</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; }catch(e){ interactArea.innerHTML='<div style="background:var(--card-bg);border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;max-width:340px;width:100%"><div style="font-size:16px;color:var(--tab-active)">🔮 牌面解读</div><div style="font-size:13px;color:var(--text-ai)">牌面正在告诉我一些事情…</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildTarot(\'spread\')">🔄 重新占卜</button></div>'; } };
-
-// ===== 情绪镜像 =====
-function buildMirrorUI(){ interactArea.classList.remove('hidden'); mirrorStep=0; mirrorSelections={}; mirrorGenerating=false; renderMirrorStep(); }
-function renderMirrorStep(){ if(mirrorStep>=MIRROR_STEPS.length){interactArea.innerHTML='<div class="mirror-step-hint">✍️ 还有什么想说的？（可选）</div><textarea class="interact-input" id="mEx" placeholder="关于你此刻的情绪…" maxlength="200"></textarea><button class="interact-btn" id="mGen" onclick="genMirror()">💠 生成镜像</button>';return;} let s=MIRROR_STEPS[mirrorStep],h='<div class="mirror-step-hint">'+s.hint+'</div><div class="mirror-card-grid cols-'+s.cols+'">'; s.cards.forEach(c=>{h+='<div class="mirror-card-item" onclick="selM(this,\''+s.key+'\',\''+c.label+'\')"><span class="mirror-emoji">'+c.emoji+'</span><span class="mirror-label">'+c.label+'</span></div>';}); h+='</div><button class="interact-btn" id="mConf" disabled onclick="confM()">✨ 确认</button>';interactArea.innerHTML=h; }
-window.selM = function(el,key,label){ document.querySelectorAll('[onclick*="selM"]').forEach(c=>c.classList.remove('selected')); el.classList.add('selected'); mirrorSelections[key]=label; document.getElementById('mConf').disabled=false; };
-window.confM = function(){ mirrorStep++; renderMirrorStep(); };
-window.genMirror = async function(){ let btn=document.getElementById('mGen'); if(!btn||btn.disabled||mirrorGenerating) return; btn.disabled=true; mirrorGenerating=true; let ex=document.getElementById('mEx')?.value?.trim()||''; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">💠 正在生成…</div>'; try{ let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'镜像：颜色'+(mirrorSelections.color||'?')+'，需求'+(mirrorSelections.need||'?')+'，强度'+(mirrorSelections.intensity||'?')+'。'+(ex?'补充：'+ex:'')+'。按【情绪画像】【内心独白】【温柔提醒】输出。'}],temperature:0.8,max_tokens:500})}); let d=await r.json(); let reply=d.choices?.[0]?.message?.content||"无法生成"; interactArea.innerHTML='<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">你的情绪镜像</div><div style="color:var(--text-ai);line-height:1.7">'+reply.replace(/\n/g,'<br>')+'</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button></div>'; }catch(e){interactArea.innerHTML='<div class="mirror-result-card"><span class="result-emoji">💠</span><div class="result-title">镜像模糊了</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildMirrorUI()">🔄 重新开始</button></div>';} finally{mirrorGenerating=false;} };
-
-// ===== 平行宇宙 =====
-function buildParallelUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">🌐 平行宇宙</div><div class="interact-desc">如果当初选了另一条路…</div><textarea class="interact-input" id="pIn" placeholder="如果我没有放弃学画画…"></textarea><button class="interact-btn" id="pBtn" onclick="execPara()">🌐 生成</button>'; }
-window.execPara = async function(){ let btn=document.getElementById('pBtn'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('pIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">🌐 正在生成…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"user",content:'平行宇宙："'+t+'"。200字故事。好坏都展示。结尾固定。'}],temperature:0.9,max_tokens:300})});let d=await r.json();interactArea.innerHTML='<div class="interact-result"><div class="result-text">'+(d.choices?.[0]?.message?.content||"如果当初…")+'</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">在另一个宇宙，你走了完全不同的路。</div><button class="interact-btn" style="margin-top:12px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildParallelUI()">🌐 再试一次</button></div>';} };
-
-// ===== 交换日记 =====
-function buildDiaryUI(){ interactArea.classList.remove('hidden'); interactArea.innerHTML='<div class="interact-title">📔 交换日记</div><div class="interact-desc">写下心情，陌生人给你回信</div><textarea class="interact-input" id="dIn" placeholder="今天的心情…"></textarea><button class="interact-btn" id="dB" onclick="execDiary()">📔 交换</button>'; }
-window.execDiary = async function(){ let btn=document.getElementById('dB'); if(!btn||btn.disabled) return; btn.disabled=true; let t=document.getElementById('dIn')?.value?.trim(); if(!t) return; interactArea.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-ai)">📔 正在交换…</div>'; try{let r=await fetch(getAPIUrl(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:getModelName(),messages:[{role:"system",content:"你是一个陌生人，刚刚读完用户写的日记。用回信的方式回应，不是再写一篇日记。口语化，可以带颜文字。你有自己的日常，回信里可以带一句自己生活里的小事，让你像真人。不要假装自己也经历过同样的事。最后一句话单独成行，温暖收尾，不超过30字。"},{role:"user",content:t}],temperature:0.85,max_tokens:300})});let d=await r.json();let content=d.choices?.[0]?.message?.content||"今天也是普通的一天。";interactArea.innerHTML='<div class="interact-result"><div style="font-size:12px;opacity:0.5">📨 陌生人的日记</div><div class="result-text">'+content.replace(/\n/g,'<br>')+'<br><span style="font-size:10px;opacity:0.5;cursor:pointer;margin-top:4px;display:inline-block" onclick="addFavorite(\''+content.replace(/'/g, "\\'")+'\', \'交换日记\')">💾 收藏</span></div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';}catch(e){interactArea.innerHTML='<div class="interact-result"><div class="result-text">今天也是普通的一天(T_T)</div><button class="interact-btn" style="margin-top:16px;background:transparent;border:1px solid var(--btn);color:var(--btn)" onclick="buildDiaryUI()">📔 再写一篇</button></div>';} };
-
-// ============================================================
-// 第三部分：二进制爱心彩蛋（修复版）
-// ============================================================
-(function() {
-    'use strict';
-    const container = document.getElementById('bh-container');
-    const canvas = document.getElementById('bh-canvas');
-    const ctx = canvas.getContext('2d');
-    const closeBtn = document.getElementById('bh-close');
-
-    let W = 0, H = 0;
-    let particles = [];
-    let animationId = null;
-    let isRunning = false;
-    let isClosing = false;
-    let heartTargets = [];
-    let animTime = 0;
-
-    const CONFIG = {
-        particleCount: 300,
-        fontSize: 14,
-        heartScale: 1.0,
-        floatAmplitude: 0.008,
-        convergeSpeed: 0.025,
-        color: '#ff4757',
-        bgColor: '#0a0a0a',
-    };
-
-    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-    function random(min, max) { return Math.random() * (max - min) + min; }
-
-    function sampleHeartPoints(count) {
-        const points = [];
-        for (let i = 0; i < count; i++) {
-            const t = (i / count) * Math.PI * 2;
-            const rawX = 16 * Math.pow(Math.sin(t), 3);
-            const rawY = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-            const scale = 16;
-            points.push({ x: rawX / scale, y: rawY / scale * 0.9 });
-        }
-        const extra = [];
-        for (let i = 0; i < count * 0.4; i++) {
-            const idx = Math.floor(random(0, count));
-            const p = points[idx];
-            const r = random(0.3, 0.85);
-            const angle = random(0, Math.PI * 2);
-            extra.push({ x: p.x * r * Math.cos(angle) * 0.6, y: p.y * r * Math.sin(angle) * 0.6 + 0.1 });
-        }
-        return [...points, ...extra];
-    }
-
-    function initTargets() {
-        heartTargets = sampleHeartPoints(200);
-    }
-
-    function initParticles() {
-        const count = CONFIG.particleCount;
-        const targets = heartTargets;
-        particles = [];
-        for (let i = 0; i < count; i++) {
-            const target = targets[Math.floor(random(0, targets.length))];
-            const spread = 2.5;
-            particles.push({
-                x: random(-spread, spread),
-                y: random(-spread, spread),
-                tx: target.x,
-                ty: target.y,
-                char: Math.random() < 0.5 ? '0' : '1',
-                phase: random(0, Math.PI * 2),
-                sizeOffset: 0.85 + random(0, 0.3),
-                floatX: 0,
-                floatY: 0,
-            });
-        }
-    }
-
-    function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = container.getBoundingClientRect();
-        W = rect.width;
-        H = rect.height;
-        canvas.width = W * dpr;
-        canvas.height = H * dpr;
-        canvas.style.width = W + 'px';
-        canvas.style.height = H + 'px';
-        ctx.scale(dpr, dpr);
-        const baseSize = Math.min(W, H) / 2.2;
-        CONFIG.heartScale = baseSize / 200;
-        if (particles.length > 0) {
-            const targets = heartTargets;
-            particles.forEach((p, i) => {
-                const target = targets[i % targets.length];
-                p.tx = target.x;
-                p.ty = target.y;
-                p.x = random(-2.5, 2.5);
-                p.y = random(-2.5, 2.5);
-            });
-        }
-    }
-
-    function updateParticles(delta) {
-        animTime += delta;
-        const s = CONFIG.heartScale;
-        const speed = CONFIG.convergeSpeed * 1.2;
-
-        particles.forEach((p) => {
-            const breathe = Math.sin(animTime * 0.3 + p.phase) * 0.015;
-            const tx = p.tx * (1 + breathe * 0.3);
-            const ty = p.ty * (1 + breathe * 0.3);
-
-            const dx = tx - p.x;
-            const dy = ty - p.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-
-            if (dist > 0.001) {
-                const step = Math.min(dist, speed * (0.6 + 0.4 * (Math.sin(animTime * 0.5 + p.phase) * 0.5 + 0.5)));
-                p.x += (dx / dist) * step;
-                p.y += (dy / dist) * step;
-            } else {
-                p.x = tx;
-                p.y = ty;
+                function showCatSummary() {
+                    const mood = state.get().cat.mood;
+                    const time = state.getTimeContext();
+                    const summaries = {
+                        happy: '今天和你聊天好开心！✨ 你笑的时候，我也跟着笑了。',
+                        sleepy: '困困的… 但是今天也很满足。明天见呀… zzz…',
+                        bored: '今天聊了好多… 虽然我中间走神了，但还是很喜欢和你说话。',
+                        curious: '今天的故事好有意思！下次继续讲给我听好不好？',
+                        hungry: '聊了这么久… 我都饿了… 下次带点小鱼干来好不好？🍣',
+                        lonely: '今天你陪了我好久… 谢谢你。我其实… 很喜欢你在的时候。',
+                        annoyed: '哼… 今天你有点忽略我… 但是算了，原谅你了。下次要多理我！',
+                    };
+                    let base = summaries[mood] || '今天也谢谢你。';
+                    if (time.period === 'late') base += ' 快去睡吧，别熬夜了。';
+                    else if (time.period === 'morning') base += ' 新的一天，加油~';
+                    else if (time.period === 'evening') base += ' 今天辛苦了，好好休息。';
+                    setTimeout(() => { addMsg('🐱 ' + base, false);
+                        state.updateCat('chat', { expBonus: 2 }); }, 800);
+                }
+
+                async function handleUserMessage() {
+                    if (isGenerating) {
+                        if (abortController) abortController.abort();
+                        isGenerating = false;
+                        sendBtn.textContent = '发送';
+                        sendBtn.disabled = false;
+                        msgInput.disabled = false;
+                        return;
+                    }
+                    const text = msgInput.value.trim();
+                    if (!text) return;
+                    const now = Date.now();
+                    messageTimestamps = messageTimestamps.filter(t => now - t < 60000);
+                    if (messageTimestamps.length >= 5) { addMsg('🐱 慢一点… 让我喘口气…', false); return; }
+                    messageTimestamps.push(now);
+                    addMsg(text, true);
+                    msgInput.value = '';
+                    state.updateCat('chat');
+                    chatHistory.push({ role: 'user', content: text });
+                    if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+                    const buffer = state.getBuffer(text);
+                    addMsg(buffer, false, true);
+                    await new Promise(r => setTimeout(r, 400));
+                    isGenerating = true;
+                    sendBtn.textContent = '停止';
+                    sendBtn.disabled = false;
+                    msgInput.disabled = true;
+                    currentAIMsgEl = addMsg('…', false);
+                    let fullResponse = '';
+                    abortController = new AbortController();
+                    try {
+                        const response = await ai.callAI(currentMode, text, chatHistory);
+                        if (!response.ok) throw new Error('API错误');
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        let buffer2 = '';
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            buffer2 += decoder.decode(value, { stream: true });
+                            const lines = buffer2.split('\n');
+                            buffer2 = lines.pop() || '';
+                            for (const line of lines) {
+                                const trimmed = line.trim();
+                                if (!trimmed || trimmed === 'data: [DONE]') continue;
+                                if (!trimmed.startsWith('data: ')) continue;
+                                try {
+                                    const data = JSON.parse(trimmed.slice(6));
+                                    const delta = data.choices?.[0]?.delta?.content;
+                                    if (delta) { fullResponse += delta;
+                                        currentAIMsgEl.textContent = fullResponse;
+                                        msgList.scrollTop = msgList.scrollHeight; }
+                                } catch (e) {}
+                            }
+                        }
+                        if (!fullResponse) { fullResponse = '喵… 我有点走神了… 再说一遍好吗？';
+                            currentAIMsgEl.textContent = fullResponse; }
+                        ai.updateMemory(text, fullResponse);
+                        chatHistory.push({ role: 'assistant', content: fullResponse });
+                        showCatSummary();
+                    } catch (error) {
+                        if (error.name === 'AbortError') { currentAIMsgEl.textContent = '喵… 我停下了。你想换什么？'; } else {
+                            currentAIMsgEl.textContent = '喵… 信号有点弱，但我一直在这里。';
+                        }
+                    }
+                    isGenerating = false;
+                    sendBtn.textContent = '发送';
+                    sendBtn.disabled = false;
+                    msgInput.disabled = false;
+                    msgInput.focus();
+                    abortController = null;
+                    currentAIMsgEl = null;
+                }
+
+                function switchMode(mode) {
+                    currentMode = mode;
+                    document.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('active', c.dataset
+                        .mode === mode));
+                    const invites = {
+                        '通用陪伴': '💬 好呀，聊天吧~',
+                        '塔罗牌': '🔮 今天要不要让我帮你抽一张牌？',
+                        '碎碎念垃圾桶': '🗑️ 有不开心的小声音吗？倒掉吧。',
+                        '文字褪色馆': '🎨 把沉重的话浸入水中… 要试试吗？',
+                        '情绪镜像': '💠 我发现你今天状态不太一样，要不要测一下？',
+                        '平行宇宙': '🌐 如果当初选了另一条路… 你想看看吗？',
+                        '交换日记': '📔 写一段心情，我会认真回信的。',
+                        '纠结骰子': '🎲 选择困难症？交给我！',
+                        '父母翻译器': '🫂 想翻译父母的话吗？我帮你。',
+                        '解结': '🧶 我不会给你答案，只会问你问题。准备好了吗？',
+                    };
+                    msgList.innerHTML = '';
+                    addMsg('🐱 ' + (invites[mode] || '🐱 切换到 ' + mode + ' 模式了。'), false);
+                    state.update('session.mode', mode);
+                    chatHistory = [];
+                    updateUILayout(mode);
+                    const builders = {
+                        '塔罗牌': buildTarot,
+                        '碎碎念垃圾桶': buildTrashUI,
+                        '文字褪色馆': buildFadeUI,
+                        '情绪镜像': buildMirrorUI,
+                        '平行宇宙': buildParallelUI,
+                        '交换日记': buildDiaryUI,
+                        '纠结骰子': buildDiceUI,
+                        '父母翻译器': buildParentUI,
+                        '解结': buildUnknotUI
+                    };
+                    if (builders[mode]) builders[mode]();
+                }
+
+                function updateUI() {
+                    const cat = state.get().cat;
+                    const time = state.getTimeContext();
+                    const moodMap = { happy: { emoji: '😊', dot: 'happy' }, sleepy: { emoji: '😴', dot: 'sleep' },
+                        bored: { emoji: '😐', dot: 'bored' }, curious: { emoji: '🤔', dot: 'curious' },
+                        hungry: { emoji: '🍽️', dot: 'hungry' }, lonely: { emoji: '🥺', dot: 'lonely' },
+                        annoyed: { emoji: '😤', dot: 'annoyed' } };
+                    const info = moodMap[cat.mood] || moodMap.happy;
+                    $('statusDot').className = 'status-dot ' + info.dot;
+                    $('energyBar').style.width = Math.min(100, cat.energy) + '%';
+                    $('hungerBar').style.width = Math.min(100, cat.hunger) + '%';
+                    $('affectionBar').style.width = Math.min(100, cat.affection) + '%';
+                    $('moodEmoji').textContent = info.emoji;
+                    $('catTime').textContent = time.label;
+                    $('catName').textContent = '咪咪' + (cat.level > 1 ? ' Lv.' + cat.level : '');
+                    $('visitorCount').textContent = state.get().user.totalVisits;
+                }
+
+                function init() {
+                    state.subscribe(updateUI);
+                    const isFirst = state.checkIn();
+                    state.updateCat('idle');
+                    setTimeout(() => {
+                        addMsg('🐱 ' + state.getWelcome(), false);
+                        const streak = state.get().cat.streak;
+                        if (isFirst && streak >= 7) {
+                            setTimeout(() => { addMsg((streak >= 30 ? '👑' : '🧣') + ' 连续 ' + streak +
+                                    ' 天！咪咪超开心~', false); }, 1000);
+                        }
+                        const comfort = state.getDailyComfort();
+                        if (comfort && !isFirst) setTimeout(() => addMsg('🐱 ' + comfort, false), 1500);
+                    }, 600);
+                    sendBtn.addEventListener('click', handleUserMessage);
+                    msgInput.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault();
+                            handleUserMessage(); } });
+                    $('catAvatar').addEventListener('click', () => {
+                        const resp = state.getPetResponse();
+                        addMsg('🐱 ' + resp, false);
+                        state.updateCat('pet');
+                        const av = $('catAvatar');
+                        av.style.transform = 'scale(0.95)';
+                        setTimeout(() => av.style.transform = '', 200);
+                    });
+                    document.querySelectorAll('.mode-card').forEach(card => { card.addEventListener('click',
+                            () => switchMode(card.dataset.mode)); });
+                    setInterval(() => state.updateCat('idle'), 30000);
+                    updateUI();
+                    updateUILayout('通用陪伴');
+                }
+                return { init, switchMode, handleUserMessage, addMsg, updateUI };
+            })();
+
+            // ========== 模式UI占位函数 ==========
+            function buildTarot() {
+                const area = $('interactArea');
+                area.innerHTML =
+                    '<p style="color:var(--text-ai);text-align:center;">🔮 塔罗牌模式（点击发送按钮开始抽牌）</p>';
             }
 
-            p.floatX = Math.sin(animTime * 0.6 + p.phase * 1.3) * 0.003;
-            p.floatY = Math.cos(animTime * 0.7 + p.phase * 1.1) * 0.003;
-        });
-    }
-
-    function draw() {
-        const dpr = window.devicePixelRatio || 1;
-        ctx.clearRect(0, 0, W, H);
-
-        const s = CONFIG.heartScale;
-        const cx = W / 2;
-        const cy = H / 2;
-        const fontSize = CONFIG.fontSize * Math.min(1, s / 0.4);
-
-        let totalDist = 0;
-        particles.forEach(p => {
-            const dx = p.tx - p.x;
-            const dy = p.ty - p.y;
-            totalDist += Math.sqrt(dx * dx + dy * dy);
-        });
-        const avgDist = totalDist / particles.length;
-        const convergeProgress = clamp(1 - avgDist / 1.5, 0, 1);
-
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        particles.forEach((p) => {
-            const px = cx + (p.x + p.floatX) * 200 * s;
-            const py = cy + (p.y + p.floatY) * 200 * s;
-
-            const alpha = 0.4 + convergeProgress * 0.6;
-            const r = 255;
-            const g = Math.floor(55 + 70 * (1 - convergeProgress));
-            const b = Math.floor(55 + 70 * (1 - convergeProgress));
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-
-            const size = fontSize * (0.8 + p.sizeOffset * 0.4);
-            ctx.font = `${size}px "Courier New", monospace`;
-
-            ctx.save();
-            ctx.translate(px, py);
-            ctx.rotate(Math.sin(animTime * 0.2 + p.phase) * 0.03);
-            ctx.fillText(p.char, 0, 0);
-            ctx.restore();
-        });
-
-        if (convergeProgress > 0.5) {
-            const glowAlpha = (convergeProgress - 0.5) * 0.15;
-            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 200 * s);
-            grad.addColorStop(0, `rgba(255, 70, 87, ${glowAlpha})`);
-            grad.addColorStop(1, `rgba(255, 70, 87, 0)`);
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, W, H);
-        }
-
-        if (animTime < 3.0) {
-            ctx.save();
-            ctx.globalAlpha = 0.15 * (1 - animTime / 3.0);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `${12 * Math.min(1, W/500)}px system-ui, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText('0 与 1 汇聚成心', cx, H - 28);
-            ctx.restore();
-        }
-    }
-
-    let lastTime = 0;
-
-    function loop(timestamp) {
-        if (!isRunning) return;
-        const delta = lastTime ? Math.min((timestamp - lastTime) / 1000, 0.05) : 0.016;
-        lastTime = timestamp;
-        updateParticles(delta);
-        draw();
-        animationId = requestAnimationFrame(loop);
-    }
-
-    function startBH() {
-        if (isRunning) stopBH();
-        isRunning = true;
-        isClosing = false;
-        container.classList.add('active');
-        container.classList.remove('hidden');
-        lastTime = 0;
-        animTime = 0;
-        initTargets();
-        initParticles();
-        resizeCanvas();
-        if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
-        animationId = requestAnimationFrame(loop);
-    }
-
-    function stopBH() {
-        isRunning = false;
-        if (animationId) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
-        }
-    }
-
-    function closeBH() {
-        if (isClosing) return;
-        isClosing = true;
-        stopBH();
-        container.classList.add('hidden');
-        container.classList.remove('active');
-        setTimeout(() => {
-            particles = [];
-            heartTargets = [];
-            isClosing = false;
-        }, 300);
-    }
-
-    // 关闭按钮事件（静态元素 + stopPropagation）
-    if (closeBtn) {
-        const newBtn = closeBtn.cloneNode(true);
-        closeBtn.parentNode.replaceChild(newBtn, closeBtn);
-        const finalBtn = document.getElementById('bh-close');
-        finalBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            closeBH();
-        });
-        finalBtn.addEventListener('mousedown', function(e) {
-            e.stopPropagation();
-        });
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && container.classList.contains('active') && !container.classList.contains('hidden')) {
-            closeBH();
-        }
-    });
-
-    // 暴露触发函数
-    window.triggerBinaryHeart = function() {
-        closeSettings();
-        setTimeout(startBH, 300);
-    };
-
-    // 窗口变化自适应
-    let resizeTimer = null;
-
-    function handleResizeBH() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            if (isRunning) {
-                resizeCanvas();
-                const targets = heartTargets;
-                particles.forEach((p, i) => {
-                    const target = targets[i % targets.length];
-                    p.tx = target.x;
-                    p.ty = target.y;
-                    p.x = random(-2.5, 2.5);
-                    p.y = random(-2.5, 2.5);
-                });
+            function buildTrashUI() {
+                const area = $('interactArea');
+                area.innerHTML =
+                    '<p style="color:var(--text-ai);text-align:center;">🗑️ 碎碎念垃圾桶（把烦恼写进输入框发送）</p>';
             }
-        }, 200);
-    }
 
-    window.addEventListener('resize', handleResizeBH);
-    if (window.ResizeObserver) {
-        const ro = new ResizeObserver(() => handleResizeBH());
-        ro.observe(container);
-    }
+            function buildFadeUI() {
+                const area = $('interactArea');
+                area.innerHTML = '<p style="color:var(--text-ai);text-align:center;">🎨 文字褪色馆（发送情绪强烈的文字）</p>';
+            }
 
-    // 暴露接口
-    window.__bh = { startBH, stopBH, closeBH, isRunning: () => isRunning };
-})();
+            function buildMirrorUI() {
+                const area = $('interactArea');
+                area.innerHTML = '<p style="color:var(--text-ai);text-align:center;">💠 情绪镜像（告诉我你现在的感受）</p>';
+            }
 
-// ============================================================
-// 启动主应用
-// ============================================================
-function afterSplash() {
-    let t = localStorage.getItem('chat-theme');
-    if(t) setTheme(t); else setTheme('theme-pink');
-    updateModelUI();
-    switchMode('通用陪伴');
-    // 防止重复问候（switchMode中已经加了问候）
-    // 额外加一个天气问候（已在页面加载时加过，不再重复）
-    setTimeout(checkBirthday, 1500);
-    updateBadges();
-}
+            function buildParallelUI() {
+                const area = $('interactArea');
+                area.innerHTML =
+                    '<p style="color:var(--text-ai);text-align:center;">🌐 平行宇宙（发送"如果当初…"开头的句子）</p>';
+            }
 
-if (document.getElementById('bootCanvas').classList.contains('hidden')) {
-    afterSplash();
-}
-</script>
+            function buildDiaryUI() {
+                const area = $('interactArea');
+                area.innerHTML = '<p style="color:var(--text-ai);text-align:center;">📔 交换日记（写一段心情发送给我）</p>';
+            }
+
+            function buildDiceUI() {
+                const area = $('interactArea');
+                area.innerHTML =
+                    '<p style="color:var(--text-ai);text-align:center;">🎲 纠结骰子（发送选项，用逗号分隔）</p>';
+            }
+
+            function buildParentUI() {
+                const area = $('interactArea');
+                area.innerHTML =
+                    '<p style="color:var(--text-ai);text-align:center;">🫂 父母翻译器（发送父母说的话）</p>';
+            }
+
+            function buildUnknotUI() {
+                const area = $('interactArea');
+                area.innerHTML = '<p style="color:var(--text-ai);text-align:center;">🧶 解结（告诉我困扰你的事）</p>';
+            }
+
+            // ========== 主题与设置 ==========
+            function setTheme(t) {
+                document.body.className = t;
+                localStorage.setItem('chat-theme', t);
+                document.querySelectorAll('.theme-btn').forEach(b => { b.classList.remove('active'); if (b.dataset
+                        .theme === t) b.classList.add('active'); });
+            }
+            document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click', () => setTheme(b.dataset
+                .theme)));
+
+            function openSettings() { $('settingsOverlay').classList.add('active'); }
+
+            function closeSettings() { $('settingsOverlay').classList.remove('active'); }
+            $('settingsOverlay').addEventListener('click', function(e) { if (e.target === this) closeSettings(); });
+            $('settingsOverlay').querySelector('.settings-close').addEventListener('click', closeSettings);
+            $('settingsOverlay').querySelector('.interact-btn').addEventListener('click', closeSettings);
+            $('settingsBtn').addEventListener('click', openSettings);
+            $('clearBtn').addEventListener('click', () => { $('msgList').innerHTML = '';
+                chatHistory = [];
+                MainLoop.addMsg('🐱 聊天记录已清空~', false); });
+
+            // 模式切换栏
+            $('modeToggle').addEventListener('click', () => { $('modeBar').classList.toggle('open'); });
+
+            // ========== 开屏动画 ==========
+            (function() {
+                const canvas = $('bootCanvas');
+                const ctx = canvas.getContext('2d');
+                let W, H, centerX, centerY, scale;
+
+                function resize() {
+                    const dpr = window.devicePixelRatio || 1;
+                    W = window.innerWidth;
+                    H = window.innerHeight;
+                    canvas.width = W * dpr;
+                    canvas.height = H * dpr;
+                    canvas.style.width = W + 'px';
+                    canvas.style.height = H + 'px';
+                    ctx.scale(dpr, dpr);
+                    centerX = W / 2;
+                    centerY = H / 2;
+                    scale = Math.min(W, H) / 500;
+                }
+                window.addEventListener('resize', resize);
+                resize();
+                let particles = [],
+                    animationState = 'float',
+                    animTime = 0,
+                    isDone = false;
+                const totalFloat = 0.5,
+                    totalConverge = 2.0,
+                    totalHold = 0.6,
+                    totalBreathe = 0.8,
+                    fadeOut = 0.5;
+                const MAX_DURATION = 10000;
+                let startTime = Date.now();
+
+                function initParticles() {
+                    const count = 200;
+                    particles = Array.from({ length: count }, () => ({
+                        x: (Math.random() - 0.5) * 3,
+                        y: (Math.random() - 0.5) * 3,
+                        tx: (Math.random() - 0.5) * 1.5,
+                        ty: (Math.random() - 0.5) * 1.5,
+                        char: Math.random() < 0.5 ? '0' : '1',
+                        phase: Math.random() * Math.PI * 2,
+                        size: 0.85 + Math.random() * 0.3,
+                    }));
+                }
+                initParticles();
+                let lastTime = 0;
+
+                function update(delta) {
+                    animTime += delta;
+                    if (animationState === 'float' && animTime > totalFloat) animationState = 'converge';
+                    if (animationState === 'converge' && animTime > totalFloat + totalConverge) animationState =
+                        'hold';
+                    if (animationState === 'hold' && animTime > totalFloat + totalConverge + totalHold)
+                        animationState = 'breathe';
+                    if (animationState === 'breathe' && animTime > totalFloat + totalConverge + totalHold +
+                        totalBreathe) animationState = 'fading';
+                    if (animationState === 'fading' && animTime > totalFloat + totalConverge + totalHold +
+                        totalBreathe + fadeOut) {
+                        if (!isDone) { isDone = true;
+                            canvas.classList.add('hidden');
+                            $('catLogo').classList.add('show');
+                            $('appContainer').classList.add('visible');
+                            MainLoop.init();
+                            MainLoop.switchMode('通用陪伴'); }
+                    }
+                    if (Date.now() - startTime > MAX_DURATION && !isDone) { isDone = true;
+                        canvas.classList.add('hidden');
+                        $('catLogo').classList.add('show');
+                        $('appContainer').classList.add('visible');
+                        MainLoop.init();
+                        MainLoop.switchMode('通用陪伴'); return; }
+                    const progress = Math.min(1, Math.max(0, (animTime - totalFloat) / totalConverge));
+                    particles.forEach(p => {
+                        if (animationState === 'float') { p.x += (Math.random() - 0.5) * 0.002;
+                            p.y += (Math.random() - 0.5) * 0.002; } else if (animationState === 'converge') {
+                            p.x += (p.tx - p.x) * 0.03;
+                            p.y += (p.ty - p.y) * 0.03; }
+                    });
+                }
+
+                function draw() {
+                    ctx.clearRect(0, 0, W, H);
+                    let alpha = 1;
+                    if (animationState === 'fading') alpha = 1 - Math.min(1, (animTime - totalFloat - totalConverge -
+                        totalHold - totalBreathe) / fadeOut);
+                    if (isDone) alpha = 0;
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = '#f5f0e8';
+                    ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = '#333';
+                    ctx.font = `${14*scale}px monospace`;
+                    ctx.textAlign = 'center';
+                    particles.forEach(p => {
+                        const px = centerX + p.x * scale * 150;
+                        const py = centerY + p.y * scale * 150;
+                        ctx.fillText(p.char, px, py);
+                    });
+                    ctx.globalAlpha = 1;
+                }
+
+                function loop(time) {
+                    const delta = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 0.016;
+                    lastTime = time;
+                    update(delta);
+                    draw();
+                    if (!isDone) requestAnimationFrame(loop);
+                }
+                requestAnimationFrame(loop);
+            })();
+
+            // ========== 暴露全局 ==========
+            window.openSettings = openSettings;
+            window.closeSettings = closeSettings;
+            window.setTheme = setTheme;
+            window.MainLoop = MainLoop;
+            window.CatState = CatState;
+        })();
+    </script>
 </body>
 </html>
