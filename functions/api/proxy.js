@@ -28,7 +28,7 @@ export async function onRequest(context) {
     });
   }
 
-  const model = body.model || 'deepseek-v4-flash';
+  const model = body.model || 'glm-4-flash';
 
   let apiUrl, apiKey;
   if (model.includes('deepseek')) {
@@ -42,6 +42,26 @@ export async function onRequest(context) {
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'API Key 未配置' }), {
       status: 500,
+      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+    });
+  }
+
+  // ===== 来源防护：只允许温柔陪伴自己的域名 =====
+  const allowedOrigins = [
+    'https://51ai-1.pages.dev',
+    'https://734a1763.51ai-1.pages.dev',
+    'https://2012hyl.github.io',
+    'http://localhost'
+  ];
+
+  const origin = request.headers.get('Origin');
+  const referer = request.headers.get('Referer');
+  const isAllowed = allowedOrigins.some(a => (origin && origin.startsWith(a)) || (referer && referer.startsWith(a)));
+  const isDirectAccess = !origin && !referer;
+
+  if (!isAllowed && !isDirectAccess) {
+    return new Response(JSON.stringify({ error: '禁止访问' }), {
+      status: 403,
       headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
     });
   }
