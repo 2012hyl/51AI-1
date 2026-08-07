@@ -4,6 +4,37 @@
 export async function onRequest(context) {
   const { request, env } = context;
 
+  // 允许访问的域名白名单
+  const allowedOrigins = [
+    'https://51ai-1.pages.dev',
+    'https://734a1763.51ai-1.pages.dev',
+    'https://2012hyl.github.io',
+    'https://travel-agent-4hd.pages.dev',
+    'https://job-agent-2zy.pages.dev',
+    'http://localhost'
+  ];
+
+  const origin = request.headers.get('Origin');
+  const referer = request.headers.get('Referer');
+
+  // 检查请求来源是否在白名单中
+  const isAllowed = allowedOrigins.some(allowed => {
+    return (origin && origin.startsWith(allowed)) || (referer && referer.startsWith(allowed));
+  });
+
+  // 浏览器直接访问（没有Origin也没有Referer）放行
+  const isDirectAccess = !origin && !referer;
+
+  if (!isAllowed && !isDirectAccess) {
+    return new Response(JSON.stringify({ error: '禁止访问' }), {
+      status: 403,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+
   // 处理 CORS 预检
   if (request.method === 'OPTIONS') {
     return new Response(null, {
@@ -11,63 +42,58 @@ export async function onRequest(context) {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Max-Age': '86400',
-      },
+        'Access-Control-Max-Age': '86400'
+      }
     });
   }
 
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: '只支持POST' }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 
-  // ===== 允许访问的域名白名单 =====
-  const allowedOrigins = [
-    'https://51ai-1.pages.dev',
-    'https://734a1763.51ai-1.pages.dev',
-    'https://2012hyl.github.io',
-    'https://travel-agent.pages.dev',
-    'https://job-agent.pages.dev',
-    'http://localhost'
-  ];
-
-  const origin = request.headers.get('Origin');
-  const referer = request.headers.get('Referer');
-
-  const isAllowed = allowedOrigins.some(allowed => {
-    return (origin && origin.startsWith(allowed)) || (referer && referer.startsWith(allowed));
-  });
-
-  // 如果没有 Origin 也没有 Referer，放行（可能是直接访问或同源请求）
-  const isDirectAccess = !origin && !referer;
-
-  if (!isAllowed && !isDirectAccess) {
-    return new Response(JSON.stringify({ error: '禁止访问' }), {
-      status: 403,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-    });
-  }
-
-  // ===== 解析请求 =====
   let body;
   try {
     body = await request.json();
   } catch (e) {
     return new Response(JSON.stringify({ error: 'JSON解析失败' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 
-  const model = body.model || 'glm-4-flash';
+  const messages = body.messages;
+  const model = body.model || 'deepseek-v4-flash';
+  const temperature = body.temperature ?? 0.7;
+  const max_tokens = body.max_tokens || 2000;
+  const stream = body.stream !== false;
 
-  // ===== 根据模型选择 API =====
+  if (!messages || !Array.isArray(messages)) {
+    return new Response(JSON.stringify({ error: '缺少messages参数' }), {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+
+  // 根据模型选择 API 地址和密钥
   let apiUrl, apiKey;
   if (model.includes('deepseek')) {
     apiUrl = 'https://api.deepseek.com/chat/completions';
     apiKey = env.DEEPSEEK_API_KEY;
+  } else if (model.includes('glm')) {
+    apiUrl = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+    apiKey = env.ZHIPU_API_KEY;
   } else {
     // 默认走智谱
     apiUrl = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
@@ -77,39 +103,62 @@ export async function onRequest(context) {
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'API Key 未配置' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 
-  // ===== 转发请求 =====
   try {
     const aiResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ model, messages, temperature, max_tokens, stream })
     });
+
+    if (stream) {
+      return new Response(aiResponse.body, {
+        status: aiResponse.status,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        }
+      });
+    }
 
     const aiData = await aiResponse.json();
 
     if (aiData.error) {
       return new Response(JSON.stringify({ error: 'AI调用失败: ' + (aiData.error.message || '') }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
 
     return new Response(JSON.stringify(aiData), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
 
   } catch (error) {
     return new Response(JSON.stringify({ error: '服务器内部错误' }), {
       status: 502,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 }
